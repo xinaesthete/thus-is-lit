@@ -23,6 +23,7 @@ function createGUIWindow() {
         }
     });
     window.loadURL(`file://${__dirname}/gui.html`);
+    window.on('close', ()=>app.quit());
 }
 
 
