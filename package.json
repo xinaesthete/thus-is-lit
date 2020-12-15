@@ -1,0 +1,28 @@
+{
+  "name": "thus-is-lit",
+  "version": "1.0.0",
+  "description": "",
+  "main": "public/server.js",
+  "dependencies": {
+    "@material-ui/core": "^4.11.2",
+    "@material-ui/icons": "^4.11.2",
+    "@material-ui/lab": "^4.0.0-alpha.57",
+    "@types/react": "^17.0.0",
+    "@types/react-dom": "^17.0.0",
+    "chokidar": "^3.4.3",
+    "electron": "^11.1.0",
+    "live-server": "^1.2.1",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1",
+    "three": "^0.123.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.8.23"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

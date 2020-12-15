@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../src/renderer/index.tsx"],
+  "sourcesContent": ["import * as THREE from'three'\r\n\r\nconsole.log(\"hello\")"],
+  "mappings": "MAEA,QAAQ,IAAI",
+  "names": []
+}
