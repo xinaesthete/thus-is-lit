@@ -7,7 +7,12 @@ const port = 8321;
 async function createRendererWindow() {
     const window = new BrowserWindow({
         autoHideMenuBar: true,
-        fullscreen: true
+        fullscreen: true,
+        webPreferences: {
+            contextIsolation: true,
+            nodeIntegration: false,
+            sandbox: true
+        }
     });
     //would be good to have a saved configuration 
     //and use that to create sets of windows each on correct screens.

@@ -17,6 +17,10 @@ const buildDir = path.join(__dirname);
 function createGUIWindow() {
     const window = new BrowserWindow({
         autoHideMenuBar: true,
+        webPreferences: {
+            contextIsolation: true,
+            nodeIntegration: false
+        }
     });
     window.loadURL(`file://${__dirname}/gui.html`);
 }
