@@ -1,5 +1,6 @@
 import * as dat from "dat.gui"
 import * as THREE from 'three'
+import {isNum, isVec2, Numeric, Tweakable, Uniforms} from '../common/tweakables'
 
 function lerp(s, t, a) {
     if (a<0) return s;
@@ -7,8 +8,6 @@ function lerp(s, t, a) {
     return s + a*(t-s);
 }
 
-//implement other types when needed (less to refactor while figuring out design)
-type Numeric = number | THREE.Vector2; // | THREE.Vector3 | THREE.Vector4;
 interface Lagger<T extends Numeric> {
     lagTime: number;
     update(dt: number) : T;
@@ -56,19 +55,6 @@ class LagVec2 implements Lagger<THREE.Vector2> {
         this.lagY.lagTime = t;
     }
 }
-function isNum(v: Numeric) : v is number {
-    return typeof v === "number";
-}
-function isVec2(v: Numeric) : v is THREE.Vector2 {
-    return (v as THREE.Vector2) !== null;
-}
-/// implement when needed, save refactoring...
-// function isVec3(v: Numeric) : v is THREE.Vector3 {
-//     return (v as THREE.Vector3) !== null;
-// }
-// function isVec4(v: Numeric) : v is THREE.Vector4 {
-//     return (v as THREE.Vector4) !== null;
-// }
 
 function getLagger(v: Numeric, lagTime: number): Lagger<Numeric> {
     if (isNum(v)) {
@@ -79,27 +65,6 @@ function getLagger(v: Numeric, lagTime: number): Lagger<Numeric> {
     }
 }
 
-
-
-//ways of moving:
-//constant direction (wrap)
-//ping-pong
-//noise
-//smooth oscillation
-//shaped oscillation
-// see also THREE.KeyframeTrack et al
-
-export interface Tweakable<T extends Numeric> {
-    name?: string,
-    value: T,
-    min?: number,
-    max?: number,
-    step?: number,
-    shapeFn?: (T) => T
-}
-export type Uniforms = Record<string, Tweakable<any>>;
-//no such luck
-//function isTweakNum(t: Tweakable<number>) // t.value is number {}
 
 const gui = new dat.GUI();
 //this gui should either not exist on renderer, or be hidden by default...
@@ -112,8 +77,12 @@ document.onkeypress = (ev) => {
         guiHidden = !guiHidden;
     }
 }
-export const makeGUI = (specs: Tweakable<Numeric>[], uniforms:any = {}) => {
-    return new ParamGroup(specs, uniforms);
+export const makeGUI = (specs: Tweakable<Numeric>[], uniforms:Uniforms = {}) => {
+    const parms = new ParamGroup(specs, uniforms);
+    //send a message to the server so that it knows what GUI to show...
+    //also we need to be able to listen to those
+    //as well as filename
+    return parms;
 }
 
 
@@ -121,7 +90,7 @@ export const makeGUI = (specs: Tweakable<Numeric>[], uniforms:any = {}) => {
 export class ParamGroup {
     parms: ShaderParam[] = [];
     lagTime: number = 1000;
-    constructor(specs: Tweakable<Numeric>[], uniforms:any = {}) {
+    constructor(specs: Tweakable<Numeric>[], uniforms:Uniforms = {}) {
         const parms = this.parms;
         gui.add(this, 'lagTime', 0, 20000);
         specs.forEach(s => {

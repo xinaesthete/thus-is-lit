@@ -12,6 +12,7 @@ import {
 } from 'three'
 import * as params from './params'
 import * as vid from './video_state'
+import {Uniforms} from '../common/tweakables'
 
 const scene = new Scene();
 const camera = new OrthographicCamera(0, 1, 1, 0, 0, 10);
@@ -29,7 +30,7 @@ document.body.prepend(renderer.domElement);
 
 let w = window.innerWidth, h = window.innerHeight;
 
-const uniforms: params.Uniforms = {
+const uniforms: Uniforms = {
     'ScreenAspect': {value: w/h},
     'Leaves': {value: 3},
     'Angle': {value: 1.05},
