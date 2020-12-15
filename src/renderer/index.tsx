@@ -7,10 +7,7 @@ import {
     PlaneGeometry,
     Scene,
     ShaderMaterial,
-    Texture,
-    TextureLoader,
     Vector2,
-    VideoTexture,
     WebGLRenderer
 } from 'three'
 import * as params from './params'
@@ -26,7 +23,7 @@ const renderer = new WebGLRenderer({
   alpha: false
 });
 renderer.setSize(window.innerWidth, window.innerHeight);
-document.body.appendChild(renderer.domElement);
+document.body.prepend(renderer.domElement);
 
 
 
@@ -54,10 +51,7 @@ const parms = params.makeGUI([
     {name: "OutAngle", value: 0, min: -1, max: 1},
     {name: "Zoom", value: 1.3, min: 0, max: 10},
     {name: "KaleidMix", value: 0.999, min: 0, max: 1},
-    //not great as is, but maybe something later (off off on?)
     {name: "Mozaic", value: 4, min: 1, max: 40},
-    // {name: "MozMix", value: 0.3, min: 0, max: 1},
-    // {name: "MozPow", value: 1.5, min: 0, max: 10},
     {name: "MozGain", value: .5, min: 0, max: 1},
     {name: "ContrastPreBias", value: 0.5, min: 0, max: 1},
     {name: "ContrastGain", value: 0.5, min: 0, max: 1},
@@ -70,10 +64,6 @@ const parms = params.makeGUI([
 ], uniforms);
 
 vid.setup(renderer, uniforms);
-// const gui = new dat.GUI();
-// gui.add(vid.vidEl, 'playbackRate').min(0).max(20).name('rate1');
-//gui.add(vidEl2, 'playbackRate').min(0).max(20).name('rate2');
-//gui.add(vidEl3, 'playbackRate').min(0).max(20).name('rate3');
 
 const geo = new PlaneGeometry(2, 2);
 const mat = new ShaderMaterial({vertexShader: vs, fragmentShader: fs, uniforms: uniforms, transparent: true});

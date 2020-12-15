@@ -102,6 +102,16 @@ export type Uniforms = Record<string, Tweakable<any>>;
 //function isTweakNum(t: Tweakable<number>) // t.value is number {}
 
 const gui = new dat.GUI();
+//this gui should either not exist on renderer, or be hidden by default...
+gui.hide();
+let guiHidden = true;
+document.onkeypress = (ev) => {
+    if (ev.key === "/") {
+        if (guiHidden) gui.show();
+        else gui.hide();
+        guiHidden = !guiHidden;
+    }
+}
 export const makeGUI = (specs: Tweakable<Numeric>[], uniforms:any = {}) => {
     return new ParamGroup(specs, uniforms);
 }
