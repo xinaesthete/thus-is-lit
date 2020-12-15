@@ -7,7 +7,11 @@ const port = 8321;
 async function createRendererWindow() {
     const window = new BrowserWindow({
         autoHideMenuBar: true,
-        fullscreen: true,
+        //there seems to be a bug in electron when we have multiple fullscreen videos playing
+        //(and not being seen directly, but rather fed in to THREE.VideoTexture)
+        //using frame: false appears to work better.
+        //fullscreen: true,
+        frame: false,
         webPreferences: {
             contextIsolation: true,
             nodeIntegration: false,
@@ -20,7 +24,7 @@ async function createRendererWindow() {
     //spanning entire extended desktop
     await window.loadURL(`file://${__dirname}/renderer.html`);
     
-    //establish communication link here...
+    //establish communication link here?
     
     return;
 }
