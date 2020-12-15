@@ -4,12 +4,11 @@ const chokidar = require('chokidar');
 
 async function watch(name, node=false) {
     console.log(`[${new Date()}] building ${name}, node=${node}`);
-    // what do we need to do so that it understands where to find node_modules?
-    // for now I've added a file /electron-launch.js, I think it is actually redundant
-    // *** what I need to do is make sure electron is treated as external ***
+    // TODO: log errors / warnings / stats.
     const builder = await build({
         color: true,
         platform: node ? "node" : "browser",
+        //may need a better approach to electron externals soon...
         external: ["electron", "fsevents"],
         entryPoints: [`./src/${name}/index.tsx`],
         outfile: `./public/${name}.js`,

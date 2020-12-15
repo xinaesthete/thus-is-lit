@@ -1,5 +1,8 @@
 import { app, BrowserWindow } from 'electron'
 import * as path from 'path'
+import {start} from './server_comms'
+
+start();
 
 const buildDir = path.join(__dirname);
 
@@ -18,16 +21,5 @@ function createGUIWindow() {
     window.loadURL(`file://${__dirname}/gui.html`);
 }
 
-function createRendererWindow() {
-    const window = new BrowserWindow({
-        autoHideMenuBar: true,
-        fullscreen: true
-    });
-    //would be good to have a saved configuration 
-    //and use that to create sets of windows each on correct screens.
-    //nb may go back to old organic-art method of making one big borderless window
-    //spanning entire extended desktop
-    window.loadURL(`file://${__dirname}/renderer.html`);
-}
 
 app.on("ready", createGUIWindow);
