@@ -86,7 +86,6 @@ export const makeGUI = (specs: Tweakable<Numeric>[], uniforms:Uniforms = {}) => 
     const params = new URLSearchParams(location.search);
     if (params.has("id")) {
         const id = Number.parseInt(params.get("id"));
-        alert(id);
         const model: KaleidModel = {
             id: id,
             filename: "todo",
