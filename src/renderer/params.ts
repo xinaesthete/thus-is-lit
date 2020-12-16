@@ -1,6 +1,8 @@
 import * as dat from "dat.gui"
 import * as THREE from 'three'
 import {isNum, isVec2, Numeric, Tweakable, Uniforms} from '../common/tweakables'
+import {rendererStarted, port} from '../common/constants'
+import KaleidModel from '../common/KaleidModel'
 
 function lerp(s, t, a) {
     if (a<0) return s;
@@ -80,8 +82,29 @@ document.onkeypress = (ev) => {
 export const makeGUI = (specs: Tweakable<Numeric>[], uniforms:Uniforms = {}) => {
     const parms = new ParamGroup(specs, uniforms);
     //send a message to the server so that it knows what GUI to show...
-    //also we need to be able to listen to those
-    //as well as filename
+    //only if we have an id to use from query string
+    const params = new URLSearchParams(location.search);
+    if (params.has("id")) {
+        const id = Number.parseInt(params.get("id"));
+        alert(id);
+        const model: KaleidModel = {
+            id: id,
+            filename: "todo",
+            uniforms: uniforms, //maybe rather base this on 'specs'
+        }
+        const body = JSON.stringify(model);
+        console.log(`sending ${rendererStarted} ${body}`);
+        fetch(`http://localhost:${port}${rendererStarted}`, {
+            method: "POST", body: body,
+            //https://stackoverflow.com/questions/52684372/fetch-post-request-to-express-js-generates-empty-body
+            //prefer to keep application/json
+            headers: {"Content-Type": "application/x-www-form-urlencoded"}
+        });
+    }
+    
+    //also we need to be able to listen to tweakables tweaking
+    //as well as filename and whatever else.
+    //... let's have a WebSocket server here for that.
     return parms;
 }
 

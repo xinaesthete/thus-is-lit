@@ -45,6 +45,7 @@ const uniforms: Uniforms = {
     // texture3: {value: vidTex3}
 };
 
+//this will also (for the time being) be responsible for reporting that we've started to the server.
 const parms = params.makeGUI([
     {name: "Leaves", value: 3, min: 1, max: 8, step: 1},
     {name: "Angle", value: 1.05, min: -Math.PI, max: Math.PI},
