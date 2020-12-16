@@ -7,8 +7,17 @@ import { Snackbar } from '@material-ui/core';
 function App() {
   return (
     //... how shall we make this do something in here?
-    //I want a Snackbar and I want my GUI!
+    
+    //React.createElement(KaleidGUI, {}, model) ?
+
+
     <NewRendererButton />
+    
+    
+    
+    //settings: media base path.
+    //browse media
+    
   );
 }
 

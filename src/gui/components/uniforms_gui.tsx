@@ -1,5 +1,6 @@
 import { Button, Slider, makeStyles, Typography, Grid } from '@material-ui/core'
 import React from 'react'
+import KaleidModel from '../../common/KaleidModel';
 //maybe want to use material, or just plain-old vanilla dat.gui...
 //import DatGui, {DatNumber, DatString} from 'react-dat-gui'
 import {Uniforms, Numeric, Tweakable, isNum, isVec2} from '../../common/tweakables'
@@ -14,55 +15,37 @@ const useStyles = makeStyles({
     }
 });
 
-function TweakableSlider(u: Tweakable<number>, name: string) {
+function TweakableSlider(u: Tweakable<number>) {
     const classes = useStyles();
-    
+    const [value, setValue] = React.useState(u.value);
+    const handleChange = (event: any, newValue: number | number[]) => {
+        setValue(newValue as number); //how does this propogate back up?
+    };
     return (
         <Grid item className={classes.root}>
-            <Typography>{name}</Typography>
-            <Slider min={u.min} max={u.max} />
+            <Typography>{u.name || "unnamed?"}</Typography>
+            <Slider value={value} min={u.min} max={u.max} onChange={handleChange} />
         </Grid>
     )
 }
 
 //maybe more like KaleidModel rather than Uniforms here.
-export class UniformGui extends React.Component<Uniforms, UniformsState> {
-    state = {
-        data: {
-            'x': {value: 0.5, min: -1, max: 1},
-            'y': {value: 0.5, min: -1, max: 1},
-        } as Uniforms
-    }
+//so how do we make it?
+interface KProps {
+    kaleid: KaleidModel
+}
+export function KaleidGUI(props: KProps) {
+    const classes = useStyles();
+    const [model, setModel] = React.useState(props.kaleid);
 
-
-    handleUpdate = newData => {
-        //...output the data to outside where it's needed.
-        this.setState(prevState => ({
-            data: {...prevState.data, ...newData}
-        }))
-    }
-
-    render() {
-        const { data } = this.state;
-
-        return (
-            //strongly suspect shoe-horning in to react-dat-gui will be harder than making something more fitting to the shape of my data.
-            <Grid container spacing={1}>
-                {Object.keys(data).map(k => {
-                    const u = data[k] as Tweakable<any>;
-                    if (isNum(u.value)) {
-                        return <TweakableSlider {...u as Tweakable<number>} name={k}></TweakableSlider>
-                    }
-                })}
-            </Grid>
-            // <DatGui data={data} onUpdate={this.handleUpdate}>
-            //     {Object.keys(data).map(k => {
-            //         const u = data[k] as Tweakable<any>;
-            //         if (isNum(u.value)) {
-            //             return <DatNumber path={`${k}.value`} label={k}></DatNumber>
-            //         }
-            //     })}
-            // </DatGui>
-        )
-    }
+    return (
+        <Grid container spacing={1}>
+            <Grid item className={classes.root}><Typography>ID: {model.id}</Typography></Grid>
+            {model.tweakables.map(u => {
+                if (isNum(u.value)) {
+                    return <TweakableSlider {...u as Tweakable<number>} />
+                }
+            })}
+        </Grid>
+    )
 }
