@@ -6,12 +6,12 @@
 // reflection of that (serving also a guide to what generated).
 
 
-import { Uniforms } from "./tweakables";
+import { Tweakable } from "./tweakables";
 
 export default interface Renderer {
-    /** key may be subject to change... */
+    /** id key may be subject to change eg when we think about how to restore saved state... */
     id: number,
     filename: string,
-    uniforms: Uniforms
+    tweakables: Tweakable<any>[]
 }
 

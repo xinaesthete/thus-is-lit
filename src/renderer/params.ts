@@ -1,6 +1,6 @@
 import * as dat from "dat.gui"
 import * as THREE from 'three'
-import {isNum, isVec2, Numeric, Tweakable, Uniforms} from '../common/tweakables'
+import {isNum, isVec2, MovementType, Numeric, Tweakable, Uniforms} from '../common/tweakables'
 import {rendererStarted, port} from '../common/constants'
 import KaleidModel from '../common/KaleidModel'
 
@@ -79,17 +79,29 @@ document.onkeypress = (ev) => {
         guiHidden = !guiHidden;
     }
 }
+/** 
+ * Originally a small helper function, this is now serving as the key function to initialize
+ * parameters, register with server/gui etc... indeed if it wasn't called, the emerging protocol
+ * for what a Renderer needs to do as a bare minimum would not be met.
+ */
 export const makeGUI = (specs: Tweakable<Numeric>[], uniforms:Uniforms = {}) => {
+    specs.forEach(s => s.movement = MovementType.Modulatable);
+    Object.keys(uniforms).forEach(k => uniforms[k].movement = MovementType.Fixed);
     const parms = new ParamGroup(specs, uniforms);
     //send a message to the server so that it knows what GUI to show...
-    //only if we have an id to use from query string
+    //only if we have an id to use from query string.
+    //If not, we should still be able to operate as a standalone webpage,
+    //but this scenario is not currently being tested.
     const params = new URLSearchParams(location.search);
     if (params.has("id")) {
         const id = Number.parseInt(params.get("id"));
+        //we don't want all of the uniforms, just the non-Fixed ones?
+        //or just flag the ones that are Fixed & ignore them later?
+        //... if I just make KaleidModel.tweakables be an array, I can use specs here.
         const model: KaleidModel = {
             id: id,
             filename: "todo",
-            uniforms: uniforms, //maybe rather base this on 'specs'
+            tweakables: specs,
         }
         const body = JSON.stringify(model);
         console.log(`sending ${rendererStarted} ${body}`);
