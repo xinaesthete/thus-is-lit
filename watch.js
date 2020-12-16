@@ -9,6 +9,7 @@ async function watch(name, node=false) {
         color: true,
         platform: node ? "node" : "browser",
         //may need a better approach to electron externals soon...
+        //also... why am I getting several copies of three in my renderer bundle?!
         external: ["electron", "fsevents"],
         entryPoints: [`./src/${name}/index.tsx`],
         outfile: `./public/${name}.js`,
@@ -23,7 +24,7 @@ async function watch(name, node=false) {
         incremental: true,
         loader: { '.glsl': 'text' }
     });
-    chokidar.watch(`src/${name}/**/*`).on('all', () => {
+    chokidar.watch(`src/${name}/**/*`, {ignoreInitial: true}).on('all', () => {
         console.log(`[${new Date()}] rebuilding ${name}`);
         builder.rebuild();
     });

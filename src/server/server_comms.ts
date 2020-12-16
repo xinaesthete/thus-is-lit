@@ -13,6 +13,7 @@ const expApp = express();
 //trying to figure out whether express.json() is enough, whether we need body-parser
 //or why we shouldn't just have a JSON string and parse it ourselves.
 //express depends on body-parser already, so it's not adding to node_modules.
+//but it does seem to be adding to bundle size, largely because of iconv
 //expApp.use(express.json());
 expApp.use(bodyParser.urlencoded({extended: false}));
 expApp.use(bodyParser.json());

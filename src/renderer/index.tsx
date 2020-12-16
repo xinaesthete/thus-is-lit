@@ -1,25 +1,17 @@
 import vs from './shaders/kaleid_vert.glsl'
 import fs from './shaders/kaleid_frag.glsl'
 
-import {
-    Mesh,
-    OrthographicCamera,
-    PlaneGeometry,
-    Scene,
-    ShaderMaterial,
-    Vector2,
-    WebGLRenderer
-} from 'three'
+import * as THREE from 'three'
 import * as params from './params'
 import * as vid from './video_state'
 import {Uniforms} from '../common/tweakables'
 
-const scene = new Scene();
-const camera = new OrthographicCamera(0, 1, 1, 0, 0, 10);
+const scene = new THREE.Scene();
+const camera = new THREE.OrthographicCamera(0, 1, 1, 0, 0, 10);
 camera.position.set(0.5, 0.5, -1);
 camera.lookAt(0.5,0.5,0);
 
-const renderer = new WebGLRenderer({
+const renderer = new THREE.WebGLRenderer({
   antialias: true,
   alpha: false
 });
@@ -27,9 +19,9 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.prepend(renderer.domElement);
 
 
-
 let w = window.innerWidth, h = window.innerHeight;
 
+const Vector2 = THREE.Vector2;
 const uniforms: Uniforms = {
     'ScreenAspect': {value: w/h},
     'Leaves': {value: 3},
@@ -67,9 +59,9 @@ const parms = params.makeGUI([
 
 vid.setup(renderer, uniforms);
 
-const geo = new PlaneGeometry(2, 2);
-const mat = new ShaderMaterial({vertexShader: vs, fragmentShader: fs, uniforms: uniforms, transparent: true});
-const mesh = new Mesh(geo, mat);
+const geo = new THREE.PlaneGeometry(2, 2);
+const mat = new THREE.ShaderMaterial({vertexShader: vs, fragmentShader: fs, uniforms: uniforms, transparent: true});
+const mesh = new THREE.Mesh(geo, mat);
 mesh.position.x = 0.5;
 mesh.position.y = 0.5;
 
