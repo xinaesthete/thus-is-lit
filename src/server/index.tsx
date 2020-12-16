@@ -24,7 +24,9 @@ function createGUIWindow() {
         }
     });
     window.loadURL(`file://${__dirname}/gui.html`);
-    window.on('close', ()=>app.quit());
+    //really slow to quit when devtools is up?
+    //fairly slow anyway.
+    window.on('close', ()=>{console.log("quitting"); app.quit()});
 }
 
 
