@@ -97,7 +97,7 @@ export const makeGUI = (specs: Tweakable<Numeric>[], uniforms:Uniforms = {}) => 
             method: "POST", body: body,
             //https://stackoverflow.com/questions/52684372/fetch-post-request-to-express-js-generates-empty-body
             //prefer to keep application/json
-            headers: {"Content-Type": "application/x-www-form-urlencoded"}
+            headers: {"Content-Type": "application/json"}
         });
     }
     

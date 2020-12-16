@@ -80,7 +80,8 @@ expApp.post(consts.rendererStarted, (req, res) => {
     //this is failing because we get something like
     //{ "{a: 42}": "" } whereas we want {a: 42}
     //probably need to write our fetch differently, experimenting with something horrible...
-    const info = JSON.parse(Object.keys(req.body)[0]) as KaleidModel;
+    // const info = JSON.parse(Object.keys(req.body)[0]) as KaleidModel;
+    const info = req.body as KaleidModel;
     console.log(`id: '${info.id}'`);
     console.log(JSON.stringify(info, null, 2));
     //why is this error not being thrown?
