@@ -9,6 +9,7 @@ import { Uniforms } from '../common/tweakables';
 
 
 import {port, newRenderer} from '../common/constants'
+import KaleidModel from '../common/KaleidModel';
 // let's make a button that creates a renderer...
 // and then very soon refactor this code somewhere sensible.
 
@@ -19,8 +20,10 @@ export async function makeLight() {
   console.log(`requesting newRenderer...`);
   //TODO: consider server not on localhost.
   const response = await fetch(`http://localhost:${port}${newRenderer}`);
-  const info = response.json();
-  console.log(`newRenderer response received: \n${JSON.stringify(info, null, 2)}`);
+  const info = await response.json() as KaleidModel;
+  console.log(`newRenderer response received: \n${JSON.stringify(info, null, 2)}`); //let's have a look at this, shall we...
+  //with something involving UI, not going in to devtools...
+  return info;
 }
 
 

@@ -47,6 +47,7 @@ async function createRendererWindow(id) {
     const promise = new Promise<KaleidModel>((resolve, reject) => {
         console.log(`setting pendingRenderInits '${id}'...`);
         pendingRenderInits.set(id, (v: KaleidModel) => {
+            console.log(`resolving '${id}'... sending model as response to gui`);
             resolve(v);
         })
     });
@@ -69,7 +70,8 @@ expApp.get(consts.newRenderer, async (req, res) => {
     const m = await createRendererWindow(id);
     
     //I could pass info about what WS port to connect to & what parameters to control here.
-    res.send(`new renderer created with id '${id}'`);
+    //yes, let's.
+    res.send(m);
 });
 
 //sent by renderer as it initialises
