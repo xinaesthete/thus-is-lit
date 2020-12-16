@@ -1,3 +1,4 @@
+import 'source-map-support/register' //evanw delivers yet again
 import { app, BrowserWindow } from 'electron'
 import * as path from 'path'
 import {start} from './server_comms'
