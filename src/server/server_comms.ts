@@ -76,8 +76,13 @@ expApp.post(consts.rendererStarted, (req, res) => {
     console.log(`received /rendererStarted`);
     //find & resolve the associated promise so that the corresponding createRendererWindow can finally return.
     //what possible errors should we think about?
-    const info = req.body as KaleidModel;
+    
+    //this is failing because we get something like
+    //{ "{a: 42}": "" } whereas we want {a: 42}
+    //probably need to write our fetch differently, experimenting with something horrible...
+    const info = JSON.parse(Object.keys(req.body)[0]) as KaleidModel;
     console.log(`id: '${info.id}'`);
+    console.log(JSON.stringify(info, null, 2));
     //why is this error not being thrown?
     if (!info) throw new Error(`/rendererStarted body '${req.body}' couldn't be parsed as KaleidModel.`)
     const id = info.id;
