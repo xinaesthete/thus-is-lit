@@ -25,6 +25,7 @@ function TweakableSlider(u: Tweakable<number>, name: string) {
     )
 }
 
+//maybe more like KaleidModel rather than Uniforms here.
 export class UniformGui extends React.Component<Uniforms, UniformsState> {
     state = {
         data: {

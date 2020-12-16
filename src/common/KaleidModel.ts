@@ -8,7 +8,7 @@
 
 import { Tweakable } from "./tweakables";
 
-export default interface Renderer {
+export default interface KaleidModel {
     /** id key may be subject to change eg when we think about how to restore saved state... */
     id: number,
     filename: string,
