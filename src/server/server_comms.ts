@@ -1,8 +1,9 @@
-import { BrowserWindow } from 'electron';
+import { BrowserWindow, screen } from 'electron';
 import express from 'express'
 import bodyParser from 'body-parser'
 import * as consts from '../common/constants'
 import KaleidModel from '../common/KaleidModel';
+import { getNextScreen } from './screen_config';
 
 export function start() {
     console.log("initialising server_comms...")
@@ -26,6 +27,11 @@ const pendingRenderInits = new Map<number, RendererInitCompletionHandler>();
 const currentModels = new Map<number, KaleidModel>();
 
 async function createRendererWindow(id) {
+    //TODO: configure based on saved setup etc.
+    //relay info about available screens back to gui.
+    const screen = getNextScreen();
+    const { x, y, width, height } = screen.bounds;
+
     const window = new BrowserWindow({
         autoHideMenuBar: true,
         //there seems to be a bug in electron when we have multiple fullscreen videos playing
@@ -33,6 +39,7 @@ async function createRendererWindow(id) {
         //using frame: false appears to work better.  I should have an argument for that.
         //fullscreen: true,
         frame: false,
+        x: x, y: y, width: width, height: height,
         webPreferences: {
             contextIsolation: true,
             nodeIntegration: false,

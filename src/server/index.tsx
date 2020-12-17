@@ -2,6 +2,7 @@ import 'source-map-support/register' //evanw delivers yet again
 import { app, BrowserWindow } from 'electron'
 import * as path from 'path'
 import {start} from './server_comms'
+import { getNextScreen } from './screen_config';
 
 start();
 
@@ -16,6 +17,8 @@ const buildDir = path.join(__dirname);
 // electronReload(buildDir);
 
 function createGUIWindow() {
+    const screen = getNextScreen();
+    const { x, y } = screen.bounds;
     const window = new BrowserWindow({
         autoHideMenuBar: true,
         webPreferences: {
@@ -25,8 +28,9 @@ function createGUIWindow() {
     });
     window.loadURL(`file://${__dirname}/gui.html`);
     //really slow to quit when devtools is up?
-    //fairly slow anyway.
-    window.on('close', ()=>{console.log("quitting"); app.quit()});
+    //fairly slow anyway. hiding the window makes it feel responsive...
+    //hopefully not hiding some other problem from ourselves.
+    window.on('close', ()=>{console.log("quitting"); window.hide(); app.quit()});
 }
 
 
