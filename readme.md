@@ -6,7 +6,7 @@ Experimental system for multi-screen video projection and effects running in Ele
 
 In early development stages... it should soon, with a little careful consideration, facilitate co-operation between networked devices to allow things like an iPad on a local network to control visuals on (potentially multiple) other machines performing rendering.
 
-Fairly light on capabilities at time of writing.  If you want to understand how to use it, or how it's likely change, you probably have to speak to me directly.  Priority at this stage is to create a nice performance interface (eg a `Mutator` interactive genetic-algorithm paradigm) with ability to manage material to be used for a set-list.
+Fairly light on capabilities at time of writing.  If you want to understand how to use it, or how it's likely change, you probably have to speak to me directly.  Priority at this stage is to create a nice performance interface (eg a [Mutator](https://youtu.be/OwL3dsFBxpE)-esque interactive genetic-algorithm paradigm) with ability to manage material to be used for a set-list.
 
 As of now (who knows if I'll update this readme as I update features), running the app will launch a GUI controller window.  That window has a button that causes a new Renderer window to be created (this can be done an arbitrary number of times).  On my Windows system, I am having trouble with contention in video playback with multiple fullscreen windows when the `<video>` elements themselves aren't visible; for now, I've made the renderer windows borderless and manipulate their position with `[win]+[arrow]` keyboard shortcuts.
 
