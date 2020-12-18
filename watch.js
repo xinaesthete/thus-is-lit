@@ -13,7 +13,7 @@ async function watch(name, node=false) {
         external: ["electron", "fsevents"],
         entryPoints: [`./src/${name}/index.tsx`],
         outfile: `./public/${name}.js`,
-        minify: true,
+        // minify: true,
         bundle: true,
         sourcemap: true,
         define: {
@@ -35,6 +35,9 @@ async function watch(name, node=false) {
     watch('renderer');
     watch('gui');
     watch('server', true);
+    //still haven't got live-reload working, should be good eventually...
+    //handy to be able to see gui / renderer in browser and see how things work with basic server, but for interop we need our custom server.
+    //might even consider putting most of this build logic into actual Electron script...
     liveServer.start({
         root: 'public',
         open: false,
