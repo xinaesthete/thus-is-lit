@@ -2,6 +2,29 @@ const { build } = require('esbuild');
 const liveServer = require('live-server');
 const chokidar = require('chokidar');
 
+
+// assuming that THREE is a global object,
+// makes any imported reference to three proxy to that instead.
+// This still leads to ~22kb of extra code (unminified)... not sure why more dead code isn't elliminated.
+const threeShim = Object.keys(require("three")).map(k => `export const ${k} = window.THREE.${k}`).join('\n');
+
+//https://esbuild.github.io/plugins/#using-plugins
+const externaliseThreePlugin = {
+    name: 'three',
+    setup(build) {
+        build.onResolve({ filter: /^three$/ }, args => ({
+            path: args.path,
+            // external: true,
+            namespace: 'three-ns'
+        }));
+        build.onLoad({ filter: /.*/, namespace: 'three-ns' }, (args) => ({
+            contents: threeShim,
+            loader: 'js'
+        }));
+    }
+}
+
+
 async function watch(name, node=false) {
     console.log(`[${new Date()}] building ${name}, node=${node}`);
     // TODO: log errors / warnings / stats.
@@ -11,6 +34,7 @@ async function watch(name, node=false) {
         //may need a better approach to electron externals soon...
         //also... why am I getting several copies of three in my renderer bundle?!
         external: ["electron", "fsevents"],
+        plugins: [externaliseThreePlugin], //this is not a keeper... but...
         entryPoints: [`./src/${name}/index.tsx`],
         outfile: `./public/${name}.js`,
         // minify: true,
