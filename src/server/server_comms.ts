@@ -79,6 +79,7 @@ expApp.get(consts.newRenderer, async (req, res) => {
     //I could pass info about what WS port to connect to & what parameters to control here.
     //yes, let's.
     res.send(m);
+    // res.send({body: m, CORS: "Access-Control-Allow-Origin: *"});
 });
 
 //sent by renderer as it initialises
@@ -87,14 +88,10 @@ expApp.post(consts.rendererStarted, (req, res) => {
     //find & resolve the associated promise so that the corresponding createRendererWindow can finally return.
     //what possible errors should we think about?
     
-    //this is failing because we get something like
-    //{ "{a: 42}": "" } whereas we want {a: 42}
-    //probably need to write our fetch differently, experimenting with something horrible...
-    // const info = JSON.parse(Object.keys(req.body)[0]) as KaleidModel;
     const info = req.body as KaleidModel;
     console.log(`id: '${info.id}'`);
-    console.log(JSON.stringify(info, null, 2));
-    //why is this error not being thrown?
+    // console.log(JSON.stringify(info, null, 2));
+    //why was this error not being thrown?
     if (!info) throw new Error(`/rendererStarted body '${req.body}' couldn't be parsed as KaleidModel.`)
     const id = info.id;
     if (!pendingRenderInits.has(id)) {
@@ -108,7 +105,10 @@ expApp.post(consts.rendererStarted, (req, res) => {
     }
     // const id = Number.parseInt(req.params['id']);
     // const tweakables = JSON.parse(req.params['tweakables']);
-    res.send();
+    //https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS/Errors/CORSMissingAllowOrigin
+    //this was relevant when loading page served by liveServer in watch script in web browser...
+    //but we probably want to serve from here instead, and certainly don't want to get too wild with which requests we serve.
+    res.send();//{CORS: "Access-Control-Allow-Origin: *"}); //XXXXXXXXX JUST TESTING WITH WILDCARD XXXXXXXXXXXXXXXX
 });
 
 expApp.listen(consts.port, () => {

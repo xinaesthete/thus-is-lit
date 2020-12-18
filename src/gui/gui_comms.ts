@@ -13,16 +13,19 @@ import KaleidModel from '../common/KaleidModel';
 // let's make a button that creates a renderer...
 // and then very soon refactor this code somewhere sensible.
 
+/**send a message to the server asking for a renderer to be created.
+ * Server responds with a model when ready.
+*/
 export async function makeLight() {
-  //send a message to the server asking for a renderer to be created.
   //who should be responsible for keeping track of which renderers are around, associated with with GUI?
   //*probably really needs to be the server* that is the only way that we can ensure integrity.
   console.log(`requesting newRenderer...`);
   //TODO: consider server not on localhost.
-  const response = await fetch(`http://localhost:${port}${newRenderer}`);
+  const response = await fetch(`http://localhost:${port}${newRenderer}`, {
+    //mode: 'cors', headers: {'Access-Control-Allow-Origin' : '*'}
+  });
   const info = await response.json() as KaleidModel;
-  console.log(`newRenderer response received: \n${JSON.stringify(info, null, 2)}`); //let's have a look at this, shall we...
-  //with something involving UI, not going in to devtools...
+  console.log(`newRenderer response received`);
   return info;
 }
 

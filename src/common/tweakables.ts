@@ -18,6 +18,7 @@ export enum MovementType {
     Fixed, Modulatable 
 }
 
+//add an optional neutral value to reset to? (eg gain = 0.5)
 export interface Tweakable<T extends Numeric> {
     name?: string,
     value: T,
@@ -26,7 +27,7 @@ export interface Tweakable<T extends Numeric> {
     step?: number,
     delta?: number,
     movement?: MovementType,
-    shapeFn?: (T) => T
+    scale?: (T) => T //change to be similar to MuiSlider? but that has a different idea about relation to min&max?
 }
 export type Uniforms = Record<string, Tweakable<any>>;
 //no such luck

@@ -3,6 +3,7 @@ import { app, BrowserWindow } from 'electron'
 import * as path from 'path'
 import {start} from './server_comms'
 import { getNextScreen } from './screen_config';
+import installReactDevtool from './devtool'
 
 start();
 
@@ -34,4 +35,8 @@ function createGUIWindow() {
 }
 
 
-app.on("ready", createGUIWindow);
+app.on("ready", async () => {
+    //await installReactDevtool(); //let's try getting at page in browser instead - useful to have that working.
+    //https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS/Errors/CORSMissingAllowOrigin
+    createGUIWindow();
+});
