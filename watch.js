@@ -5,7 +5,6 @@ const chokidar = require('chokidar');
 
 // assuming that THREE is a global object,
 // makes any imported reference to three proxy to that instead.
-// This still leads to ~22kb of extra code (unminified)... not sure why more dead code isn't elliminated.
 const threeShim = Object.keys(require("three")).map(k => `export const ${k} = window.THREE.${k}`).join('\n');
 
 //https://esbuild.github.io/plugins/#using-plugins
