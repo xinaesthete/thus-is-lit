@@ -12,13 +12,14 @@ function Alert(props) {
 }
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
-    width: '100%',
+    width: '30%',
     '& > * + *': {
-      marginTop: theme.spacing(2),
+      marginTop: theme.spacing(2)
     },
   },
 }));
 
+/** at the moment this is the closest thing we have to main app container, but that should change soon. */
 export default function NewRendererButton() {
   //should makeLight itself make something, or do we wrap it?
   //still not very fluent in react, basing on https://material-ui.com/components/snackbars/
@@ -39,12 +40,22 @@ export default function NewRendererButton() {
 
   return (
       <>
-      <Button variant="contained" color="primary" onClick={async ()=>{
+      <Button className={classes.root} variant="contained" color="primary" onClick={async ()=>{
           const m = await makeLight();
           setOpen(true);
           setModel(m);
         }}>
         is this it?
+      </Button>
+      <Button className={classes.root} variant="contained" color="primary" onClick={()=> {
+        const m: KaleidModel = {
+          id: 42, filename: "test", tweakables: [
+            {name: "fake", value: 0.3, min: 0, max: 10}
+          ]
+        }
+        setModel(m);
+      }}>
+        this certainly isn't
       </Button>
       {modelGui}
       <Snackbar open={open} autoHideDuration={1000} onClose={handleClose}>
