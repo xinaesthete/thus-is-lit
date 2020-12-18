@@ -1,6 +1,6 @@
 # thus-is-lit
 
-![thus is lit](litk.png)
+![thus is lit, based on Fireicon01 from wikimedia commons](litk.png)
 
 Experimental system for multi-screen video projection and effects running in Electron.  If it works well, it is likely that in future other AV features (like SuperCollider synthesis stuff among other things related to visualisation / sonification / live-coding etc) will be added.  Initially developed for a live performance application, but also anticipated to be relevant to installations as well as collaborative workshops and web-based work.  I have long-standing hopes to write software for digital-asset-management (for instance of audio & 360 video files), some of which are immediately relevant/needed here, so future feature-creep may also extend further into that domain.
 
