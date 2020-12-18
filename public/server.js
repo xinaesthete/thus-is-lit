@@ -24560,6 +24560,7 @@ var rendererStarted = "/rendererStarted";
 
 // src/server/screen_config.ts
 var electron = __toModule(require("electron"));
+var os = __toModule(require("os"));
 var displays;
 electron.app.on("ready", () => {
   displays = electron.screen.getAllDisplays();
@@ -24575,6 +24576,9 @@ var i = 0;
 function getNextScreen() {
   return displays[i++ % displays.length];
 }
+function useFullscreen() {
+  return os.platform() !== "win32";
+}
 
 // src/server/server_comms.ts
 function start() {
@@ -24588,10 +24592,13 @@ var pendingRenderInits = new Map();
 var currentModels = new Map();
 async function createRendererWindow(id) {
   const screen3 = getNextScreen();
+  const fullscreen = useFullscreen();
+  console.log(`creating renderer, fullscreen: ${fullscreen}, screen: ${JSON.stringify(screen3)}`);
   const {x, y, width, height} = screen3.bounds;
   const window2 = new electron2.BrowserWindow({
     autoHideMenuBar: true,
-    frame: false,
+    fullscreen,
+    frame: !fullscreen,
     x,
     y,
     width,

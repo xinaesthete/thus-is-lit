@@ -1,126 +1,126 @@
 (() => {
   // src/renderer/shaders/kaleid_vert.glsl
-  var kaleid_vert_default = "uniform float Leaves;\r\nvarying float segAng;\r\nvarying vec2 vertTexCoord;\r\n#define PI 3.14159265359\r\n\r\nvoid main() {\r\n  vertTexCoord = uv;\r\n  segAng = 2. * PI / Leaves;\r\n  gl_Position = vec4(position, 1.0);\r\n}\r\n";
+  var kaleid_vert_default = "uniform float Leaves;\nvarying float segAng;\nvarying vec2 vertTexCoord;\n#define PI 3.14159265359\n\nvoid main() {\n  vertTexCoord = uv;\n  segAng = 2. * PI / Leaves;\n  gl_Position = vec4(position, 1.0);\n}\n";
 
   // src/renderer/shaders/kaleid_frag.glsl
-  var kaleid_frag_default = `varying float segAng;\r
-uniform sampler2D texture1;\r
-uniform sampler2D texture2;\r
-uniform sampler2D texture3;\r
-uniform float ScreenAspect;\r
-uniform vec2 UVLimit;\r
-uniform float Zoom;\r
-uniform float Angle;\r
-uniform float AngleGain;\r
-uniform float KaleidMix;\r
-uniform float OutAngle;\r
-uniform float Mozaic;\r
-uniform float MozMix;\r
-uniform float MozPow;\r
-uniform float MozGain;\r
-uniform float ContrastPostBias;\r
-uniform float ContrastPreBias;\r
-uniform float ContrastGain;\r
-uniform float SaturationBias;\r
-uniform float SaturationGain;\r
-uniform vec2 Centre;\r
-uniform vec2 ImageCentre;\r
-uniform vec2 Vignette;\r
-\r
-varying vec4 vertColor;\r
-varying vec2 vertTexCoord;\r
-\r
-// 2d cartesian to polar coordinates\r
-vec2 car2pol(vec2 IN) { return vec2(length(IN), atan(IN.y, IN.x)); }\r
-// 2d polar to cartesian coordinates\r
-vec2 pol2car(vec2 IN) { return vec2(IN.x * cos(IN.y), IN.x * sin(IN.y)); }\r
-vec2 mirrorRepeat(vec2 uv, vec2 limit) {\r
-  // https://www.desmos.com/calculator/jqniynd1hh\r
-  // return abs(mod((vec2(-1.)-uv),vec2(2.))+vec2(1.));\r
-  return min(abs(mod(uv, 2. * limit)), abs(mod(2. * limit - uv, 2. * limit)));\r
-}\r
-// https://cis700-procedural-graphics.github.io/files/toolbox_functions.pdf\r
-//(nb, switched arguments)\r
-float bias(float t, float b) { return pow(t, log(b) / log(0.5)); }\r
-float gain(float t, float g) {\r
-  if (t < 0.5)\r
-    return bias(2. * t, 1. - g) / 2.;\r
-  else\r
-    return 1. - bias(2. - 2. * t, 1. - g) / 2.;\r
-}\r
-vec2 gain(vec2 t, float g) { return vec2(gain(t.x, g), gain(t.y, g)); }\r
-vec2 gain(vec2 t, vec2 g) { return vec2(gain(t.x, g.x), gain(t.y, g.y)); }\r
-\r
-// http://lolengine.net/blog/2013/07/27/rgb-to-hsv-in-glsl\r
-vec3 hsv2rgb(in vec3 c) {\r
-  vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);\r
-  vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);\r
-  vec3 pp = c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);\r
-  return clamp(\r
-      pp, 0.0,\r
-      1.0); // added sjpt 30 July 2015, can probably remove other clamp???\r
-}\r
-vec3 rgb2hsv(in vec3 c) {\r
-  vec4 K = vec4(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0);\r
-  vec4 p = mix(vec4(c.bg, K.wz), vec4(c.gb, K.xy), step(c.b, c.g));\r
-  vec4 q = mix(vec4(p.xyw, c.r), vec4(c.r, p.yzx), step(p.x, c.r));\r
-\r
-  float d = q.x - min(q.w, q.y);\r
-  float e = 1.0e-10;\r
-  return vec3(abs(q.z + (q.w - q.y) / (6.0 * d + e)), d / (q.x + e), q.x);\r
-}\r
-vec2 mozaic(vec2 uv, float num, float strength, float p, float g) {\r
-  // TODO change GLSL version, use round\r
-  //        vec2 uv2 = 0.5 + uv*num;\r
-  //        vec2 _frac = abs(fract(uv2)-0.5) * 2.;\r
-  //        _frac = gain(pow(_frac, vec2(p)), g);\r
-  //        vec2 _floor = floor(uv2);\r
-  //        uv2 = _floor / num;\r
-  //        return mix(uv, uv2, strength* (1.-_frac));\r
-  vec2 uv2 = (uv - 0.5) * num;\r
-  vec2 _frac = gain(fract(uv2), g);\r
-  vec2 _floor = floor(uv2);\r
-  uv2 = _floor / num;\r
-  uv2 += _frac / num;\r
-  uv2 += 0.5;\r
-  return mix(uv, uv2, strength);\r
-}\r
-\r
-void main(void) {\r
-  vec2 uv = vertTexCoord.xy; // / UVLimit;\r
-  uv.x *=\r
-      ScreenAspect; // doesn't seem to make sense to do this after "/ UVLimit".\r
-  uv /= UVLimit;    // TODO think coherently about coordinates :)\r
-  vec2 c = Centre;\r
-  c.x *= ScreenAspect;\r
-  vec2 polar = car2pol(uv - c / UVLimit);\r
-  polar.y += OutAngle * segAng;\r
-  float fr = fract(polar.y / segAng);\r
-  fr = gain(fr, AngleGain);\r
-  polar.y = Angle + (fr > 0.5 ? 1. - fr : fr) * segAng;\r
-  polar.x *= Zoom;\r
-\r
-  vec2 uv2 = mix(uv, pol2car(polar) + ImageCentre, KaleidMix);\r
-  uv2 = mozaic(uv2, Mozaic, MozMix, MozPow, MozGain);\r
-\r
-  // uv2 = vertTexCoord;\r
-\r
-  // uv2.x *= ScreenAspect;\r
-  uv2 = mirrorRepeat(uv2, UVLimit);\r
-\r
-  vec4 col = texture2D(texture1, uv2);\r
-  vec3 colHSV = rgb2hsv(col.rgb);\r
-  colHSV.y = bias(gain(colHSV.y, SaturationGain), SaturationBias);\r
-  colHSV.z = bias(colHSV.z, ContrastPreBias);\r
-  colHSV.z = bias(gain(colHSV.z, ContrastGain), ContrastPostBias);\r
-  col.rgb = hsv2rgb(colHSV);\r
-\r
-  float feather = smoothstep(0., Vignette.x, 0.5 - abs(0.5 - vertTexCoord.x));\r
-  feather *= smoothstep(0., Vignette.y, 0.5 - abs(0.5 - vertTexCoord.y));\r
-  col.a = feather;\r
-\r
-  gl_FragColor = col;\r
-}\r
+  var kaleid_frag_default = `varying float segAng;
+uniform sampler2D texture1;
+uniform sampler2D texture2;
+uniform sampler2D texture3;
+uniform float ScreenAspect;
+uniform vec2 UVLimit;
+uniform float Zoom;
+uniform float Angle;
+uniform float AngleGain;
+uniform float KaleidMix;
+uniform float OutAngle;
+uniform float Mozaic;
+uniform float MozMix;
+uniform float MozPow;
+uniform float MozGain;
+uniform float ContrastPostBias;
+uniform float ContrastPreBias;
+uniform float ContrastGain;
+uniform float SaturationBias;
+uniform float SaturationGain;
+uniform vec2 Centre;
+uniform vec2 ImageCentre;
+uniform vec2 Vignette;
+
+varying vec4 vertColor;
+varying vec2 vertTexCoord;
+
+// 2d cartesian to polar coordinates
+vec2 car2pol(vec2 IN) { return vec2(length(IN), atan(IN.y, IN.x)); }
+// 2d polar to cartesian coordinates
+vec2 pol2car(vec2 IN) { return vec2(IN.x * cos(IN.y), IN.x * sin(IN.y)); }
+vec2 mirrorRepeat(vec2 uv, vec2 limit) {
+  // https://www.desmos.com/calculator/jqniynd1hh
+  // return abs(mod((vec2(-1.)-uv),vec2(2.))+vec2(1.));
+  return min(abs(mod(uv, 2. * limit)), abs(mod(2. * limit - uv, 2. * limit)));
+}
+// https://cis700-procedural-graphics.github.io/files/toolbox_functions.pdf
+//(nb, switched arguments)
+float bias(float t, float b) { return pow(t, log(b) / log(0.5)); }
+float gain(float t, float g) {
+  if (t < 0.5)
+    return bias(2. * t, 1. - g) / 2.;
+  else
+    return 1. - bias(2. - 2. * t, 1. - g) / 2.;
+}
+vec2 gain(vec2 t, float g) { return vec2(gain(t.x, g), gain(t.y, g)); }
+vec2 gain(vec2 t, vec2 g) { return vec2(gain(t.x, g.x), gain(t.y, g.y)); }
+
+// http://lolengine.net/blog/2013/07/27/rgb-to-hsv-in-glsl
+vec3 hsv2rgb(in vec3 c) {
+  vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
+  vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
+  vec3 pp = c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
+  return clamp(
+      pp, 0.0,
+      1.0); // added sjpt 30 July 2015, can probably remove other clamp???
+}
+vec3 rgb2hsv(in vec3 c) {
+  vec4 K = vec4(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0);
+  vec4 p = mix(vec4(c.bg, K.wz), vec4(c.gb, K.xy), step(c.b, c.g));
+  vec4 q = mix(vec4(p.xyw, c.r), vec4(c.r, p.yzx), step(p.x, c.r));
+
+  float d = q.x - min(q.w, q.y);
+  float e = 1.0e-10;
+  return vec3(abs(q.z + (q.w - q.y) / (6.0 * d + e)), d / (q.x + e), q.x);
+}
+vec2 mozaic(vec2 uv, float num, float strength, float p, float g) {
+  // TODO change GLSL version, use round
+  //        vec2 uv2 = 0.5 + uv*num;
+  //        vec2 _frac = abs(fract(uv2)-0.5) * 2.;
+  //        _frac = gain(pow(_frac, vec2(p)), g);
+  //        vec2 _floor = floor(uv2);
+  //        uv2 = _floor / num;
+  //        return mix(uv, uv2, strength* (1.-_frac));
+  vec2 uv2 = (uv - 0.5) * num;
+  vec2 _frac = gain(fract(uv2), g);
+  vec2 _floor = floor(uv2);
+  uv2 = _floor / num;
+  uv2 += _frac / num;
+  uv2 += 0.5;
+  return mix(uv, uv2, strength);
+}
+
+void main(void) {
+  vec2 uv = vertTexCoord.xy; // / UVLimit;
+  uv.x *=
+      ScreenAspect; // doesn't seem to make sense to do this after "/ UVLimit".
+  uv /= UVLimit;    // TODO think coherently about coordinates :)
+  vec2 c = Centre;
+  c.x *= ScreenAspect;
+  vec2 polar = car2pol(uv - c / UVLimit);
+  polar.y += OutAngle * segAng;
+  float fr = fract(polar.y / segAng);
+  fr = gain(fr, AngleGain);
+  polar.y = Angle + (fr > 0.5 ? 1. - fr : fr) * segAng;
+  polar.x *= Zoom;
+
+  vec2 uv2 = mix(uv, pol2car(polar) + ImageCentre, KaleidMix);
+  uv2 = mozaic(uv2, Mozaic, MozMix, MozPow, MozGain);
+
+  // uv2 = vertTexCoord;
+
+  // uv2.x *= ScreenAspect;
+  uv2 = mirrorRepeat(uv2, UVLimit);
+
+  vec4 col = texture2D(texture1, uv2);
+  vec3 colHSV = rgb2hsv(col.rgb);
+  colHSV.y = bias(gain(colHSV.y, SaturationGain), SaturationBias);
+  colHSV.z = bias(colHSV.z, ContrastPreBias);
+  colHSV.z = bias(gain(colHSV.z, ContrastGain), ContrastPostBias);
+  col.rgb = hsv2rgb(colHSV);
+
+  float feather = smoothstep(0., Vignette.x, 0.5 - abs(0.5 - vertTexCoord.x));
+  feather *= smoothstep(0., Vignette.y, 0.5 - abs(0.5 - vertTexCoord.y));
+  col.a = feather;
+
+  gl_FragColor = col;
+}
 `;
 
   // three-ns:three
@@ -3176,7 +3176,7 @@ void main(void) {\r
 
   // src/renderer/video_state.ts
   var vidEl = document.getElementById("vid1");
-  var vidUrl = "bashed.mp4";
+  var vidUrl = "red.mp4";
   console.log(vidUrl);
   vidEl.src = vidUrl;
   setTimeout(() => vidEl.play(), 3e3);

@@ -3,7 +3,7 @@ import express from 'express'
 import bodyParser from 'body-parser'
 import * as consts from '../common/constants'
 import KaleidModel from '../common/KaleidModel';
-import { getNextScreen } from './screen_config';
+import { getNextScreen, useFullscreen } from './screen_config';
 
 export function start() {
     console.log("initialising server_comms...")
@@ -30,6 +30,8 @@ async function createRendererWindow(id) {
     //TODO: configure based on saved setup etc.
     //relay info about available screens back to gui.
     const screen = getNextScreen();
+    const fullscreen = useFullscreen();
+    console.log(`creating renderer, fullscreen: ${fullscreen}, screen: ${JSON.stringify(screen)}`);
     const { x, y, width, height } = screen.bounds;
 
     const window = new BrowserWindow({
@@ -37,8 +39,8 @@ async function createRendererWindow(id) {
         //there seems to be a bug in electron when we have multiple fullscreen videos playing
         //(and not being seen directly, but rather fed in to THREE.VideoTexture)
         //using frame: false appears to work better.  I should have an argument for that.
-        //fullscreen: true,
-        frame: false,
+        fullscreen: fullscreen,
+        frame: !fullscreen,
         x: x, y: y, width: width, height: height,
         webPreferences: {
             contextIsolation: true,

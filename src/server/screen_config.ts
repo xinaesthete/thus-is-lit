@@ -1,4 +1,5 @@
 import {app, screen} from 'electron'
+import * as os from 'os'
 
 let displays: Electron.Display[];
 
@@ -22,4 +23,8 @@ app.on('ready', () => {
 let i = 0;
 export function getNextScreen() {
     return displays[i++ % displays.length];
+}
+
+export function useFullscreen() {
+    return os.platform() !== 'win32';
 }
