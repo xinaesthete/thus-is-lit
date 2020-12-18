@@ -3,7 +3,7 @@
 Each of these subfolders (`common` being a slight anomaly... seems to be something like Model of MVC) has an `index.tsx` which relates to a convention of the way that the build script (`/watch.js`) works at the time of writing.  **Just now only gui is expected to use react 'tsx' features**, although renderer might do too some day and I see no harm in using that filename.
 
 ## gui
-React interface for controlling the app, keeping out of the way of graphics output (notwithstanding future live-coding configurations perhaps).
+React interface for controlling the app, keeping out of the way of graphics output (notwithstanding future live-coding configurations perhaps).  GUIs should be able to handle having embedded Renderers as well, there may be some issues to work through there... hopefully most are already known to me.
 
 ## renderer
 Stuff related to rendering with WebGL.  At the moment, this is a fairly fixed configuration of a little kaleidoscope renderer operating on a single still or video source.  It should understand how to respond to messages sent over websocket from the gui with changes to graphics parameters.  It is instatiated with a `?id=%d` URL parameter which relates to how GUIs & renderers are associated with each-other, and for housekeeping in the server etc.
