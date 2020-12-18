@@ -51,8 +51,11 @@ async function watch(name, node=false) {
         console.log(`[${new Date()}] rebuilding ${name}`);
         builder.rebuild();
     });
+    chokidar.watch(`src/common/**/*`, {ignoreInitial: true}).on('all', () => {
+        console.log(`[${new Date()}] rebuilding ${name}`);
+        builder.rebuild();
+    });
 }
-
 (async () => {
     //seems like it'd be pretty easy to add something so this script could be watched / watch itself...
     watch('renderer');

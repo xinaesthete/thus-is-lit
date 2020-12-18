@@ -1,8 +1,9 @@
 import * as dat from "dat.gui"
 import * as THREE from 'three'
 import {isNum, isVec2, MovementType, Numeric, Tweakable, Uniforms} from '../common/tweakables'
-import {rendererStarted, port} from '../common/constants'
+import {rendererStarted, host_port} from '../common/constants'
 import KaleidModel from '../common/KaleidModel'
+import { init } from "./renderer_comms"
 
 function lerp(s, t, a) {
     if (a<0) return s;
@@ -88,34 +89,7 @@ export const makeGUI = (specs: Tweakable<Numeric>[], uniforms:Uniforms = {}) => 
     specs.forEach(s => s.movement = MovementType.Modulatable);
     Object.keys(uniforms).forEach(k => uniforms[k].movement = MovementType.Fixed);
     const parms = new ParamGroup(specs, uniforms);
-    //send a message to the server so that it knows what GUI to show...
-    //only if we have an id to use from query string.
-    //If not, we should still be able to operate as a standalone webpage,
-    //but this scenario is not currently being tested.
-    const params = new URLSearchParams(location.search);
-    if (params.has("id")) {
-        const id = Number.parseInt(params.get("id"));
-        //we don't want all of the uniforms, just the non-Fixed ones?
-        //or just flag the ones that are Fixed & ignore them later?
-        //... if I just make KaleidModel.tweakables be an array, I can use specs here.
-        const model: KaleidModel = {
-            id: id,
-            filename: "todo",
-            tweakables: specs,
-        }
-        const body = JSON.stringify(model);
-        console.log(`sending ${rendererStarted} ${body}`);
-        fetch(`http://localhost:${port}${rendererStarted}`, {
-            method: "POST", body: body,
-            //https://stackoverflow.com/questions/52684372/fetch-post-request-to-express-js-generates-empty-body
-            //prefer to keep application/json
-            headers: {"Content-Type": "application/json"}
-        });
-    }
-    
-    //also we need to be able to listen to tweakables tweaking
-    //as well as filename and whatever else.
-    //... let's have a WebSocket server here for that.
+    init(specs).then(()=>{});
     return parms;
 }
 

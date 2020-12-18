@@ -1,13 +1,17 @@
-import { BrowserWindow, screen } from 'electron';
+// this file is starting to have too many separate areas of concern:
+// should be broken up
+/// express API
+/// fileserver (with hot-reloading of code, config of asset paths etc)
+/// websocket comms for control changes...
+
+import { BrowserWindow } from 'electron';
 import express from 'express'
+import * as ws from 'ws'
 import bodyParser from 'body-parser'
 import * as consts from '../common/constants'
 import KaleidModel from '../common/KaleidModel';
 import { getNextScreen, useFullscreen } from './screen_config';
 
-export function start() {
-    console.log("initialising server_comms...")
-}
 
 const expApp = express();
 //https://stackoverflow.com/questions/52684372/fetch-post-request-to-express-js-generates-empty-body
@@ -24,7 +28,7 @@ let nextRendererID = 0;
 type RendererInitCompletionHandler = (v: KaleidModel)=>void;
 const pendingRenderInits = new Map<number, RendererInitCompletionHandler>();
 
-const currentModels = new Map<number, KaleidModel>();
+const currentModels = new Map<number, KaleidModel>(); ////
 
 async function createRendererWindow(id) {
     //TODO: configure based on saved setup etc.
@@ -57,6 +61,8 @@ async function createRendererWindow(id) {
         console.log(`setting pendingRenderInits '${id}'...`);
         pendingRenderInits.set(id, (v: KaleidModel) => {
             console.log(`resolving '${id}'... sending model as response to gui`);
+            currentModels.set(id, v); //remember to remove as well.
+            //consider lifecycle / what we actually use this for...
             resolve(v);
         })
     });
@@ -113,7 +119,23 @@ expApp.post(consts.rendererStarted, (req, res) => {
     res.send();//{CORS: "Access-Control-Allow-Origin: *"}); //XXXXXXXXX JUST TESTING WITH WILDCARD XXXXXXXXXXXXXXXX
 });
 
-expApp.listen(consts.port, () => {
-    console.log(`express server listening at http://localhost:${consts.port}`);
-});
 
+export function start() {
+    console.log("initialising server_comms...");
+    //this file could be very simple, and call a few modules one by one...
+    const server = expApp.listen(consts.host_port, () => {
+        console.log(`express server listening at http://localhost:${consts.host_port}`);
+    });
+
+    const wsServer = new ws.Server({server: server});
+    wsServer.on('connection', socket => {
+        console.log(`new ws connection:::`);
+        socket.on('message', message => console.log(message));
+    });
+
+    // server.on('upgrade', (request, socket, head) => {
+    //     wsServer.handleUpgrade((request, socket, head) => {
+    //         wsServer.emit('connection', socket, request);
+    //     });
+    // })
+}

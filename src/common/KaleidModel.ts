@@ -9,8 +9,11 @@
 import { Tweakable } from "./tweakables";
 
 export default interface KaleidModel {
+    /// auxiliary / housekeeping stuff:::
     /** id key may be subject to change eg when we think about how to restore saved state... */
     id: number,
+
+    /// stuff that effects the content:::
     filename: string,
     tweakables: Tweakable<any>[]
 }

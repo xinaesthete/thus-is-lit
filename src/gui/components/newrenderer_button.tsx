@@ -2,7 +2,7 @@ import React from 'react';
 import Button from '@material-ui/core/Button';
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
-import { makeLight } from '../gui_comms';
+import { requestNewRenderer } from '../gui_comms';
 import { makeStyles, Theme } from '@material-ui/core';
 import KaleidModel from '../../common/KaleidModel'
 import { KaleidGUI } from './uniforms_gui';
@@ -41,7 +41,7 @@ export default function NewRendererButton() {
   return (
       <>
       <Button className={classes.root} variant="contained" color="primary" onClick={async ()=>{
-          const m = await makeLight();
+          const m = await requestNewRenderer();
           setOpen(true);
           setModel(m);
         }}>

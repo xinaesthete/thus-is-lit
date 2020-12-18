@@ -1780,10 +1780,10 @@
                   isMessageLoopRunning = false;
                   scheduledHostCallback = null;
                 } else {
-                  port2.postMessage(null);
+                  port.postMessage(null);
                 }
               } catch (error) {
-                port2.postMessage(null);
+                port.postMessage(null);
                 throw error;
               }
             } else {
@@ -1791,13 +1791,13 @@
             }
           };
           var channel = new MessageChannel();
-          var port2 = channel.port2;
+          var port = channel.port2;
           channel.port1.onmessage = performWorkUntilDeadline;
           requestHostCallback = function(callback) {
             scheduledHostCallback = callback;
             if (!isMessageLoopRunning) {
               isMessageLoopRunning = true;
-              port2.postMessage(null);
+              port.postMessage(null);
             }
           };
           requestHostTimeout = function(callback, ms2) {
@@ -28498,17 +28498,25 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
   })(Alert);
 
   // src/common/constants.ts
-  var port = 8321;
+  var host_port = 8321;
   var newRenderer = "/newRenderer";
+  var websocketURL = "ws://localhost:" + host_port;
 
   // src/gui/gui_comms.ts
-  async function makeLight() {
+  async function requestNewRenderer() {
     console.log(`requesting newRenderer...`);
-    const response = await fetch(`http://localhost:${port}${newRenderer}`, {});
+    const response = await fetch(`http://localhost:${host_port}${newRenderer}`, {});
     const info = await response.json();
     console.log(`newRenderer response received`);
     return info;
   }
+  console.log(`making websocket`);
+  var ws = new WebSocket(websocketURL);
+  ws.onopen = (ev) => {
+    console.log(`websocket opened`);
+    ws.send("hello!");
+  };
+  ws.onmessage = (ev) => console.log(`websocket message`);
 
   // node_modules/@material-ui/core/esm/Typography/Typography.js
   var React32 = __toModule(require_react());
@@ -29859,7 +29867,7 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
       variant: "contained",
       color: "primary",
       onClick: async () => {
-        const m = await makeLight();
+        const m = await requestNewRenderer();
         setOpen(true);
         setModel(m);
       }

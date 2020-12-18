@@ -1351,7 +1351,7 @@ void main(void) {
           break;
         }
         case "KeyboardEvents": {
-          var init = evt.initKeyboardEvent || evt.initKeyEvent;
+          var init2 = evt.initKeyboardEvent || evt.initKeyEvent;
           Common.defaults(params2, {
             cancelable: true,
             ctrlKey: false,
@@ -1361,7 +1361,7 @@ void main(void) {
             keyCode: void 0,
             charCode: void 0
           });
-          init(eventType, params2.bubbles || false, params2.cancelable, window, params2.ctrlKey, params2.altKey, params2.shiftKey, params2.metaKey, params2.keyCode, params2.charCode);
+          init2(eventType, params2.bubbles || false, params2.cancelable, window, params2.ctrlKey, params2.altKey, params2.shiftKey, params2.metaKey, params2.keyCode, params2.charCode);
           break;
         }
         default: {
@@ -2659,9 +2659,9 @@ void main(void) {
       }
     },
     listen: function listen(controller) {
-      var init = this.__listening.length === 0;
+      var init2 = this.__listening.length === 0;
       this.__listening.push(controller);
-      if (init) {
+      if (init2) {
         updateDisplays(this.__listening);
       }
     },
@@ -3042,8 +3042,42 @@ void main(void) {
   }
 
   // src/common/constants.ts
-  var port = 8321;
+  var host_port = 8321;
   var rendererStarted = "/rendererStarted";
+  var websocketURL = "ws://localhost:" + host_port;
+
+  // src/renderer/renderer_comms.ts
+  var socket = new WebSocket(websocketURL);
+  async function setupWebSocket(model) {
+  }
+  async function init(specs) {
+    const params2 = new URLSearchParams(location.search);
+    if (params2.has("id")) {
+      const id = Number.parseInt(params2.get("id"));
+      const model = {
+        id,
+        filename: "todo",
+        tweakables: specs
+      };
+      const body = JSON.stringify(model);
+      console.log(`sending ${rendererStarted} ${body}`);
+      fetch(`http://localhost:${host_port}${rendererStarted}`, {
+        method: "POST",
+        body,
+        headers: {"Content-Type": "application/json"}
+      });
+      setupWebSocket(model);
+    }
+  }
+  socket.onopen = (ev) => {
+    console.log(`socket opened`);
+  };
+  socket.onclose = (ev) => {
+    console.log(`socket closed`);
+  };
+  socket.onmessage = (ev) => {
+    console.log(`message received`);
+  };
 
   // src/renderer/params.ts
   function lerp(s, t, a) {
@@ -3113,22 +3147,8 @@ void main(void) {
     specs.forEach((s) => s.movement = MovementType.Modulatable);
     Object.keys(uniforms2).forEach((k) => uniforms2[k].movement = MovementType.Fixed);
     const parms2 = new ParamGroup(specs, uniforms2);
-    const params2 = new URLSearchParams(location.search);
-    if (params2.has("id")) {
-      const id = Number.parseInt(params2.get("id"));
-      const model = {
-        id,
-        filename: "todo",
-        tweakables: specs
-      };
-      const body = JSON.stringify(model);
-      console.log(`sending ${rendererStarted} ${body}`);
-      fetch(`http://localhost:${port}${rendererStarted}`, {
-        method: "POST",
-        body,
-        headers: {"Content-Type": "application/json"}
-      });
-    }
+    init(specs).then(() => {
+    });
     return parms2;
   };
   var ParamGroup = class {
@@ -3161,13 +3181,13 @@ void main(void) {
     }
   };
   var ShaderParam = class {
-    constructor(uniforms2, name, init = 0.5, min = 0, max = 1, lagTime = 1e4) {
+    constructor(uniforms2, name, init2 = 0.5, min = 0, max = 1, lagTime = 1e4) {
       this.uniforms = uniforms2;
-      this.uniformObj = this.uniforms[name] = {value: init};
+      this.uniformObj = this.uniforms[name] = {value: init2};
       this.name = name;
       this.min = min;
       this.max = max;
-      this.val = getLagger(init, lagTime);
+      this.val = getLagger(init2, lagTime);
     }
     update(dt) {
       this.uniformObj.value = this.val.update(dt);
