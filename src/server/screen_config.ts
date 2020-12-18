@@ -5,13 +5,13 @@ let displays: Electron.Display[];
 
 app.on('ready', () => {
     displays = screen.getAllDisplays();
+    //at some point we may do something more with these listeners.
     screen.addListener('display-added', (event, newDisplay) => {
-        displays.push(newDisplay);
+        displays = screen.getAllDisplays();
     })
     
     screen.addListener('display-removed', (event, removedDisplay) => {
-        //TODO... don't want to put something in here & not test it 
-        //then get an unhandled exception later
+        displays = screen.getAllDisplays();
     })
     
     screen.addListener('display-metrics-changed', (event, display) => {
@@ -22,6 +22,8 @@ app.on('ready', () => {
 
 let i = 0;
 export function getNextScreen() {
+    //For some reason I think calling screen.getAllDisplays() felt like it may have been a bit slow
+    //likely mis-diagnosis.
     return displays[i++ % displays.length];
 }
 
