@@ -18,12 +18,19 @@
 
 import { rendererStarted, host_port, websocketURL } from "../common/constants";
 import KaleidModel from "../common/KaleidModel";
+import { makeRegisterRendererMessage, OscCommandType } from "../common/osc_util";
 import { Numeric, Tweakable } from "../common/tweakables";
 
 let socket = new WebSocket(websocketURL);
 
 async function setupWebSocket(model: KaleidModel) {
-
+    //send a message so that our socket is associated with our ID on server.
+    //for now we know that the socket won't be open yet, but this is wrong place.
+    socket.onopen = () => {
+        console.log(`sending WS message to establish this renderer as receiver for id '${model.id}'`);
+        // thinking about not using OSC for now: seem to be having trouble finding a library that just works
+        socket.send(makeRegisterRendererMessage(model.id));
+    }
 }
 
 export async function init(specs: Tweakable<Numeric>[]) {
@@ -54,10 +61,6 @@ export async function init(specs: Tweakable<Numeric>[]) {
     }
 }
 
-socket.onopen = (ev) => {
-    console.log(`socket opened`);
-}
-
 socket.onclose = (ev) => {
     console.log(`socket closed`);
 }
@@ -70,6 +73,13 @@ socket.onmessage = (ev) => {
     //{address: '/set', args: [id, `tweakables/${name}`, value, `tweakables/${name2}`, value2]}
     //const msg = osc.unpackMessage(ev.data);
     console.log(`message received`);
+    const json = JSON.parse(ev.data as string);
+    if (json.address === OscCommandType.Set) {
+        //!!! do something about it!!!
+        console.log('success(?)!');
+        const model = json.model as KaleidModel;
+        console.log(model.tweakables[0].value);
+    }
 }
 
 

@@ -32,7 +32,7 @@ async function watch(name, node=false) {
         platform: node ? "node" : "browser",
         //may need a better approach to electron externals soon...
         //also... why am I getting several copies of three in my renderer bundle?!
-        external: ["electron", "fsevents"],
+        external: ["electron", "fsevents", "express"],
         plugins: [externaliseThreePlugin], //this is not a keeper... but...
         entryPoints: [`./src/${name}/index.tsx`],
         outfile: `./public/${name}.js`,
@@ -42,17 +42,14 @@ async function watch(name, node=false) {
         define: {
             "process.env.NODE_ENV": '"development"'
         },
-        // tsconfig: './tsconfig.json',
-        logLevel: 'error',
+        tsconfig: './tsconfig.json',
+        logLevel: 'warning',
         incremental: true,
         loader: { '.glsl': 'text' }
     });
-    chokidar.watch(`src/${name}/**/*`, {ignoreInitial: true}).on('all', () => {
+    chokidar.watch([`src/${name}/**/*`, `src/common/**/*`], {ignoreInitial: true}).on('all', () => {
         console.log(`[${new Date()}] rebuilding ${name}`);
-        builder.rebuild();
-    });
-    chokidar.watch(`src/common/**/*`, {ignoreInitial: true}).on('all', () => {
-        console.log(`[${new Date()}] rebuilding ${name}`);
+        //whay am I not seeing compile errors in console output?
         builder.rebuild();
     });
 }

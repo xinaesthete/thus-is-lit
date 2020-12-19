@@ -6,6 +6,7 @@ import KaleidModel from '../../common/KaleidModel';
 //maybe want to use material, or just plain-old vanilla dat.gui...
 //import DatGui, {DatNumber, DatString} from 'react-dat-gui'
 import {Uniforms, Numeric, Tweakable, isNum, isVec2} from '../../common/tweakables'
+import { sendModel } from '../gui_comms';
 
 interface SliderProp extends Tweakable<number> {
     // onChangeX: React.ChangeEventHandler<number>
@@ -26,11 +27,6 @@ function RowLabel(props: {name: string}) {
 
 function TweakableSlider(u: SliderProp) {
     //--- state should be owned further up the hierarchy ---
-    // const [value, setValue] = React.useState(u.value);
-    // const handleChange = (event: any, newValue: number | number[]) => {
-    //     console.log(`${u.name} changed to ${newValue}`);
-    //     setValue(newValue as number); //how does this propogate back up?
-    // };
     const { name, min, max, value, step } = u;
     return (
         <>
@@ -84,6 +80,8 @@ export function KaleidGUI(props: KProps) {
                 draftState.tweakables[i].value = newValue;
             });
             setModel(newModel);
+            //sending model to renderer might be an idea (via host ws)
+            sendModel(newModel);
         }
     }
 

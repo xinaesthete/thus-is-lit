@@ -1,6 +1,7 @@
 {
     "compilerOptions": {
         "moduleResolution": "node",
+        "importHelpers": true,
         "jsx": "react",
         "esModuleInterop": true,
         "target": "ES6",

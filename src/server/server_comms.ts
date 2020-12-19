@@ -1,5 +1,6 @@
 // this file is starting to have too many separate areas of concern:
 // should be broken up
+// I make BrowserWindows in here, which seems fishy.
 /// express API
 /// fileserver (with hot-reloading of code, config of asset paths etc)
 /// websocket comms for control changes...
@@ -7,10 +8,12 @@
 import { BrowserWindow } from 'electron';
 import express from 'express'
 import * as ws from 'ws'
+import WebSocket from 'ws' //https://github.com/websockets/ws/issues/1583
 import bodyParser from 'body-parser'
 import * as consts from '../common/constants'
 import KaleidModel from '../common/KaleidModel';
 import { getNextScreen, useFullscreen } from './screen_config';
+import { OscCommandType } from '../common/osc_util';
 
 
 const expApp = express();
@@ -30,7 +33,7 @@ const pendingRenderInits = new Map<number, RendererInitCompletionHandler>();
 
 const currentModels = new Map<number, KaleidModel>(); ////
 
-async function createRendererWindow(id) {
+async function createRendererWindow(id: number) {
     //TODO: configure based on saved setup etc.
     //relay info about available screens back to gui.
     const screen = getNextScreen();
@@ -79,7 +82,7 @@ async function createRendererWindow(id) {
 }
 
 expApp.get(consts.newRenderer, async (req, res) => {
-    console.log("newRenderer request received");
+    console.log("[GET] newRenderer request received");
     let id = nextRendererID++;
     //wait for the renderer to send us info back... respond with KaleidModel.
     const m = await createRendererWindow(id);
@@ -92,7 +95,7 @@ expApp.get(consts.newRenderer, async (req, res) => {
 
 //sent by renderer as it initialises
 expApp.post(consts.rendererStarted, (req, res) => {
-    console.log(`received /rendererStarted`);
+    console.log(`[POST] received /rendererStarted`);
     //find & resolve the associated promise so that the corresponding createRendererWindow can finally return.
     //what possible errors should we think about?
     
@@ -128,10 +131,54 @@ export function start() {
     });
 
     const wsServer = new ws.Server({server: server});
-    wsServer.on('connection', socket => {
+    //the type of WebSocket here is browser version rather than ws.
+    //How do I fix that?
+    const renderers: Map<number, WebSocket> = new Map();
+    const controllers: WebSocket[] = [];
+    wsServer.on('connection', (socket) => {
         console.log(`new ws connection:::`);
-        socket.on('message', message => console.log(message));
+        socket.on('close', (closedSocket, code, reason) => {
+            console.log(`[ws] socket close ${reason}`);
+            ///remove from collections...
+            if (controllers.includes(closedSocket)) controllers.splice(controllers.indexOf(closedSocket),1);
+            //if (renderers.values...)) //lodash?....
+        });
+        //what kind of thing connected? whatever, for now the only message we expect is JSON model
+        //from GUI to Renderer...
+        socket.on('message', message => {
+            try {
+                const json = JSON.parse(message as string); //TODO pass to type-annotated function.
+                if (json.address === OscCommandType.RegisterRenderer) {
+                    console.log(`[ws] registering renderer...`);
+                    if (json.id === undefined) console.error(`malformed message '${message}'`); //why--->
+                    else {
+                        if (renderers.has(json.id)) {
+                            console.log(`[ws] already had socket for renderer #${json.id}`);
+                            //will it safely become garbage and be disposed? probably.
+                        }
+                        renderers.set(json.id as number, socket); //but it *is* *a* *we*b*b*socket /sob
+                        console.log(`[ws] ${json.id} socket established`);
+                    }
+                } else if (json.address === OscCommandType.RegisterController) {
+                    console.log(`registering controller`);
+                    controllers.push(socket);
+                } else if (json.address === OscCommandType.Set) {
+                    console.log(`[ws] /set id=${json.id} command...`);
+                    const model = json.model as KaleidModel;
+                    if (renderers.has(model.id)) {
+                        //// model.id is undefined but we're still trying to send...
+                        console.log(`[ws] forwarding set message ${message}`);
+                        renderers.get(model.id).send(message);
+                    }
+                } else {
+                    console.log(`[ws] message not handled: ${message}`);
+                }
+            } catch (e) {
+                console.error(`[ws] message '${message}' not json string`);
+            }
+        });
     });
+
 
     // server.on('upgrade', (request, socket, head) => {
     //     wsServer.handleUpgrade((request, socket, head) => {

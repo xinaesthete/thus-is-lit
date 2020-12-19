@@ -3046,9 +3046,25 @@ void main(void) {
   var rendererStarted = "/rendererStarted";
   var websocketURL = "ws://localhost:" + host_port;
 
+  // src/common/osc_util.ts
+  var OscCommandType;
+  (function(OscCommandType2) {
+    OscCommandType2["Set"] = "/set";
+    OscCommandType2["Get"] = "/get";
+    OscCommandType2["RegisterRenderer"] = "/register_renderer";
+    OscCommandType2["RegisterController"] = "/register_controller";
+  })(OscCommandType || (OscCommandType = {}));
+  function makeRegisterRendererMessage(id) {
+    return JSON.stringify({address: OscCommandType.RegisterRenderer, id});
+  }
+
   // src/renderer/renderer_comms.ts
   var socket = new WebSocket(websocketURL);
   async function setupWebSocket(model) {
+    socket.onopen = () => {
+      console.log(`sending WS message to establish this renderer as receiver for id '${model.id}'`);
+      socket.send(makeRegisterRendererMessage(model.id));
+    };
   }
   async function init(specs) {
     const params2 = new URLSearchParams(location.search);
@@ -3069,14 +3085,18 @@ void main(void) {
       setupWebSocket(model);
     }
   }
-  socket.onopen = (ev) => {
-    console.log(`socket opened`);
-  };
   socket.onclose = (ev) => {
     console.log(`socket closed`);
   };
   socket.onmessage = (ev) => {
     console.log(`message received`);
+    const json = JSON.parse(ev.data);
+    if (json.address === OscCommandType.Set) {
+      //!!! do something about it!!!
+      console.log("success(?)!");
+      const model = json.model;
+      console.log(model.tweakables[0].value);
+    }
   };
 
   // src/renderer/params.ts

@@ -28502,6 +28502,18 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
   var newRenderer = "/newRenderer";
   var websocketURL = "ws://localhost:" + host_port;
 
+  // src/common/osc_util.ts
+  var OscCommandType;
+  (function(OscCommandType2) {
+    OscCommandType2["Set"] = "/set";
+    OscCommandType2["Get"] = "/get";
+    OscCommandType2["RegisterRenderer"] = "/register_renderer";
+    OscCommandType2["RegisterController"] = "/register_controller";
+  })(OscCommandType || (OscCommandType = {}));
+  function makeRegisterControllerMessage() {
+    return JSON.stringify({address: OscCommandType.RegisterController});
+  }
+
   // src/gui/gui_comms.ts
   async function requestNewRenderer() {
     console.log(`requesting newRenderer...`);
@@ -28514,9 +28526,12 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
   var ws = new WebSocket(websocketURL);
   ws.onopen = (ev) => {
     console.log(`websocket opened`);
-    ws.send("hello!");
+    ws.send(makeRegisterControllerMessage());
   };
   ws.onmessage = (ev) => console.log(`websocket message`);
+  function sendModel(model) {
+    ws.send(JSON.stringify({model, address: OscCommandType.Set}));
+  }
 
   // node_modules/@material-ui/core/esm/Typography/Typography.js
   var React32 = __toModule(require_react());
@@ -29815,6 +29830,7 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
           draftState.tweakables[i2].value = newValue;
         });
         setModel(newModel);
+        sendModel(newModel);
       };
     };
     return /* @__PURE__ */ react12.default.createElement(react12.default.Fragment, null, /* @__PURE__ */ react12.default.createElement(Typography_default, null, "ID: ", model.id), model.tweakables.map((u2, i2) => {
