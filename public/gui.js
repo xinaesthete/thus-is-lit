@@ -29833,7 +29833,9 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
         sendModel(newModel);
       };
     };
-    return /* @__PURE__ */ react12.default.createElement(react12.default.Fragment, null, /* @__PURE__ */ react12.default.createElement(Typography_default, null, "ID: ", model.id), model.tweakables.map((u2, i2) => {
+    return /* @__PURE__ */ react12.default.createElement("div", {
+      className: classes.root
+    }, /* @__PURE__ */ react12.default.createElement(Typography_default, null, "ID: ", model.id), model.tweakables.map((u2, i2) => {
       if (isNum(u2.value)) {
         const {name, min, max, value, step} = u2;
         return /* @__PURE__ */ react12.default.createElement(TweakableSlider, {

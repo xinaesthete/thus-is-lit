@@ -70,12 +70,9 @@ socket.onclose = (ev) => {
 socket.onmessage = (ev) => {
     //How shall we specify our message schema?
     //and model in general?
-    //roughly, for now....
-    console.log(`message received`);
+    //very roughly, for now....
     const json = JSON.parse(ev.data as string);
     if (json.address === OscCommandType.Set) {
-        //!!! do something about it!!!
-        console.log('success(?)!');
         const model = json.model as KaleidModel;
         paramState.setValues(model.tweakables);
     }

@@ -1,7 +1,11 @@
 import * as THREE from 'three'
 
 //implement other types when needed (less to refactor while figuring out design)
-export type Numeric = number | THREE.Vector2; // | THREE.Vector3 | THREE.Vector4;
+interface vec2 {x: number, y: number};
+export type Numeric = number | vec2; // | THREE.Vector3 | THREE.Vector4;
+//...value for vec2 passed as {x: number, y: number} needs some adaptation...
+
+
 //ways of moving:
 //fixed value, no gui...
 //via slider
@@ -29,6 +33,7 @@ export interface Tweakable<T extends Numeric> {
     movement?: MovementType,
     scale?: (T) => T //change to be similar to MuiSlider? but that has a different idea about relation to min&max?
 }
+
 export type Uniforms = Record<string, Tweakable<any>>;
 //no such luck
 //function isTweakNum(t: Tweakable<number>) // t.value is number {}

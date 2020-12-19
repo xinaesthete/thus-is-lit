@@ -3089,11 +3089,8 @@ void main(void) {
     console.log(`socket closed`);
   };
   socket.onmessage = (ev) => {
-    console.log(`message received`);
     const json = JSON.parse(ev.data);
     if (json.address === OscCommandType.Set) {
-      //!!! do something about it!!!
-      console.log("success(?)!");
       const model = json.model;
       paramState.setValues(model.tweakables);
     }
@@ -3121,6 +3118,7 @@ void main(void) {
   };
   var LagVec2 = class {
     constructor(controlVec, lagTime) {
+      this._targVal = new Vector2();
       this.controlVec = controlVec;
       this.outputVec = controlVec.clone();
       this.lagX = new LagNum(controlVec.x, lagTime);
@@ -3180,6 +3178,7 @@ void main(void) {
     paramState = parms2;
     return parms2;
   };
+  var scratchVec2 = new Vector2();
   var ParamGroup = class {
     constructor(specs, uniforms2 = {}) {
       this.parms = [];
@@ -3205,7 +3204,11 @@ void main(void) {
     setValues(newValues) {
       newValues.forEach((t) => {
         const p = this.parms.find((p2) => p2.name === t.name);
-        p.val.targVal = t.value;
+        if (isNum(t.value)) {
+          p.val.targVal = t.value;
+        } else {
+          p.val.targVal = scratchVec2.set(t.value.x, t.value.y);
+        }
       });
     }
     update(dt) {
@@ -3226,6 +3229,9 @@ void main(void) {
     }
     update(dt) {
       this.uniformObj.value = this.val.update(dt);
+    }
+    setTargVal(v) {
+      this.val.targVal = v;
     }
   };
 

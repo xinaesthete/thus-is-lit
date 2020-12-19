@@ -58,7 +58,7 @@ class LagVec2 implements Lagger<THREE.Vector2> {
         this.lagX.lagTime = t;
         this.lagY.lagTime = t;
     }
-    private _targVal: THREE.Vector2;
+    private _targVal = new THREE.Vector2();
     public get targVal() {
         this._targVal.set(this.lagX.targVal, this.lagY.targVal);
         return this._targVal;
@@ -107,7 +107,7 @@ export const makeGUI = (specs: Tweakable<Numeric>[], uniforms:Uniforms = {}) => 
 }
 
 
-
+const scratchVec2 = new THREE.Vector2();
 export class ParamGroup {
     parms: ShaderParam[] = [];
     lagTime: number = 1000;
@@ -136,8 +136,12 @@ export class ParamGroup {
         newValues.forEach(t => {
             //so slow and wrong in various ways but probably not enough to matter for a while.
             const p = this.parms.find(p => p.name === t.name);
-            //dunno why TS doesn't complain that it doesn't know these Numerics are compatible...
-            p.val.targVal = t.value; 
+            if (isNum(t.value)) {
+                p.val.targVal = t.value; 
+            } else {
+                //only numbers and vec2 for now...
+                (p.val.targVal as THREE.Vector2) = scratchVec2.set(t.value.x, t.value.y);
+            }
         });
     }
     update(dt: number) {
@@ -167,5 +171,8 @@ export class ShaderParam {
     }
     update(dt: number) {
         this.uniformObj.value = this.val.update(dt);
+    }
+    setTargVal(v: Numeric) {
+        this.val.targVal = v;
     }
 }

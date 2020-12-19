@@ -86,7 +86,7 @@ export function KaleidGUI(props: KProps) {
     }
 
     return (
-        <>
+        <div className={classes.root}>
         <Typography>ID: {model.id}</Typography>
             {model.tweakables.map((u, i) => {
                 if (isNum(u.value)) {
@@ -100,6 +100,6 @@ export function KaleidGUI(props: KProps) {
                     )
                 }
             })}
-        </>
+        </div>
     )
 }

@@ -6,7 +6,7 @@
 // reflection of that (serving also a guide to what generated).
 
 
-import { Tweakable } from "./tweakables";
+import { Numeric, Tweakable } from "./tweakables";
 
 export default interface KaleidModel {
     /// auxiliary / housekeeping stuff:::
@@ -18,3 +18,9 @@ export default interface KaleidModel {
     tweakables: Tweakable<any>[]
 }
 
+//passing entire KaleidModel as JSON is heavy.
+export interface KaleidControlMessage {
+    id: number,
+
+    changed: Record<string, Numeric>
+}
