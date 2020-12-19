@@ -1,15 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import NewRendererButton from './components/newrenderer_button'
+import RendererControl from './components/renderer_control'
 
 function App() {
   return (
-    //... how shall we make this do something in here?
-    
-    //React.createElement(KaleidGUI, {}, model) ?
-
 <>
-    <NewRendererButton />
+    <RendererControl />
 </>    
     
     
