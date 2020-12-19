@@ -1,6 +1,6 @@
 import * as dat from "dat.gui"
 import * as THREE from 'three'
-import {isNum, isVec2, MovementType, Numeric, vec2, Tweakable, Uniforms} from '../common/tweakables'
+import {isNum, MovementType, Numeric, vec2, Tweakable, Uniforms} from '../common/tweakables'
 import {rendererStarted, host_port} from '../common/constants'
 import KaleidModel from '../common/KaleidModel'
 import { init } from "./renderer_comms"
@@ -73,9 +73,9 @@ function getLagger(v: Numeric, lagTime: number): Lagger<Numeric> {
     if (isNum(v)) {
         return new LagNum(v, lagTime);
     }
-    if (isVec2(v)) {
+    //if (isVec2(v)) {
         return new LagVec2(v, lagTime);
-    }
+    //}
 }
 
 
@@ -123,7 +123,7 @@ export class ParamGroup {
                 const p = new ShaderParam(uniforms, s.name, v, s.min, s.max);
                 parms.push(p);
                 gui.add(p.val, 'targVal', s.min, s.max, s.step).name(s.name);
-            } else if (isVec2(v)) {
+            } else { //if (isVec2(v)) {
                 //make the initial value v passed to ShaderParam contain the 'target' values
                 //to be updated by the GUI, while the actual values passed to uniform will be encapsulated
                 const p = new ShaderParam(uniforms, s.name, v, s.min, s.max);

@@ -9,12 +9,12 @@ import KaleidModel from '../../common/KaleidModel';
 //maybe want to use material, or just plain-old vanilla dat.gui...
 //maybe revisit react-dat-gui with benefit of understanding React a bit better.
 //import DatGui, {DatNumber, DatString} from 'react-dat-gui'
-import {Uniforms, Numeric, Tweakable, isNum, isVec2} from '../../common/tweakables'
+import {Uniforms, Numeric, Tweakable, isNum, vec2} from '../../common/tweakables'
 import { sendModel } from '../gui_comms';
 
-interface SliderProp extends Tweakable<number> {
+interface SliderProp<T extends Numeric> extends Tweakable<T> {
     // onChangeX: React.ChangeEventHandler<number>
-    onChange: (event: React.ChangeEvent<{}>, newValue: number) => void
+    onChange: (event: React.ChangeEvent<{}>, newValue: T) => void
 }
 
 
@@ -28,19 +28,48 @@ function RowLabel(props: {name: string}) {
     const classes = useStyles();
     return <Typography className={classes.root}>{props.name}</Typography>
 }
-
-function TweakableSlider(u: SliderProp) {
+const defaultStep = (u: SliderProp<Numeric>) => (u.max - u.min) / 200.;
+function TweakableSlider(u: SliderProp<Numeric>) {
+    ///AAARGGGH noooo... this isNum thing is bad & I seem to be having a bad time with TS generics just now.
+    //isVec2() was flat-out useless???
+    if (!isNum(u.value)) return TweakableSliderPair(u as SliderProp<vec2>);
+    const classes = useStyles();
     //--- state should be owned further up the hierarchy ---
-    const { name, min, max, value, step } = u;
-    //why are these no longer flowing sensibly?
-    const classes=useStyles();
+    const { name, min, max, value, step = defaultStep(u), onChange } = u as SliderProp<number>;
+    
     return (
         <>
             <RowLabel name={name} />
-            <Slider className={classes.root} name={name} min={min} max={max} value={value} step={step} onChange={u.onChange} 
+            <Slider className={classes.root} name={name} min={min} max={max} value={value as number} step={step}
+                onChange={onChange} 
                 valueLabelDisplay="auto" />
-            <br />
         </>
+    )
+}
+
+function TweakableSliderPair(u: SliderProp<vec2>) {
+    const classes = useStyles();
+    const { name, min, max, value, step = defaultStep(u) } = u;
+    //just enough state so that when any one slider changes, we can pass a vec2 to onChange
+    const [val, setVal] = React.useState(value); 
+    const makeChange = (k: "x" | "y") => (event: any, newComponentValue: number) => {
+        const newVal = {...val};
+        newVal[k] = newComponentValue;
+        setVal(newVal);
+        ///this doesn't seem to work... is passing event through like this wrong?
+        u.onChange(event, newVal);
+    }
+    return (
+        <>
+            <RowLabel name={name} />
+            <Slider className={classes.root} name={name} min={min} max={max} value={val.x} step={step} 
+                onChange={makeChange('x')} 
+                valueLabelDisplay="auto" />
+            <Slider className={classes.root} name={name} min={min} max={max} value={val.y} step={step} 
+                onChange={makeChange('y')} 
+                valueLabelDisplay="auto" />
+        </>
+        
     )
 }
 
@@ -68,8 +97,8 @@ export function KaleidGUI(props: KProps) {
     const [model, setModel] = React.useState(props.kaleid);
     // const [filterText, setFilterText] = React.useState(/.*/g);
 
-    const makeSliderHandler = (key: string, i: number) => {
-        return (event: any, newValue: number) => {
+    function makeSliderHandler(key: string, i: number) {
+        return (event: any, newValue: Numeric) => {
             //need to be careful about deep vs shallow copy when making new state.
             //Also, we could easily generate a lot of garbage here *which sucks*
             //because we want to do cool realtime stuff.
@@ -106,7 +135,7 @@ export function KaleidGUI(props: KProps) {
             <AccordionDetails>
             <div>
             {model.tweakables.map((u, i) => {
-                if (isNum(u.value)) {
+//                if (isNum(u.value)) {
                     // {...u as T} definitely not right here: TS is happy with that, React is not.
                     const {name, min, max, value, step} = u;
                     return (
@@ -115,9 +144,9 @@ export function KaleidGUI(props: KProps) {
                         }
                         />
                         )
-                    } else if (isVec2(u.value)) {
+//                    } else if (isVec2(u.value)) {
                         //TODO.
-                    }
+//                    }
                 })}
             </div>
             </AccordionDetails>

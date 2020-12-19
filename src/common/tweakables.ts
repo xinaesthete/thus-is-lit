@@ -43,9 +43,11 @@ export type Uniforms = Record<string, Tweakable<any>>;
 export function isNum(v: Numeric) : v is number {
     return typeof v === "number";
 }
-export function isVec2(v: Numeric) : v is vec2 {
-    return (v as vec2) !== null; //note that 'as' is not helping us here, but 'is' above is.
-}
+// export function isVec2(v: Numeric) : v is vec2 {
+//     return (v as vec2) !== null; //note that 'as' is not helping us here, but 'is' above should.
+// }
+
+
 /// implement when needed, save refactoring...
 // function isVec3(v: Numeric) : v is THREE.Vector3 {
 //     return (v as THREE.Vector3) !== null;

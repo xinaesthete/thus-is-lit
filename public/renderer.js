@@ -3037,9 +3037,6 @@ void main(void) {
   function isNum(v) {
     return typeof v === "number";
   }
-  function isVec2(v) {
-    return v !== null;
-  }
 
   // src/common/constants.ts
   var host_port = 8321;
@@ -3120,7 +3117,7 @@ void main(void) {
     constructor(controlVec, lagTime) {
       this._targVal = new Vector2();
       this.controlVec = controlVec;
-      this.outputVec = controlVec.clone();
+      this.outputVec = {...controlVec};
       this.lagX = new LagNum(controlVec.x, lagTime);
       this.lagY = new LagNum(controlVec.y, lagTime);
       this._lagTime = lagTime;
@@ -3152,9 +3149,7 @@ void main(void) {
     if (isNum(v)) {
       return new LagNum(v, lagTime);
     }
-    if (isVec2(v)) {
-      return new LagVec2(v, lagTime);
-    }
+    return new LagVec2(v, lagTime);
   }
   var gui = new GUI$1();
   gui.hide();
@@ -3193,7 +3188,7 @@ void main(void) {
           const p = new ShaderParam(uniforms2, s.name, v, s.min, s.max);
           parms2.push(p);
           gui.add(p.val, "targVal", s.min, s.max, s.step).name(s.name);
-        } else if (isVec2(v)) {
+        } else {
           const p = new ShaderParam(uniforms2, s.name, v, s.min, s.max);
           parms2.push(p);
           gui.add(v, "x", s.min, s.max, s.step).name(s.name + ".x");
