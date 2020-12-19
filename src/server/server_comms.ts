@@ -167,7 +167,9 @@ export function start() {
                     const model = json.model as KaleidModel;
                     if (renderers.has(model.id)) {
                         //// model.id is undefined but we're still trying to send...
-                        console.log(`[ws] forwarding set message ${message}`);
+                        // const vals = model.tweakables.
+                        //     map(t => `${t.name}:\t\t${JSON.stringify(t.value)}`).join('\n  ');
+                        // console.log(`[ws] forwarding set message \n  ${vals}`);
                         renderers.get(model.id).send(message);
                     }
                 } else {

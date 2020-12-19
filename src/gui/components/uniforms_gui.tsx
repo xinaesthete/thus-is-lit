@@ -69,7 +69,6 @@ function TweakableSliderPair(u: SliderProp<vec2>) {
                 onChange={makeChange('y')} 
                 valueLabelDisplay="auto" />
         </>
-        
     )
 }
 
@@ -112,9 +111,13 @@ export function KaleidGUI(props: KProps) {
                 //draftState.tweakables[key].value = newValue; //duh, tweakables is an array
                 const arr = draftState.tweakables;
                 //XXX::: this is not technically correct / safe: there is no guarantee that tweakable names are unique.
+                //in general we're really expecting the tweakables array not to change order / size etc and
+                //MOST CERTAINLY HAVE NOT TESTED anything that involves anything like that, and don't intend to any time soon.
                 if (i >= arr.length || arr[i].name !== key) i = draftState.tweakables.findIndex(t=>t.name === key);
-                if (i === -1) return;
-                draftState.tweakables[i].value = newValue;
+                if (i === -1) return draftState;
+                const t = draftState.tweakables[i];
+                //console.log(`changing ${key} from ${JSON.stringify(t.value)} to ${JSON.stringify(newValue)}`);
+                t.value = newValue;
             });
             setModel(newModel);
             //sending model to renderer might be an idea (via host ws)
