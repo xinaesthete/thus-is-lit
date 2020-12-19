@@ -1,7 +1,7 @@
 import * as THREE from 'three'
 
 //implement other types when needed (less to refactor while figuring out design)
-interface vec2 {x: number, y: number};
+export interface vec2 {x: number, y: number};
 export type Numeric = number | vec2; // | THREE.Vector3 | THREE.Vector4;
 //...value for vec2 passed as {x: number, y: number} needs some adaptation...
 
@@ -43,8 +43,8 @@ export type Uniforms = Record<string, Tweakable<any>>;
 export function isNum(v: Numeric) : v is number {
     return typeof v === "number";
 }
-export function isVec2(v: Numeric) : v is THREE.Vector2 {
-    return (v as THREE.Vector2) !== null;
+export function isVec2(v: Numeric) : v is vec2 {
+    return (v as vec2) !== null; //note that 'as' is not helping us here, but 'is' above is.
 }
 /// implement when needed, save refactoring...
 // function isVec3(v: Numeric) : v is THREE.Vector3 {

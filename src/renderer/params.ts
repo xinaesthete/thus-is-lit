@@ -1,6 +1,6 @@
 import * as dat from "dat.gui"
 import * as THREE from 'three'
-import {isNum, isVec2, MovementType, Numeric, Tweakable, Uniforms} from '../common/tweakables'
+import {isNum, isVec2, MovementType, Numeric, vec2, Tweakable, Uniforms} from '../common/tweakables'
 import {rendererStarted, host_port} from '../common/constants'
 import KaleidModel from '../common/KaleidModel'
 import { init } from "./renderer_comms"
@@ -30,15 +30,15 @@ class LagNum implements Lagger<number> {
         return this.curVal = lerp(this.curVal, this.targVal, a);
     }
 }
-class LagVec2 implements Lagger<THREE.Vector2> {
-    controlVec: THREE.Vector2;
-    outputVec: THREE.Vector2;
+class LagVec2 implements Lagger<vec2> {
+    controlVec: vec2;
+    outputVec: vec2;
     lagX: LagNum;
     lagY: LagNum;
     private _lagTime: number;
-    constructor(controlVec: THREE.Vector2, lagTime: number) {
+    constructor(controlVec: vec2, lagTime: number) {
         this.controlVec = controlVec;
-        this.outputVec = controlVec.clone();
+        this.outputVec = {...controlVec};
         this.lagX = new LagNum(controlVec.x, lagTime);
         this.lagY = new LagNum(controlVec.y, lagTime);
         this._lagTime = lagTime;
@@ -64,6 +64,7 @@ class LagVec2 implements Lagger<THREE.Vector2> {
         return this._targVal;
     }
     public set targVal(v: THREE.Vector2) {
+        //nb, I did already have controlVec
         this._targVal.copy(v);
     }
 }

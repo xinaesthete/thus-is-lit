@@ -1,4 +1,5 @@
 import React from 'react'
+import produce from 'immer'
 import Button from '@material-ui/core/Button';
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
@@ -68,9 +69,22 @@ function OldNewRendererButton() {
 
 
 export default function RendererControl() {
+    const classes = useStyles();
+    const [renderModels, setRenderModels] = React.useState([] as KaleidModel[])
+
     return (
         <>
-        <OldNewRendererButton />
+        <Button className={classes.root} variant="contained" color="primary" onClick={
+            async () => {
+                const m = await requestNewRenderer();
+                const newModels = produce(renderModels, (draftState) => {
+                    draftState.push(m);
+                    return draftState;
+                })
+                setRenderModels(newModels);
+            }
+        }>Make new renderer</Button>
+        {renderModels.map((m,i)=> <KaleidGUI key={i} kaleid={m} />)}
         </>
     )
 }

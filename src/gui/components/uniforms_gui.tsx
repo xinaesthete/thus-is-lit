@@ -1,9 +1,13 @@
-import { Button, Slider, makeStyles, Typography, Grid } from '@material-ui/core'
+import { 
+    Accordion, AccordionSummary, AccordionDetails, Slider, makeStyles, Typography, Grid 
+} from '@material-ui/core'
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import React from 'react'
 import produce from 'immer'
 import {produceWithPatches} from 'immer'
 import KaleidModel from '../../common/KaleidModel';
 //maybe want to use material, or just plain-old vanilla dat.gui...
+//maybe revisit react-dat-gui with benefit of understanding React a bit better.
 //import DatGui, {DatNumber, DatString} from 'react-dat-gui'
 import {Uniforms, Numeric, Tweakable, isNum, isVec2} from '../../common/tweakables'
 import { sendModel } from '../gui_comms';
@@ -28,10 +32,14 @@ function RowLabel(props: {name: string}) {
 function TweakableSlider(u: SliderProp) {
     //--- state should be owned further up the hierarchy ---
     const { name, min, max, value, step } = u;
+    //why are these no longer flowing sensibly?
+    const classes=useStyles();
     return (
         <>
             <RowLabel name={name} />
-            <Slider name={name} min={min} max={max} value={value} step={step} onChange={u.onChange} valueLabelDisplay="auto" />
+            <Slider className={classes.root} name={name} min={min} max={max} value={value} step={step} onChange={u.onChange} 
+                valueLabelDisplay="auto" />
+            <br />
         </>
     )
 }
@@ -87,19 +95,33 @@ export function KaleidGUI(props: KProps) {
 
     return (
         <div className={classes.root}>
-        <Typography>ID: {model.id}</Typography>
+        <Accordion>
+            <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel{model.id}-content" 
+                id="panel{model.id}-header"
+            >
+                <Typography>Renderer {model.id}:</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+            <div>
             {model.tweakables.map((u, i) => {
                 if (isNum(u.value)) {
                     // {...u as T} definitely not right here: TS is happy with that, React is not.
                     const {name, min, max, value, step} = u;
                     return (
-                    <TweakableSlider key={i} name={name} min={min} max={max} value={value} step={step}
+                        <TweakableSlider key={i} name={name} min={min} max={max} value={value} step={step}
                         onChange={makeSliderHandler(u.name, i)
+                        }
+                        />
+                        )
+                    } else if (isVec2(u.value)) {
+                        //TODO.
                     }
-                    />
-                    )
-                }
-            })}
+                })}
+            </div>
+            </AccordionDetails>
+        </Accordion>
         </div>
     )
 }
