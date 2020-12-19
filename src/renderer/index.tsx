@@ -1,3 +1,7 @@
+//// change this so that it is able to respond to messages
+//also want to make it able to have (multiple) views embedded in gui...
+
+
 import vs from './shaders/kaleid_vert.glsl'
 import fs from './shaders/kaleid_frag.glsl'
 

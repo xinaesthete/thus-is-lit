@@ -21,6 +21,8 @@ import KaleidModel from "../common/KaleidModel";
 import { makeRegisterRendererMessage, OscCommandType } from "../common/osc_util";
 import { Numeric, Tweakable } from "../common/tweakables";
 
+import { paramState } from './params'
+
 let socket = new WebSocket(websocketURL);
 
 async function setupWebSocket(model: KaleidModel) {
@@ -67,18 +69,15 @@ socket.onclose = (ev) => {
 
 socket.onmessage = (ev) => {
     //How shall we specify our message schema?
-    //It should definitely have "id" for routing.
-    //structured address vs SuperCollider-style command name & array?
-    //{address: `/${id}/set/tweakables/${name}`, args: [value]} //difficult to update many simultaneously
-    //{address: '/set', args: [id, `tweakables/${name}`, value, `tweakables/${name2}`, value2]}
-    //const msg = osc.unpackMessage(ev.data);
+    //and model in general?
+    //roughly, for now....
     console.log(`message received`);
     const json = JSON.parse(ev.data as string);
     if (json.address === OscCommandType.Set) {
         //!!! do something about it!!!
         console.log('success(?)!');
         const model = json.model as KaleidModel;
-        console.log(model.tweakables[0].value);
+        paramState.setValues(model.tweakables);
     }
 }
 

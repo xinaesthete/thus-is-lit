@@ -14,6 +14,7 @@ function lerp(s, t, a) {
 interface Lagger<T extends Numeric> {
     lagTime: number;
     update(dt: number) : T;
+    targVal: T;
 }
 class LagNum implements Lagger<number> {
     lagTime: number;
@@ -57,6 +58,14 @@ class LagVec2 implements Lagger<THREE.Vector2> {
         this.lagX.lagTime = t;
         this.lagY.lagTime = t;
     }
+    private _targVal: THREE.Vector2;
+    public get targVal() {
+        this._targVal.set(this.lagX.targVal, this.lagY.targVal);
+        return this._targVal;
+    }
+    public set targVal(v: THREE.Vector2) {
+        this._targVal.copy(v);
+    }
 }
 
 function getLagger(v: Numeric, lagTime: number): Lagger<Numeric> {
@@ -80,6 +89,9 @@ document.onkeypress = (ev) => {
         guiHidden = !guiHidden;
     }
 }
+
+export let paramState: ParamGroup;
+
 /** 
  * Originally a small helper function, this is now serving as the key function to initialize
  * parameters, register with server/gui etc... indeed if it wasn't called, the emerging protocol
@@ -90,6 +102,7 @@ export const makeGUI = (specs: Tweakable<Numeric>[], uniforms:Uniforms = {}) => 
     Object.keys(uniforms).forEach(k => uniforms[k].movement = MovementType.Fixed);
     const parms = new ParamGroup(specs, uniforms);
     init(specs).then(()=>{});
+    paramState = parms;
     return parms;
 }
 
@@ -117,6 +130,14 @@ export class ParamGroup {
                 gui.add(v, 'x', s.min, s.max, s.step).name(s.name + '.x');
                 gui.add(v, 'y', s.min, s.max, s.step).name(s.name + '.y');
             }
+        });
+    }
+    setValues(newValues: Tweakable<Numeric>[]) {
+        newValues.forEach(t => {
+            //so slow and wrong in various ways but probably not enough to matter for a while.
+            const p = this.parms.find(p => p.name === t.name);
+            //dunno why TS doesn't complain that it doesn't know these Numerics are compatible...
+            p.val.targVal = t.value; 
         });
     }
     update(dt: number) {

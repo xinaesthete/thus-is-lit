@@ -1337,7 +1337,7 @@ void main(void) {
       }
     },
     fakeEvent: function fakeEvent(elem, eventType, pars, aux) {
-      var params2 = pars || {};
+      var params3 = pars || {};
       var className = EVENT_MAP_INV[eventType];
       if (!className) {
         throw new Error("Event type " + eventType + " not supported.");
@@ -1345,14 +1345,14 @@ void main(void) {
       var evt = document.createEvent(className);
       switch (className) {
         case "MouseEvents": {
-          var clientX = params2.x || params2.clientX || 0;
-          var clientY = params2.y || params2.clientY || 0;
-          evt.initMouseEvent(eventType, params2.bubbles || false, params2.cancelable || true, window, params2.clickCount || 1, 0, 0, clientX, clientY, false, false, false, false, 0, null);
+          var clientX = params3.x || params3.clientX || 0;
+          var clientY = params3.y || params3.clientY || 0;
+          evt.initMouseEvent(eventType, params3.bubbles || false, params3.cancelable || true, window, params3.clickCount || 1, 0, 0, clientX, clientY, false, false, false, false, 0, null);
           break;
         }
         case "KeyboardEvents": {
           var init2 = evt.initKeyboardEvent || evt.initKeyEvent;
-          Common.defaults(params2, {
+          Common.defaults(params3, {
             cancelable: true,
             ctrlKey: false,
             altKey: false,
@@ -1361,11 +1361,11 @@ void main(void) {
             keyCode: void 0,
             charCode: void 0
           });
-          init2(eventType, params2.bubbles || false, params2.cancelable, window, params2.ctrlKey, params2.altKey, params2.shiftKey, params2.metaKey, params2.keyCode, params2.charCode);
+          init2(eventType, params3.bubbles || false, params3.cancelable, window, params3.ctrlKey, params3.altKey, params3.shiftKey, params3.metaKey, params3.keyCode, params3.charCode);
           break;
         }
         default: {
-          evt.initEvent(eventType, params2.bubbles || false, params2.cancelable || true);
+          evt.initEvent(eventType, params3.bubbles || false, params3.cancelable || true);
           break;
         }
       }
@@ -1586,10 +1586,10 @@ void main(void) {
   }
   var NumberController = function(_Controller) {
     inherits(NumberController2, _Controller);
-    function NumberController2(object, property, params2) {
+    function NumberController2(object, property, params3) {
       classCallCheck(this, NumberController2);
       var _this = possibleConstructorReturn(this, (NumberController2.__proto__ || Object.getPrototypeOf(NumberController2)).call(this, object, property));
-      var _params = params2 || {};
+      var _params = params3 || {};
       _this.__min = _params.min;
       _this.__max = _params.max;
       _this.__step = _params.step;
@@ -1648,9 +1648,9 @@ void main(void) {
   }
   var NumberControllerBox = function(_NumberController) {
     inherits(NumberControllerBox2, _NumberController);
-    function NumberControllerBox2(object, property, params2) {
+    function NumberControllerBox2(object, property, params3) {
       classCallCheck(this, NumberControllerBox2);
-      var _this2 = possibleConstructorReturn(this, (NumberControllerBox2.__proto__ || Object.getPrototypeOf(NumberControllerBox2)).call(this, object, property, params2));
+      var _this2 = possibleConstructorReturn(this, (NumberControllerBox2.__proto__ || Object.getPrototypeOf(NumberControllerBox2)).call(this, object, property, params3));
       _this2.__truncationSuspended = false;
       var _this = _this2;
       var prevY = void 0;
@@ -2225,7 +2225,7 @@ void main(void) {
   var hideableGuis = [];
   var GUI = function GUI2(pars) {
     var _this = this;
-    var params2 = pars || {};
+    var params3 = pars || {};
     this.domElement = document.createElement("div");
     this.__ul = document.createElement("ul");
     this.domElement.appendChild(this.__ul);
@@ -2235,28 +2235,28 @@ void main(void) {
     this.__rememberedObjects = [];
     this.__rememberedObjectIndecesToControllers = [];
     this.__listening = [];
-    params2 = Common.defaults(params2, {
+    params3 = Common.defaults(params3, {
       closeOnTop: false,
       autoPlace: true,
       width: GUI2.DEFAULT_WIDTH
     });
-    params2 = Common.defaults(params2, {
-      resizable: params2.autoPlace,
-      hideable: params2.autoPlace
+    params3 = Common.defaults(params3, {
+      resizable: params3.autoPlace,
+      hideable: params3.autoPlace
     });
-    if (!Common.isUndefined(params2.load)) {
-      if (params2.preset) {
-        params2.load.preset = params2.preset;
+    if (!Common.isUndefined(params3.load)) {
+      if (params3.preset) {
+        params3.load.preset = params3.preset;
       }
     } else {
-      params2.load = {preset: DEFAULT_DEFAULT_PRESET_NAME};
+      params3.load = {preset: DEFAULT_DEFAULT_PRESET_NAME};
     }
-    if (Common.isUndefined(params2.parent) && params2.hideable) {
+    if (Common.isUndefined(params3.parent) && params3.hideable) {
       hideableGuis.push(this);
     }
-    params2.resizable = Common.isUndefined(params2.parent) && params2.resizable;
-    if (params2.autoPlace && Common.isUndefined(params2.scrollable)) {
-      params2.scrollable = true;
+    params3.resizable = Common.isUndefined(params3.parent) && params3.resizable;
+    if (params3.autoPlace && Common.isUndefined(params3.scrollable)) {
+      params3.scrollable = true;
     }
     var useLocalStorage = SUPPORTS_LOCAL_STORAGE && localStorage.getItem(getLocalStorageHash(this, "isLocal")) === "true";
     var saveToLocalStorage = void 0;
@@ -2264,22 +2264,22 @@ void main(void) {
     Object.defineProperties(this, {
       parent: {
         get: function get$$13() {
-          return params2.parent;
+          return params3.parent;
         }
       },
       scrollable: {
         get: function get$$13() {
-          return params2.scrollable;
+          return params3.scrollable;
         }
       },
       autoPlace: {
         get: function get$$13() {
-          return params2.autoPlace;
+          return params3.autoPlace;
         }
       },
       closeOnTop: {
         get: function get$$13() {
-          return params2.closeOnTop;
+          return params3.closeOnTop;
         }
       },
       preset: {
@@ -2287,13 +2287,13 @@ void main(void) {
           if (_this.parent) {
             return _this.getRoot().preset;
           }
-          return params2.load.preset;
+          return params3.load.preset;
         },
         set: function set$$13(v) {
           if (_this.parent) {
             _this.getRoot().preset = v;
           } else {
-            params2.load.preset = v;
+            params3.load.preset = v;
           }
           setPresetSelectIndex(this);
           _this.revert();
@@ -2301,31 +2301,31 @@ void main(void) {
       },
       width: {
         get: function get$$13() {
-          return params2.width;
+          return params3.width;
         },
         set: function set$$13(v) {
-          params2.width = v;
+          params3.width = v;
           setWidth(_this, v);
         }
       },
       name: {
         get: function get$$13() {
-          return params2.name;
+          return params3.name;
         },
         set: function set$$13(v) {
-          params2.name = v;
+          params3.name = v;
           if (titleRow) {
-            titleRow.innerHTML = params2.name;
+            titleRow.innerHTML = params3.name;
           }
         }
       },
       closed: {
         get: function get$$13() {
-          return params2.closed;
+          return params3.closed;
         },
         set: function set$$13(v) {
-          params2.closed = v;
-          if (params2.closed) {
+          params3.closed = v;
+          if (params3.closed) {
             dom.addClass(_this.__ul, GUI2.CLASS_CLOSED);
           } else {
             dom.removeClass(_this.__ul, GUI2.CLASS_CLOSED);
@@ -2338,7 +2338,7 @@ void main(void) {
       },
       load: {
         get: function get$$13() {
-          return params2.load;
+          return params3.load;
         }
       },
       useLocalStorage: {
@@ -2358,8 +2358,8 @@ void main(void) {
         }
       }
     });
-    if (Common.isUndefined(params2.parent)) {
-      this.closed = params2.closed || false;
+    if (Common.isUndefined(params3.parent)) {
+      this.closed = params3.closed || false;
       dom.addClass(this.domElement, GUI2.CLASS_MAIN);
       dom.makeSelectable(this.domElement, false);
       if (SUPPORTS_LOCAL_STORAGE) {
@@ -2367,14 +2367,14 @@ void main(void) {
           _this.useLocalStorage = true;
           var savedGui = localStorage.getItem(getLocalStorageHash(this, "gui"));
           if (savedGui) {
-            params2.load = JSON.parse(savedGui);
+            params3.load = JSON.parse(savedGui);
           }
         }
       }
       this.__closeButton = document.createElement("div");
       this.__closeButton.innerHTML = GUI2.TEXT_CLOSED;
       dom.addClass(this.__closeButton, GUI2.CLASS_CLOSE_BUTTON);
-      if (params2.closeOnTop) {
+      if (params3.closeOnTop) {
         dom.addClass(this.__closeButton, GUI2.CLASS_CLOSE_TOP);
         this.domElement.insertBefore(this.__closeButton, this.domElement.childNodes[0]);
       } else {
@@ -2385,10 +2385,10 @@ void main(void) {
         _this.closed = !_this.closed;
       });
     } else {
-      if (params2.closed === void 0) {
-        params2.closed = true;
+      if (params3.closed === void 0) {
+        params3.closed = true;
       }
-      var titleRowName = document.createTextNode(params2.name);
+      var titleRowName = document.createTextNode(params3.name);
       dom.addClass(titleRowName, "controller-name");
       titleRow = addRow(_this, titleRowName);
       var onClickTitle = function onClickTitle2(e) {
@@ -2399,12 +2399,12 @@ void main(void) {
       dom.addClass(this.__ul, GUI2.CLASS_CLOSED);
       dom.addClass(titleRow, "title");
       dom.bind(titleRow, "click", onClickTitle);
-      if (!params2.closed) {
+      if (!params3.closed) {
         this.closed = false;
       }
     }
-    if (params2.autoPlace) {
-      if (Common.isUndefined(params2.parent)) {
+    if (params3.autoPlace) {
+      if (Common.isUndefined(params3.parent)) {
         if (autoPlaceVirgin) {
           autoPlaceContainer = document.createElement("div");
           dom.addClass(autoPlaceContainer, CSS_NAMESPACE);
@@ -2416,7 +2416,7 @@ void main(void) {
         dom.addClass(this.domElement, GUI2.CLASS_AUTO_PLACE);
       }
       if (!this.parent) {
-        setWidth(_this, params2.width);
+        setWidth(_this, params3.width);
       }
     }
     this.__resizeHandler = function() {
@@ -2427,7 +2427,7 @@ void main(void) {
     dom.bind(this.__ul, "transitionend", this.__resizeHandler);
     dom.bind(this.__ul, "oTransitionEnd", this.__resizeHandler);
     this.onResize();
-    if (params2.resizable) {
+    if (params3.resizable) {
       addResizeHandle(this);
     }
     saveToLocalStorage = function saveToLocalStorage2() {
@@ -2443,7 +2443,7 @@ void main(void) {
         root.width -= 1;
       });
     }
-    if (!params2.parent) {
+    if (!params3.parent) {
       resetWidth();
     }
   };
@@ -2828,19 +2828,19 @@ void main(void) {
       }
     }
   }
-  function _add(gui2, object, property, params2) {
+  function _add(gui2, object, property, params3) {
     if (object[property] === void 0) {
       throw new Error('Object "' + object + '" has no property "' + property + '"');
     }
     var controller = void 0;
-    if (params2.color) {
+    if (params3.color) {
       controller = new ColorController(object, property);
     } else {
-      var factoryArgs = [object, property].concat(params2.factoryArgs);
+      var factoryArgs = [object, property].concat(params3.factoryArgs);
       controller = ControllerFactory.apply(gui2, factoryArgs);
     }
-    if (params2.before instanceof Controller) {
-      params2.before = params2.before.__li;
+    if (params3.before instanceof Controller) {
+      params3.before = params3.before.__li;
     }
     recallSavedValue(gui2, controller);
     dom.addClass(controller.domElement, "c");
@@ -2850,7 +2850,7 @@ void main(void) {
     var container = document.createElement("div");
     container.appendChild(name);
     container.appendChild(controller.domElement);
-    var li = addRow(gui2, container, params2.before);
+    var li = addRow(gui2, container, params3.before);
     dom.addClass(li, GUI.CLASS_CONTROLLER_ROW);
     if (controller instanceof ColorController) {
       dom.addClass(li, "color");
@@ -3067,9 +3067,9 @@ void main(void) {
     };
   }
   async function init(specs) {
-    const params2 = new URLSearchParams(location.search);
-    if (params2.has("id")) {
-      const id = Number.parseInt(params2.get("id"));
+    const params3 = new URLSearchParams(location.search);
+    if (params3.has("id")) {
+      const id = Number.parseInt(params3.get("id"));
       const model = {
         id,
         filename: "todo",
@@ -3095,7 +3095,7 @@ void main(void) {
       //!!! do something about it!!!
       console.log("success(?)!");
       const model = json.model;
-      console.log(model.tweakables[0].value);
+      paramState.setValues(model.tweakables);
     }
   };
 
@@ -3142,6 +3142,13 @@ void main(void) {
       this.lagX.lagTime = t;
       this.lagY.lagTime = t;
     }
+    get targVal() {
+      this._targVal.set(this.lagX.targVal, this.lagY.targVal);
+      return this._targVal;
+    }
+    set targVal(v) {
+      this._targVal.copy(v);
+    }
   };
   function getLagger(v, lagTime) {
     if (isNum(v)) {
@@ -3163,12 +3170,14 @@ void main(void) {
       guiHidden = !guiHidden;
     }
   };
+  var paramState;
   var makeGUI = (specs, uniforms2 = {}) => {
     specs.forEach((s) => s.movement = MovementType.Modulatable);
     Object.keys(uniforms2).forEach((k) => uniforms2[k].movement = MovementType.Fixed);
     const parms2 = new ParamGroup(specs, uniforms2);
     init(specs).then(() => {
     });
+    paramState = parms2;
     return parms2;
   };
   var ParamGroup = class {
@@ -3191,6 +3200,12 @@ void main(void) {
           gui.add(v, "x", s.min, s.max, s.step).name(s.name + ".x");
           gui.add(v, "y", s.min, s.max, s.step).name(s.name + ".y");
         }
+      });
+    }
+    setValues(newValues) {
+      newValues.forEach((t) => {
+        const p = this.parms.find((p2) => p2.name === t.name);
+        p.val.targVal = t.value;
       });
     }
     update(dt) {
