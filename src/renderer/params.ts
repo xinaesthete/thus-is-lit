@@ -108,7 +108,6 @@ export const makeGUI = (specs: Tweakable<Numeric>[], uniforms:Uniforms = {}) => 
 }
 
 
-const scratchVec2 = new THREE.Vector2();
 export class ParamGroup {
     parms: ShaderParam[] = [];
     lagTime: number = 1000;
@@ -141,7 +140,10 @@ export class ParamGroup {
                 p.val.targVal = t.value; 
             } else {
                 //only numbers and vec2 for now...
-                (p.val.targVal as THREE.Vector2) = scratchVec2.set(t.value.x, t.value.y);
+                const v = (p.val as LagVec2).controlVec;
+                v.x = t.value.x;
+                v.y = t.value.y;
+                //(p.val.targVal as vec2) = scratchVec2.set(t.value.x, t.value.y);
             }
         });
     }
