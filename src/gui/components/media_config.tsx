@@ -19,7 +19,10 @@ export default function MediaConfig() {
   if (!config) {
     //theoretically could get some crossed wires here, but hopefully not an issue
     // with a one-off component like this where the config itself very infequently changes.
-    requestFileConfigPrefs().then(setConfig);
+    requestFileConfigPrefs().then(c => {
+      setConfig(c);
+      setPath(c.mainAssetPath);
+    });
   }
   const [open, setOpen] = React.useState(false);
   //keep state of path local and only call update from parent when submit is pressed.
@@ -37,9 +40,14 @@ export default function MediaConfig() {
     const newConf = produce(config, draftConfig => {
       draftConfig.mainAssetPath = path;
     });
-    await requestSetMainAssetPath(path);
-    setConfig(newConf);
-    handleClose();
+    const ok = await requestSetMainAssetPath(path);
+    if (ok) {
+      setConfig(newConf);
+      handleClose();
+    } else {
+      //error...
+      alert(`failed to set config with path '${path}'`);
+    }
   }
   const handleUpdate = (ev) => {
     setPath(ev.target.value); //must look into my lax tsconfig
