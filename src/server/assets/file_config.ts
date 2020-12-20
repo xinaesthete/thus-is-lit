@@ -61,7 +61,7 @@ export const post_setMainAssetPath = async (req, res) => {
 
     const remoteIP = req.connection.remoteAddress;
     const newPath = req.body; ////needs to be a string
-    if (!isAcceptableAssetPath(newPath)) res.sendStatus(403).send(`bad path ${newPath}`);
+    if (!await isAcceptableAssetPath(newPath)) res.sendStatus(403).send(`bad path ${newPath}`);
     console.log(`[file_config] request to /setMainAssetPath to '${newPath}' from IP '${remoteIP}'`);
     // if (remoteIP === '127.0.0.1' || remoteIP === 'localhost') {
         const conf = await getConfig();
