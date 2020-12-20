@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import MediaConfig from './components/media_config';
 // import { Threact } from '../common/threact/threact';
 // import { DefaultCube } from '../common/threact/threexample';
 import RendererControl from './components/renderer_control'
@@ -8,6 +9,7 @@ function App() {
   // const cube = new DefaultCube();
   return (
 <>
+    <MediaConfig />
     <RendererControl />
     {/* <DefaultCube /> */}
     {/* <Threact gfx={cube} /> */}

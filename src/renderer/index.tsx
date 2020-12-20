@@ -1,5 +1,5 @@
 //// change this so that it is able to respond to messages
-//also want to make it able to have (multiple) views embedded in gui...
+//also want to make it able to have (multiple) views embedded in gui... soon.
 
 
 import vs from './shaders/kaleid_vert.glsl'

@@ -1,3 +1,4 @@
+import { expApp } from '../server_comms'
 import * as os from 'os'
 import * as path from 'path'
 import * as fs from 'fs'
@@ -19,18 +20,46 @@ interface FileConfigPrefs {
     version: string; //no clear spec for reasoning about this yet...
 }
 
-//MobX? ...
 class FileConfigPrefsModel implements FileConfigPrefs {
-    _version: string;
+    private _version: string;
+    private _mainAssetPath: string;
     constructor(initial?: FileConfigPrefs) {
         this._version = initial.version;
     }
     public get version() {
         return currentVersion;
     }
+    public get mainAssetPath() {
+        return this._mainAssetPath;
+    }
+    public set mainAssetPath(newPath: string) {
+        //MobX? ...
+        this._mainAssetPath = newPath;
+    }
 }
 
 let config: FileConfigPrefs;
+
+expApp.post('/setMainAssetPath', async (req, res) => {
+    //would be good to not just expose things like this too openly...
+    //let's only consider accepting from localhost for a start. Hopefully that's secure enough for now.
+    //I should test this.  Maybe use express-ipfilter?
+
+    //perhaps more important is to consider the effects of changing this with the application running...
+    /////// hypothesis:
+    //// any running video streams will carry on regardless 
+    //// anything that had previously failed won't start without a refresh
+    //// I think I can live with that.
+
+    const remoteIP = req.connection.remoteAddress;
+    const newPath = req.body;
+    console.log(`[file_config] request to /setMainAssetPath to '${newPath}' from '${remoteIP}'`);
+    if (remoteIP === '127.0.0.1' || remoteIP === 'localhost') {
+        const conf = await getConfig();
+        conf.mainAssetPath = newPath;
+        res.sendStatus(200);
+    }
+});
 
 async function initConfigFile() {
     const confExists = await fs.existsSync(path.join(homePath, 'config.json'));
@@ -47,7 +76,7 @@ async function initConfigFile() {
     }
 }
 
-async function getConfig() : Promise<FileConfigPrefs> {
+export async function getConfig() : Promise<FileConfigPrefs> {
     if (config) return config;
     await initConfigFile();
     try {
