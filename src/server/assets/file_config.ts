@@ -2,23 +2,20 @@ import { expApp } from '../server_comms'
 import * as os from 'os'
 import * as path from 'path'
 import * as fs from 'fs'
+import { FileConfigPrefs } from '../../common/media_model';
 
 const currentVersion = "0.0.1";
+let config: FileConfigPrefs;
+
+
+export default async function setup() {
+    console.log(`setting up file_config module, currentVersion "${currentVersion}"`);
+    config = await getConfig();
+    console.log(`config: ${JSON.stringify(config)}`);
+}
 
 const homePath = path.join(os.homedir(), '/thusislit');
 const configPath = path.join(homePath, 'config.json');
-
-interface FileConfigPrefs {
-    mainAssetPath?: string;
-    //associate names with locations?
-    //not adding fancy features that I won't be testing yet.
-    //but I'd like to be able to make a request to "TITK/someFile" 
-    //and it should look up someFile in the TITK configured on that machine.
-    //but then again if we seriously get in to asset management then we probably want an sqlite db
-    //or whatever... but anyway, not today.
-    //contentLibs?: Record<string, string>; 
-    version: string; //no clear spec for reasoning about this yet...
-}
 
 class FileConfigPrefsModel implements FileConfigPrefs {
     private _version: string;
@@ -38,9 +35,16 @@ class FileConfigPrefsModel implements FileConfigPrefs {
     }
 }
 
-let config: FileConfigPrefs;
 
-expApp.post('/setMainAssetPath', async (req, res) => {
+async function isAcceptableAssetPath(path: string) {
+    const exists = fs.existsSync(path);
+    if (!exists) return false;
+    const stat = await fs.promises.stat(path);
+    return stat.isDirectory();
+}
+
+//expApp.post('/setMainAssetPath', async (req, res) => {
+export const post_setMainAssetPath = async (req, res) => {
     //would be good to not just expose things like this too openly...
     //let's only consider accepting from localhost for a start. Hopefully that's secure enough for now.
     //I should test this.  Maybe use express-ipfilter?
@@ -52,22 +56,50 @@ expApp.post('/setMainAssetPath', async (req, res) => {
     //// I think I can live with that.
 
     const remoteIP = req.connection.remoteAddress;
-    const newPath = req.body;
-    console.log(`[file_config] request to /setMainAssetPath to '${newPath}' from '${remoteIP}'`);
-    if (remoteIP === '127.0.0.1' || remoteIP === 'localhost') {
+    const newPath = req.body; ////needs to be a string
+    if (!isAcceptableAssetPath(newPath)) res.sendStatus(403).send(`bad path ${newPath}`);
+    console.log(`[file_config] request to /setMainAssetPath to '${newPath}' from IP '${remoteIP}'`);
+    // if (remoteIP === '127.0.0.1' || remoteIP === 'localhost') {
         const conf = await getConfig();
         conf.mainAssetPath = newPath;
-        res.sendStatus(200);
+        res.sendStatus(200).send(conf);
+    // } else {
+    //     console.error(`[file_config] refused request to change asset path.\nIP: '${remoteIP}'\tpath: '${newPath}'`);
+    //     res.sendStatus(403).send(`not from that IP you don't...`);
+    // }
+};
+
+//was thinking about something for realtime feedback while typing
+//but could be problematic, and I don't have more basic stuff working yet.
+// expApp.get('/checkPossibleAssetPath/:path', async (req, res) => {
+//     const ok = await isAcceptableAssetPath(req.params.path);
+//     res.sendStatus()
+// });
+
+
+// expApp.get("/getConfigPrefs", async (req, res) => {
+export const get_getConfigPrefs = async (req, res) => {
+    console.log(`[file_config] received getConfigPrefs request`);
+    try {
+        let config = await getConfig();
+        res.send(config);
+    } catch (error) {
+        const msg = `[file_config] error getting config: ${error};`
+        console.error(msg);
+        res.sendStatus(500);
     }
-});
+};
+
 
 async function initConfigFile() {
+    console.log(`[file_config] init config file`);
+    //consider adding version to filename
     const confExists = await fs.existsSync(path.join(homePath, 'config.json'));
-    if (confExists) return fs.promises.readFile(configPath, 'utf-8');
+    if (confExists) return await fs.promises.readFile(configPath, 'utf-8');
     
     try {
-        const stat = await fs.promises.stat(homePath);
-        if (!stat.isDirectory) {
+        const stat = await fs.existsSync(homePath);
+        if (!stat) {
             await fs.promises.mkdir(homePath);
         }
         await fs.promises.writeFile(configPath, JSON.stringify(defaultConfig()));

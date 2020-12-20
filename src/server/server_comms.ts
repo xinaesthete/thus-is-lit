@@ -13,6 +13,7 @@ import bodyParser from 'body-parser'
 import * as consts from '../common/constants'
 import KaleidModel from '../common/KaleidModel';
 import { getNextScreen, useFullscreen } from './screen_config';
+import initFileConfig, * as file_config  from './assets/file_config'
 import { OscCommandType } from '../common/osc_util';
 
 
@@ -25,6 +26,9 @@ export const expApp = express();
 //expApp.use(express.json());
 expApp.use(bodyParser.urlencoded({extended: false}));
 expApp.use(bodyParser.json());
+//https://stackoverflow.com/questions/12497358/handling-text-plain-in-express-via-connect/12497793#12497793
+//(second, more recent answer)
+expApp.use(bodyParser.text({type: 'text/*'}));
 
 //it may be cleaner to have housekeeping of open renderers etc in another module.
 let nextRendererID = 0;
@@ -122,13 +126,19 @@ expApp.post(consts.rendererStarted, (req, res) => {
     res.send();//{CORS: "Access-Control-Allow-Origin: *"}); //XXXXXXXXX JUST TESTING WITH WILDCARD XXXXXXXXXXXXXXXX
 });
 
+//had something wrong in order of operations I think, so calling these here...
+//but I currently lose type inference this way, so when I enable noImplicitAny etc the build will break.
+expApp.post('/setMainAssetPath', file_config.post_setMainAssetPath);
+expApp.get('/getConfigPrefs', file_config.get_getConfigPrefs);
 
 export function start() {
     console.log("initialising server_comms...");
     //this file could be very simple, and call a few modules one by one...
     const server = expApp.listen(consts.host_port, () => {
-        console.log(`express server listening at http://localhost:${consts.host_port}`);
+        console.log(`express server listening at ${consts.httpURL}`);
     });
+    initFileConfig();
+
 
     const wsServer = new ws.Server({server: server});
     //the type of WebSocket here is browser version rather than ws.

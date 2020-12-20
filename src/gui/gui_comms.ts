@@ -7,9 +7,10 @@
 //import * as osc from 'osc-min'
 import { Uniforms } from '../common/tweakables';
 
-import { host_port, newRenderer, websocketURL } from '../common/constants'
+import { host_port, httpURL, newRenderer, websocketURL } from '../common/constants'
 import KaleidModel from '../common/KaleidModel';
 import { makeRegisterControllerMessage, OscCommandType } from '../common/osc_util';
+import { FileConfigPrefs } from '../common/media_model';
 // let's make a button that creates a renderer...
 // and then very soon refactor this code somewhere sensible.
 
@@ -20,8 +21,7 @@ export async function requestNewRenderer() {
     //who should be responsible for keeping track of which renderers are around, associated with with GUI?
     //*probably really needs to be the server* that is the only way that we can ensure integrity.
     console.log(`requesting newRenderer...`);
-    //TODO: consider server not on localhost.
-    const response = await fetch(`http://localhost:${host_port}${newRenderer}`, {
+    const response = await fetch(`${httpURL}${newRenderer}`, {
         //mode: 'cors', headers: {'Access-Control-Allow-Origin' : '*'}
     });
     const info = await response.json() as KaleidModel;
@@ -29,6 +29,24 @@ export async function requestNewRenderer() {
     return info;
 }
 
+export async function requestFileConfigPrefs() {
+    console.log('requesting file config');
+    const response = await fetch(`${httpURL}/getConfigPrefs`);
+    const config = await response.json() as FileConfigPrefs;
+    console.log(`file config response: ${JSON.stringify(config)}`);
+    return config as FileConfigPrefs;
+}
+
+export async function requestSetMainAssetPath(path: string) {
+    console.log(`requesting to set main asset path to '${path}'`);
+    const result = await fetch(`${httpURL}/setMainAssetPath`, {
+        method: "POST", body: path,
+        headers: {"Content-Type": "text/plain; charset=UTF-8"}
+    });
+    console.log(`result of setting main asset path '${path}' ${result.ok}`);
+    if (!result.ok) console.log(await result.text());
+    return result.ok;
+}
 
 //Establish a WebSocket connection to server 
 //so that it can notify us about things like new renderers.

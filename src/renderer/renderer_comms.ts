@@ -16,7 +16,7 @@
  * 
  */
 
-import { rendererStarted, host_port, websocketURL } from "../common/constants";
+import { rendererStarted, host_port, websocketURL, httpURL } from "../common/constants";
 import KaleidModel from "../common/KaleidModel";
 import { makeRegisterRendererMessage, OscCommandType } from "../common/osc_util";
 import { Numeric, Tweakable } from "../common/tweakables";
@@ -52,7 +52,7 @@ export async function init(specs: Tweakable<Numeric>[]) {
     
         const body = JSON.stringify(model);
         console.log(`sending ${rendererStarted} ${body}`);
-        fetch(`http://localhost:${host_port}${rendererStarted}`, {
+        fetch(`${httpURL}${rendererStarted}`, {
             method: "POST", body: body,
             headers: {"Content-Type": "application/json"}
         });
