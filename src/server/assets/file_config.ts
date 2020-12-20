@@ -32,6 +32,10 @@ class FileConfigPrefsModel implements FileConfigPrefs {
     public set mainAssetPath(newPath: string) {
         //MobX? ...
         this._mainAssetPath = newPath;
+        fs.writeFileSync(configPath, JSON.stringify(
+            //FFS
+            {version: this.version, mainAssetPath: this.mainAssetPath}
+        ));
     }
 }
 
@@ -62,7 +66,7 @@ export const post_setMainAssetPath = async (req, res) => {
     // if (remoteIP === '127.0.0.1' || remoteIP === 'localhost') {
         const conf = await getConfig();
         conf.mainAssetPath = newPath;
-        res.sendStatus(200).send(conf);
+        res.send(conf);
     // } else {
     //     console.error(`[file_config] refused request to change asset path.\nIP: '${remoteIP}'\tpath: '${newPath}'`);
     //     res.sendStatus(403).send(`not from that IP you don't...`);
