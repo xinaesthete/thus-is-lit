@@ -11,7 +11,7 @@ let config: FileConfigPrefs;
 export default async function setup() {
     console.log(`setting up file_config module, currentVersion "${currentVersion}"`);
     config = await getConfig();
-    console.log(`config: ${JSON.stringify(config)}`);
+    console.log(`config: ${await getConfigJsonString()}`);
 }
 
 const homePath = path.join(os.homedir(), '/thusislit');
@@ -22,15 +22,17 @@ class FileConfigPrefsModel implements FileConfigPrefs {
     private _mainAssetPath: string;
     constructor(initial?: FileConfigPrefs) {
         this._version = initial.version;
+        this._mainAssetPath = initial.mainAssetPath;
     }
     public get version() {
-        return currentVersion;
+        return this._version;
     }
     public get mainAssetPath() {
         return this._mainAssetPath;
     }
     public set mainAssetPath(newPath: string) {
-        //MobX? ...
+        //MobX? ... maybe good to spend some time looking into that sooner than later
+        //not that I shouldn't be able to be less stupid about serializing this anyway.
         this._mainAssetPath = newPath;
         fs.writeFileSync(configPath, JSON.stringify(
             //FFS
@@ -39,6 +41,11 @@ class FileConfigPrefsModel implements FileConfigPrefs {
     }
 }
 
+/** this fn should not have to exist, the FileConfigPrefsModel implementation is baad... */
+export async function getConfigJsonString() {
+    const c = await getConfig();
+    return JSON.stringify({version: c.version, mainAssetPath: c.mainAssetPath});
+}
 
 async function isAcceptableAssetPath(path: string) {
     const exists = fs.existsSync(path);
@@ -66,7 +73,7 @@ export const post_setMainAssetPath = async (req, res) => {
     // if (remoteIP === '127.0.0.1' || remoteIP === 'localhost') {
         const conf = await getConfig();
         conf.mainAssetPath = newPath;
-        res.send(conf);
+        res.send(getConfigJsonString());
     // } else {
     //     console.error(`[file_config] refused request to change asset path.\nIP: '${remoteIP}'\tpath: '${newPath}'`);
     //     res.sendStatus(403).send(`not from that IP you don't...`);
@@ -85,7 +92,7 @@ export const post_setMainAssetPath = async (req, res) => {
 export const get_getConfigPrefs = async (req, res) => {
     console.log(`[file_config] received getConfigPrefs request`);
     try {
-        let config = await getConfig();
+        let config = await getConfigJsonString();
         res.send(config);
     } catch (error) {
         const msg = `[file_config] error getting config: ${error};`
@@ -99,7 +106,11 @@ async function initConfigFile() {
     console.log(`[file_config] init config file`);
     //consider adding version to filename
     const confExists = await fs.existsSync(path.join(homePath, 'config.json'));
-    if (confExists) return await fs.promises.readFile(configPath, 'utf-8');
+    if (confExists) {
+        console.log(`[file_config] using existing config`);
+        await fs.promises.readFile(configPath, 'utf-8');
+        return;
+    }
     
     try {
         const stat = await fs.existsSync(homePath);
