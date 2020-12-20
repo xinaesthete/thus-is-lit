@@ -16,7 +16,7 @@ import { getNextScreen, useFullscreen } from './screen_config';
 import { OscCommandType } from '../common/osc_util';
 
 
-const expApp = express();
+export const expApp = express();
 //https://stackoverflow.com/questions/52684372/fetch-post-request-to-express-js-generates-empty-body
 //trying to figure out whether express.json() is enough, whether we need body-parser
 //or why we shouldn't just have a JSON string and parse it ourselves.
