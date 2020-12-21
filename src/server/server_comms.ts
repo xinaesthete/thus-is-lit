@@ -147,22 +147,22 @@ export function start() {
 
 
     const wsServer = new ws.Server({server: server});
-    //the type of WebSocket here is browser version rather than ws.
-    //How do I fix that?
+    /// -> main_state
     const renderers: Map<number, WebSocket> = new Map();
     const controllers: WebSocket[] = [];
+    const models: Map<number, KaleidModel> = new Map(); // we could never remove from this and it'll be fine for the time being.
+    // ->
+
     wsServer.on('connection', (socket) => {
         console.log(`new ws connection:::`);
         socket.onclose = (closedEvent) => {
             const { code, reason, target } = closedEvent;
-            
+            // code 1000 - normal closure, 1001 going away, 1012 service restart...
             console.log(`[ws] socket close ${reason}`);
             ///remove from collections...
             if (controllers.includes(target)) controllers.splice(controllers.indexOf(target),1);
             //if (renderers.values...)) //lodash?....
         };
-        //what kind of thing connected? whatever, for now the only message we expect is JSON model
-        //from GUI to Renderer...
         socket.on('message', message => {
             try {
                 const json = JSON.parse(message as string); //TODO pass to type-annotated function.
@@ -172,7 +172,11 @@ export function start() {
                     else {
                         if (renderers.has(json.id)) {
                             console.log(`[ws] already had socket for renderer #${json.id}`);
-                            //will it safely become garbage and be disposed? probably.
+                            //will the old one safely become garbage and be disposed? probably.
+                            renderers.set(json.id, socket);
+                            const msg = JSON.stringify({model: models.get(json.id), address: OscCommandType.Set});
+                            //console.log(`[ws] restoring state ${msg}`);
+                            socket.send(msg); //I should at least review when it's necessary to stringify.
                         }
                         renderers.set(json.id as number, socket); //but it *is* *a* *we*b*b*socket /sob
                         console.log(`[ws] ${json.id} socket established`);
@@ -180,9 +184,11 @@ export function start() {
                 } else if (json.address === OscCommandType.RegisterController) {
                     console.log(`registering controller`);
                     controllers.push(socket);
+                    //report back to it about all of the renderers (models) that are about.
                 } else if (json.address === OscCommandType.Set) {
-                    console.log(`[ws] /set id=${json.id} command...`);
+                    // console.log(`[ws] /set id=${json.model.id} command...`);
                     const model = json.model as KaleidModel;
+                    models.set(model.id, model);
                     if (renderers.has(model.id)) {
                         //// model.id is undefined but we're still trying to send...
                         // const vals = model.tweakables.

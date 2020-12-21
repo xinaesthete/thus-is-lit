@@ -59,8 +59,9 @@ export async function init(specs: Tweakable<Numeric>[]) {
         });
         //also we need to be able to listen to tweakables tweaking
         //as well as filename and whatever else.
-        //... let's have a WebSocket server here for that.
-        setupWebSocket(model);
+        await setupWebSocket(model);
+        //if we're (re)loading a particular model ID, it would be nice to get the old state back ASAP.
+        //that's up to the server once the connection is registered.
     }
 }
 
