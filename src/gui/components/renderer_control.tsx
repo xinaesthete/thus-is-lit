@@ -24,7 +24,7 @@ export default function RendererControl() {
     const [renderModels, setRenderModels] = React.useState([] as KaleidModel[]);
     //we can pull from server, similarly to how we do other things...
     //this is not nice, but may be ok for now.
-    requestModelList().then(models => {
+    if (renderModels.length === 0) requestModelList().then(models => {
         setRenderModels(models);
     });
 
