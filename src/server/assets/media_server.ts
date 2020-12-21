@@ -71,10 +71,8 @@ export function addRestAPI(expApp: express.Application) {
     
         //TODO let's give them some metadata as well
         const files: string[] = [];
-        
-        const extension = (n: string) => n.split('.').reverse()[0];
         const hidden = (n: string) => n[0] === '.';
-        const isVid = (d: Dirent) => !hidden(d.name) && extension(d.name) === 'mp4';
+        const isVid = (d: Dirent) => !hidden(d.name) && path.extname(d.name) === '.mp4';
         const dFilter = (d: Dirent) => {
             if (d.isDirectory()) return true;
             if (d.isFile()) return isVid(d);
@@ -85,10 +83,10 @@ export function addRestAPI(expApp: express.Application) {
         //    or when changing config,
         //  : but this could easily go awry with unclear React logic etc.
         // -> in which case, the fact that this call will block the main server thread
-        //    will be potentially rather bad...
+        //    could be potentially rather bad...
         // I was feeling pretty thick when I first wrote this, so might take a moment to do it properly
         // or just cache the result and only recompute when config changes.
-        // (nb, I probably want to watch the files as well and push change notifications to clients
+        // (nb, I ultimately want to watch the files as well and push change notifications to clients
         // but for an early version saying that you may need to restart if you rearrange video files is ok,
         // better than risk features that could cause unpredictable results during a gig)
         
@@ -97,9 +95,8 @@ export function addRestAPI(expApp: express.Application) {
             console.log(`expanding ${dir}/${d.name}...`);
             const pathFromAssetRoot = path.join(dir, d.name);
             const absDir = path.join(root, dir, d.name);
-            console.log(`${pathFromAssetRoot} ${isVid(d)}`);
             if (isVid(d)) {
-                console.log(`adding '${pathFromAssetRoot}'`);
+                console.log(`<<adding>> '${pathFromAssetRoot}'`);
                 files.push(pathFromAssetRoot);
             }
             else {
@@ -109,7 +106,7 @@ export function addRestAPI(expApp: express.Application) {
         }
         let dirList = await fs.promises.readdir(root, {withFileTypes: true});
         dirList.filter(dFilter).forEach(d => expand(d, ''));
-        console.log(`file listing:\n--${files.join('\n--')}`);
+        console.log(`file listing:\n  ${files.join('\n  ')}\n------/listvideo`);
         res.send(files);    
     });
 
