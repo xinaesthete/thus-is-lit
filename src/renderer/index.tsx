@@ -87,8 +87,10 @@ function animate(time: number) {
   let w = window.innerWidth, h = window.innerHeight;
   uniforms.ScreenAspect.value = w/h;
   const img = uniforms.texture1.value;
-
-  uniforms.UVLimit.value = img.repeat;
+  const vw = vid.vidEl.videoWidth;
+  const vh = vid.vidEl.videoHeight;
+  const longSide = Math.max(vw, vh);
+  uniforms.UVLimit.value = {x: vw/longSide, y: vh/longSide};
   const dt = time - t0;
   t0 = time;
 //   parms.forEach(p => p.update(dt))

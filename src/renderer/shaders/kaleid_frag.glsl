@@ -81,11 +81,19 @@ vec2 mozaic(vec2 uv, float num, float strength, float p, float g) {
   return mix(uv, uv2, strength);
 }
 
+void mainX() {
+  vec2 uv = vertTexCoord.xy;
+  //uv.y /= ScreenAspect; //fit width
+  
+  uv.x *= ScreenAspect; //fit height;
+  uv /= UVLimit*ScreenAspect; //fix aspect.
+  gl_FragColor = texture2D(texture1, uv);
+}
+
 void main(void) {
   vec2 uv = vertTexCoord.xy; // / UVLimit;
-  uv.x *=
-      ScreenAspect; // doesn't seem to make sense to do this after "/ UVLimit".
-  uv /= UVLimit;    // TODO think coherently about coordinates :)
+  uv.x *= ScreenAspect; // doesn't seem to make sense to do this after "/ UVLimit".
+  uv /= UVLimit*ScreenAspect;    // TODO think coherently about coordinates :)
   vec2 c = Centre;
   c.x *= ScreenAspect;
   vec2 polar = car2pol(uv - c / UVLimit);
@@ -103,6 +111,7 @@ void main(void) {
   // uv2.x *= ScreenAspect;
   uv2 = mirrorRepeat(uv2, UVLimit);
 
+  //uv2 = vertTexCoord.xy;
   vec4 col = texture2D(texture1, uv2);
   vec3 colHSV = rgb2hsv(col.rgb);
   colHSV.y = bias(gain(colHSV.y, SaturationGain), SaturationBias);
