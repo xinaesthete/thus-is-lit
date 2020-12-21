@@ -16,6 +16,6 @@ As of now (who knows if I'll update this readme as I update features), running t
 
 On my Windows system, I am having trouble with contention in video playback with multiple fullscreen windows when the `<video>` elements themselves aren't visible; for now, I've made the renderer windows borderless and manipulate their position with `[win]+[arrow]` keyboard shortcuts.
 
-To get it running, you'd need to clone or otherwise download the code, install node and then `npm install` & `npm run launch` from the folder where the code lives.  Actually, the build code in `public/` will tend to be stale (need to figure out why map files are so huge), so best to run `npm run watch` before `launch`.
+To get it running, you'd need to clone or otherwise download the code, install node and then `npm install` `npm run watch` & `npm run launch` from the folder where the code lives.  I'll try to make a more friendly distributable soon.
 
 For development, `npm run watch` & refer to `src/readme.md`.

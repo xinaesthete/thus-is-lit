@@ -2,7 +2,7 @@
   "name": "thus-is-lit",
   "version": "1.0.0",
   "description": "",
-  "main": "public/server.js",
+  "main": "public/build/server.js",
   "dependencies": {
     "@material-ui/core": "^4.11.2",
     "@material-ui/icons": "^4.11.2",

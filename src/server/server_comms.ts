@@ -16,6 +16,7 @@ import { getNextScreen, useFullscreen } from './screen_config';
 import initFileConfig, * as file_config  from './assets/file_config'
 import * as media_server from './assets/media_server'
 import { OscCommandType } from '../common/osc_util';
+import { buildDir } from '.';
 
 
 export const expApp = express();
@@ -80,7 +81,7 @@ async function createRendererWindow(id: number) {
     //and use that to create sets of windows each on correct screens.
     //nb may go back to old organic-art method of making one big borderless window
     //spanning entire extended desktop
-    await window.loadURL(`file://${__dirname}/renderer.html?id=${id}`);
+    await window.loadURL(`file://${buildDir}/renderer.html?id=${id}`);
     
     
     return promise;

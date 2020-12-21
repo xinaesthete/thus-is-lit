@@ -7,7 +7,7 @@ import installReactDevtool from './devtool'
 
 start();
 
-const buildDir = path.join(__dirname);
+export const buildDir = path.join(__dirname, '..');
 
 //nb, use of this library subject to review
 //also currently with hacked-in TS types https://github.com/yan-foto/electron-reload/issues/65
@@ -27,7 +27,7 @@ function createGUIWindow() {
             nodeIntegration: false
         }
     });
-    window.loadURL(`file://${__dirname}/gui.html`);
+    window.loadURL(`file://${buildDir}/gui.html`);
     //really slow to quit when devtools is up?
     //fairly slow anyway. hiding the window makes it feel responsive...
     //hopefully not hiding some other problem from ourselves.
