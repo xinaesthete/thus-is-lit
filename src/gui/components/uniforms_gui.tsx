@@ -95,14 +95,16 @@ interface KProps {
 export function KaleidGUI(props: KProps) {
     const classes = useStyles();
     const [model, setModel] = React.useState(props.kaleid);
-    const [filename, setFilename] = React.useState(props.kaleid.filename);
+    //const [filename, setFilename] = React.useState(props.kaleid.filename);
 
     const handleSetFilename = (newName: string) => {
-        setFilename(newName);
+        //setFilename(newName);
         const newModel = produce(model, draftState => {
             draftState.filename = newName;
         });
         setModel(newModel);
+        //sending model to renderer might be an idea (via host ws)
+        sendModel(newModel);
     };
     // const [filterText, setFilterText] = React.useState(/.*/g);
 

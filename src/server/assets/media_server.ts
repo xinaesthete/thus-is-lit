@@ -1,9 +1,9 @@
-import { expApp } from '../server_comms'
 import * as config from './file_config'
 import * as fs from 'fs'
 import * as path from 'path'
 import { Dirent } from 'original-fs';
 import express from 'express';
+import { httpURL } from '../../common/constants';
 
 const mimeTypes = {
     html: 'text/html; charset=utf-8',
@@ -16,49 +16,63 @@ const mimeTypes = {
 };
 
 export function addRestAPI(expApp: express.Application) {
+    expApp.get('/xvideo/:id', async function (req, res) {res.status(200).send(req.params.id)});
+    
+    
     //https://medium.com/better-programming/video-stream-with-node-js-and-html5-320b3191a6b6
-    expApp.get('/video/:id', async function (req, res) {
-        const id = req.params.id;
+    expApp.get('/video/*', async function (req, res) {
+        //tried to use '/video/:id' & req.params.id but params, but complex paths get 404,
+        //without hitting this route - maybe there's a way of expressing what I wanted with parameters
+        //(and maybe there's another flaw with this if it lets you walk back up into the FS "../../")
+        //do I need to add some middleware to express to decode URI?
+        const id = decodeURI(req.url.substring(7));
+        
+        console.log(`[media_server] (trying to) serve video ${id}`);
         const c = await config.getConfig();
         if (!c.mainAssetPath) {
             res.status(404).send(`asset path hasn't been configured`);
         }
-        const vidPath = path.join(c.mainAssetPath, id);
-        const stat = await fs.promises.stat(vidPath)
+        const vidPath = id==="red.mp4" ? "red.mp4" : path.join(c.mainAssetPath, id);
         
-        if (!stat.isFile) {
-            res.status(404).send(`couldn't load video, file not found '${vidPath}'`);
-            return;
-        }
-        
-        const fileSize = stat.size
-        ///XXX: I think this range stuff might just be noise.
-        //one of the answers here https://stackoverflow.com/questions/46625044/how-to-stream-a-m4v-video-with-nodejs
-        //mentions 'strimming' with a simple res.status(200).sendFile()
-        const range = req.headers.range
-        if (range) {
-            const parts = range.replace(/bytes=/, "").split("-")
-            const start = parseInt(parts[0], 10)
-            const end = parts[1]
-            ? parseInt(parts[1], 10)
-            : fileSize - 1
-            const chunksize = (end - start) + 1
-            const file = fs.createReadStream(vidPath, { start, end })
-            const head = {
-                'Content-Range': `bytes ${start}-${end}/${fileSize}`,
-                'Accept-Ranges': 'bytes',
-                'Content-Length': chunksize,
-                'Content-Type': 'video/mp4',
+        try {
+            const stat = await fs.promises.stat(vidPath);
+            
+            if (!stat.isFile) {
+                res.status(404).send(`couldn't load video, file not found '${vidPath}'`);
+                return;
             }
-            res.writeHead(206, head);
-            file.pipe(res);
-        } else {
-            const head = {
-                'Content-Length': fileSize,
-                'Content-Type': 'video/mp4',
+            
+            const fileSize = stat.size
+            ///XXX: I think this range stuff might just be noise.
+            //one of the answers here https://stackoverflow.com/questions/46625044/how-to-stream-a-m4v-video-with-nodejs
+            //mentions 'strimming' with a simple res.status(200).sendFile()
+            const range = req.headers.range
+            if (range) {
+                const parts = range.replace(/bytes=/, "").split("-")
+                const start = parseInt(parts[0], 10)
+                const end = parts[1]
+                ? parseInt(parts[1], 10)
+                : fileSize - 1
+                const chunksize = (end - start) + 1
+                const file = fs.createReadStream(vidPath, { start, end })
+                const head = {
+                    'Content-Range': `bytes ${start}-${end}/${fileSize}`,
+                    'Accept-Ranges': 'bytes',
+                    'Content-Length': chunksize,
+                    'Content-Type': 'video/mp4',
+                }
+                res.writeHead(206, head);
+                file.pipe(res);
+            } else {
+                const head = {
+                    'Content-Length': fileSize,
+                    'Content-Type': 'video/mp4',
+                }
+                res.writeHead(200, head)
+                fs.createReadStream(vidPath).pipe(res);
             }
-            res.writeHead(200, head)
-            fs.createReadStream(vidPath).pipe(res);
+        } catch (error) {
+            res.status(500).send(`error '${error}' reading ${vidPath}`);
         }
     });
     
@@ -70,7 +84,7 @@ export function addRestAPI(expApp: express.Application) {
         const root = await (await config.getConfig()).mainAssetPath!;
     
         //TODO let's give them some metadata as well
-        const files: string[] = [];
+        const files: string[] = ["red.mp4"];
         const hidden = (n: string) => n[0] === '.';
         const isVid = (d: Dirent) => !hidden(d.name) && path.extname(d.name) === '.mp4';
         const dFilter = (d: Dirent) => {
@@ -97,7 +111,9 @@ export function addRestAPI(expApp: express.Application) {
             const absDir = path.join(root, dir, d.name);
             if (isVid(d)) {
                 console.log(`<<adding>> '${pathFromAssetRoot}'`);
-                files.push(pathFromAssetRoot);
+                //trying to get this so that URL is in the form expected by server
+                ///might change with e.g. different named asset locations
+                files.push(encodeURI(`${httpURL}/video/${pathFromAssetRoot}`));
             }
             else {
                 const children = fs.readdirSync(absDir, {withFileTypes: true});

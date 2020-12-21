@@ -26,7 +26,7 @@ export const expApp = express();
 //express depends on body-parser already, so it's not adding to node_modules.
 //but it does seem to be adding to bundle size, largely because of iconv
 //expApp.use(express.json());
-expApp.use(bodyParser.urlencoded({extended: false}));
+expApp.use(bodyParser.urlencoded({extended: false}));//...
 expApp.use(bodyParser.json());
 //https://stackoverflow.com/questions/12497358/handling-text-plain-in-express-via-connect/12497793#12497793
 //(second, more recent answer)

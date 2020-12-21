@@ -1,11 +1,25 @@
 import * as THREE from 'three'
 
 export const vidEl = document.getElementById("vid1") as HTMLVideoElement;
-const vidUrl = "red.mp4";
+let vidUrl = "red.mp4";
 console.log(vidUrl);
 vidEl.src = vidUrl;
 setTimeout(()=>vidEl.play(), 3000);
 export const vidTex: THREE.Texture = new THREE.VideoTexture(vidEl);
+
+//nb this isn't what we want the interface to look like anyway...
+//(we want to be able to ideally have several copies on a page, other differences...)
+//This is a stop-gap interface, I'm setting vidEl.src in renderer_comms...
+export function getVideoURL() {
+    return vidUrl;
+}
+export function setVideoURL(url: string) {
+    if (url === vidEl.currentSrc) return;
+    vidEl.src = url;
+    vidUrl = url;
+    vidEl.play();
+}
+
 
 /** make sure texture settings are not going to force it to be scaled down to POT size before it gets used. */
 function setTextureParams(t: THREE.Texture) {

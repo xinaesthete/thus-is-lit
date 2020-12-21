@@ -9,10 +9,10 @@ import MediaConfig from './media_config'
 //let fileConfig: FileConfigPrefs;
 //-------
 
-//layout etc TBD
-
+//layout etc TBD...
+//could consider bringing something like this up as a Drawer when using <ChooseVideo />?
 export default function MediaBrowser() {
-
+    //const [availableVideos, setAvailableVideos] = React.useState()
     return (
         <>
             <MediaConfig />        
