@@ -73,15 +73,15 @@ function TweakableSliderPair(u: SliderProp<vec2>) {
     )
 }
 
-function FilterBox({filterText: string}) {
-    // I'm sure there's a good way I can abstract the label / child thing so I can style coherently
-    return (
-        <>
-            {/* <RowLabel {..."filter"} /> */}
+// function FilterBox({filterText: string}) {
+//     // I'm sure there's a good way I can abstract the label / child thing so I can style coherently
+//     return (
+//         <>
+//             {/* <RowLabel {..."filter"} /> */}
 
-        </>
-    )
-}
+//         </>
+//     )
+// }
 
 function FilenameBox(){
 

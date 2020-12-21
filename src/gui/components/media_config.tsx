@@ -49,9 +49,6 @@ export default function MediaConfig() {
       alert(`failed to set config with path '${path}'`);
     }
   }
-  const handleUpdate = (ev) => {
-    setPath(ev.target.value); //must look into my lax tsconfig
-  }
 
   return (
     <div>
@@ -72,7 +69,7 @@ export default function MediaConfig() {
             label="main asset path"
             type="path"
             defaultValue={path}
-            onChange={handleUpdate}
+            onChange={e=>setPath(e.target.value)}
             fullWidth
           />
         </DialogContent>

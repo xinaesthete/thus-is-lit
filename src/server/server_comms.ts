@@ -129,10 +129,12 @@ expApp.post(consts.rendererStarted, (req, res) => {
 
 //had something wrong in order of operations I think, so calling these here...
 //but I currently lose type inference this way, so when I enable noImplicitAny etc the build will break.
-expApp.post('/setMainAssetPath', file_config.post_setMainAssetPath);
-expApp.get('/getConfigPrefs', file_config.get_getConfigPrefs);
-expApp.get('/video/:id', media_server.getVideo);
-expApp.get('/listvideos', media_server.listvideos);
+file_config.addRestAPI(expApp);
+// expApp.post('/setMainAssetPath', file_config.post_setMainAssetPath);
+// expApp.get('/getConfigPrefs', file_config.get_getConfigPrefs);
+media_server.addRestAPI(expApp);
+// expApp.get('/video/:id', media_server.getVideo);
+// expApp.get('/listvideos', media_server.listvideos);
 
 export function start() {
     console.log("initialising server_comms...");
@@ -150,12 +152,14 @@ export function start() {
     const controllers: WebSocket[] = [];
     wsServer.on('connection', (socket) => {
         console.log(`new ws connection:::`);
-        socket.on('close', (closedSocket, code, reason) => {
+        socket.onclose = (closedEvent) => {
+            const { code, reason, target } = closedEvent;
+            
             console.log(`[ws] socket close ${reason}`);
             ///remove from collections...
-            if (controllers.includes(closedSocket)) controllers.splice(controllers.indexOf(closedSocket),1);
+            if (controllers.includes(target)) controllers.splice(controllers.indexOf(target),1);
             //if (renderers.values...)) //lodash?....
-        });
+        };
         //what kind of thing connected? whatever, for now the only message we expect is JSON model
         //from GUI to Renderer...
         socket.on('message', message => {

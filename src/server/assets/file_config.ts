@@ -1,8 +1,8 @@
-import { expApp } from '../server_comms'
 import * as os from 'os'
 import * as path from 'path'
 import * as fs from 'fs'
 import { FileConfigPrefs } from '../../common/media_model';
+import express from 'express';
 
 const currentVersion = "0.0.1";
 let config: FileConfigPrefs;
@@ -54,52 +54,53 @@ async function isAcceptableAssetPath(path: string) {
     return stat.isDirectory();
 }
 
-//expApp.post('/setMainAssetPath', async (req, res) => {
-export const post_setMainAssetPath = async (req, res) => {
-    //would be good to not just expose things like this too openly...
-    //let's only consider accepting from localhost for a start. Hopefully that's secure enough for now.
-    //I should test this.  Maybe use express-ipfilter?
+export function addRestAPI(expApp: express.Application) {
+    expApp.post('/setMainAssetPath', async (req, res) => {
+        //would be good to not just expose things like this too openly...
+        //let's only consider accepting from localhost for a start. Hopefully that's secure enough for now.
+        //I should test this.  Maybe use express-ipfilter?
+    
+        //perhaps more important is to consider the effects of changing this with the application running...
+        /////// hypothesis:
+        //// any running video streams will carry on regardless 
+        //// anything that had previously failed won't start without a refresh
+        //// I think I can live with that.
+    
+        const remoteIP = req.connection.remoteAddress;
+        const newPath = req.body; ////needs to be a string
+        if (!await isAcceptableAssetPath(newPath)) res.sendStatus(403);
+        console.log(`[file_config] request to /setMainAssetPath to '${newPath}' from IP '${remoteIP}'`);
+        // if (remoteIP === '127.0.0.1' || remoteIP === 'localhost') {
+            const conf = await getConfig();
+            conf.mainAssetPath = newPath;
+            res.status(200).send(getConfigJsonString());
+        // } else {
+        //     console.error(`[file_config] refused request to change asset path.\nIP: '${remoteIP}'\tpath: '${newPath}'`);
+        //     res.sendStatus(403).send(`not from that IP you don't...`);
+        // }
+    });
 
-    //perhaps more important is to consider the effects of changing this with the application running...
-    /////// hypothesis:
-    //// any running video streams will carry on regardless 
-    //// anything that had previously failed won't start without a refresh
-    //// I think I can live with that.
-
-    const remoteIP = req.connection.remoteAddress;
-    const newPath = req.body; ////needs to be a string
-    if (!await isAcceptableAssetPath(newPath)) res.sendStatus(403);
-    console.log(`[file_config] request to /setMainAssetPath to '${newPath}' from IP '${remoteIP}'`);
-    // if (remoteIP === '127.0.0.1' || remoteIP === 'localhost') {
-        const conf = await getConfig();
-        conf.mainAssetPath = newPath;
-        res.send(getConfigJsonString());
-    // } else {
-    //     console.error(`[file_config] refused request to change asset path.\nIP: '${remoteIP}'\tpath: '${newPath}'`);
-    //     res.sendStatus(403).send(`not from that IP you don't...`);
-    // }
-};
-
-//was thinking about something for realtime feedback while typing
-//but could be problematic, and I don't have more basic stuff working yet.
-// expApp.get('/checkPossibleAssetPath/:path', async (req, res) => {
-//     const ok = await isAcceptableAssetPath(req.params.path);
-//     res.sendStatus()
-// });
+    //was thinking about something for realtime feedback while typing
+    //but could be problematic, and I don't have more basic stuff working yet.
+    // expApp.get('/checkPossibleAssetPath/:path', async (req, res) => {
+    //     const ok = await isAcceptableAssetPath(req.params.path);
+    //     res.sendStatus()
+    // });
+    
+    expApp.get("/getConfigPrefs", async (req, res) => {
+        console.log(`[file_config] received getConfigPrefs request`);
+        try {
+            let config = await getConfigJsonString();
+            res.status(200).send(config);
+        } catch (error) {
+            const msg = `[file_config] error getting config: ${error};`
+            console.error(msg);
+            res.sendStatus(500);
+        }
+    });
+}
 
 
-// expApp.get("/getConfigPrefs", async (req, res) => {
-export const get_getConfigPrefs = async (req, res) => {
-    console.log(`[file_config] received getConfigPrefs request`);
-    try {
-        let config = await getConfigJsonString();
-        res.send(config);
-    } catch (error) {
-        const msg = `[file_config] error getting config: ${error};`
-        console.error(msg);
-        res.sendStatus(500);
-    }
-};
 
 
 async function initConfigFile() {
