@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import produce from 'immer'
 import Button from '@material-ui/core/Button';
 import MuiAlert from '@material-ui/lab/Alert';
@@ -24,9 +24,11 @@ export default function RendererControl() {
     const [renderModels, setRenderModels] = React.useState([] as KaleidModel[]);
     //we can pull from server, similarly to how we do other things...
     //this is not nice, but may be ok for now.
-    if (renderModels.length === 0) requestModelList().then(models => {
-        setRenderModels(models);
-    });
+    useEffect(() => {
+        if (renderModels.length === 0) requestModelList().then(models => {
+            setRenderModels(models);
+        });
+    }, []);
 
     return (
         <>

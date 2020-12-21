@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import produce from 'immer'
 import Select from '@material-ui/core/Select'
 import MenuItem from '@material-ui/core/MenuItem'
@@ -14,9 +14,11 @@ export default function ChooseVideo(props: {
   const [availableVideos, setAvailableVideos] = React.useState([props.currentVideo]);
   //or more to the point, how we structure apps to get appropriate information where we need it?
   //(not like this)
-  media.getListVideos().then(vids => {
-    setAvailableVideos(vids);
-  });
+  useEffect(() => {
+    media.getListVideos().then(vids => {
+      setAvailableVideos(vids);
+    });
+  })
   const [video, setVideo] = React.useState(props.currentVideo);
   //const video = props.currentVideo;
   const handleChoose = (n: string) => {
