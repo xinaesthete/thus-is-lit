@@ -15,6 +15,7 @@ export function getVideoURL() {
 }
 export function setVideoURL(url: string) {
     if (url === vidEl.currentSrc) return;
+    if (url === 'red.mp4' && vidEl.currentSrc.endsWith('red.mp4')) return;
     vidEl.src = url;
     vidUrl = url;
     vidEl.play();
