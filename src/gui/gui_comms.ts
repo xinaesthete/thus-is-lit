@@ -48,12 +48,18 @@ export async function requestSetMainAssetPath(path: string) {
     return result.ok;
 }
 
-export async function requestListVideos() {
+export async function requestListVideos() { //TODO rename
     console.log('requesting list of videos');
     const result = await fetch(`${httpURL}/listvideos`);
     const json = await result.json();
     console.log(JSON.stringify(json));
     return json;
+}
+
+
+export async function requestModelList() {
+    const result = await fetch(`${httpURL}/modelList`);
+    return await result.json() as KaleidModel[];
 }
 
 //Establish a WebSocket connection to server 
@@ -68,7 +74,19 @@ ws.onopen = ev => {
     console.log(`websocket opened`);
     ws.send(makeRegisterControllerMessage());
 }
-ws.onmessage = ev => console.log(`websocket message`);
+ws.onmessage = ev => {
+    const msg = JSON.parse(ev.data);
+    const cmd = msg.address as OscCommandType;
+    switch (cmd) {
+        case OscCommandType.ModelList:
+            //I'm still not quite sure where I push my model here :/
+            //almost seems easiest to pull with GET request for now.
+            //but I really need a more coherent model before I create a monster.
+            break;
+        default:
+            break;
+    }
+}
 
 export function sendModel(model: KaleidModel) {
     ws.send(JSON.stringify({model: model, address: OscCommandType.Set}));

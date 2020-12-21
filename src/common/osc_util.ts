@@ -9,7 +9,7 @@
 
 //Do I want this? Should it be here on in constants?
 export enum OscCommandType {
-    Set = "/set", Get = "/get", 
+    Set = "/set", Get = "/get", ModelList = "/model_list",
     RegisterRenderer = "/register_renderer", RegisterController = "/register_controller",
     SetVideoFilename = "/vid_file"
 }

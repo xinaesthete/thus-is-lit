@@ -37,7 +37,7 @@ let nextRendererID = 0;
 type RendererInitCompletionHandler = (v: KaleidModel)=>void;
 const pendingRenderInits = new Map<number, RendererInitCompletionHandler>();
 
-const currentModels = new Map<number, KaleidModel>(); ////
+const currentModels = new Map<number, KaleidModel>(); ////have I now made more than one of these?
 
 async function createRendererWindow(id: number) {
     //TODO: configure based on saved setup etc.
@@ -136,6 +136,12 @@ file_config.addRestAPI(expApp);
 media_server.addRestAPI(expApp);
 // expApp.get('/video/:id', media_server.getVideo);
 // expApp.get('/listvideos', media_server.listvideos);
+expApp.get('/modelList', async (req, res) => {
+    console.log(`GET /modelList`);
+    const v = [...currentModels.values()];
+    res.send(v);
+});
+
 
 export function start() {
     console.log("initialising server_comms...");
@@ -150,7 +156,7 @@ export function start() {
     /// -> main_state
     const renderers: Map<number, WebSocket> = new Map();
     const controllers: WebSocket[] = [];
-    const models: Map<number, KaleidModel> = new Map(); // we could never remove from this and it'll be fine for the time being.
+    //const models: Map<number, KaleidModel> = new Map(); // we could never remove from this and it'll be fine for the time being.
     // ->
 
     wsServer.on('connection', (socket) => {
@@ -174,7 +180,7 @@ export function start() {
                             console.log(`[ws] already had socket for renderer #${json.id}`);
                             //will the old one safely become garbage and be disposed? probably.
                             renderers.set(json.id, socket);
-                            const msg = JSON.stringify({model: models.get(json.id), address: OscCommandType.Set});
+                            const msg = JSON.stringify({model: currentModels.get(json.id), address: OscCommandType.Set});
                             //console.log(`[ws] restoring state ${msg}`);
                             socket.send(msg); //I should at least review when it's necessary to stringify.
                         }
@@ -185,10 +191,13 @@ export function start() {
                     console.log(`registering controller`);
                     controllers.push(socket);
                     //report back to it about all of the renderers (models) that are about.
+                    //really what we mean is: let it know everything it needs to about the state of the application.
+                    const msg = JSON.stringify({address: OscCommandType.ModelList, models: currentModels.values});
+                    socket.send(msg);
                 } else if (json.address === OscCommandType.Set) {
                     // console.log(`[ws] /set id=${json.model.id} command...`);
                     const model = json.model as KaleidModel;
-                    models.set(model.id, model);
+                    currentModels.set(model.id, model);
                     if (renderers.has(model.id)) {
                         //// model.id is undefined but we're still trying to send...
                         // const vals = model.tweakables.
