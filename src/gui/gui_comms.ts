@@ -7,7 +7,7 @@
 //import * as osc from 'osc-min'
 import { Uniforms } from '../common/tweakables';
 
-import { host_port, httpURL, newRenderer, websocketURL } from '../common/constants'
+import { httpURL, newRenderer, websocketURL } from '../common/constants'
 import KaleidModel from '../common/KaleidModel';
 import { makeRegisterControllerMessage, OscCommandType } from '../common/osc_util';
 import { FileConfigPrefs } from '../common/media_model';
@@ -46,6 +46,14 @@ export async function requestSetMainAssetPath(path: string) {
     console.log(`result of setting main asset path '${path}' ${result.ok}`);
     if (!result.ok) console.log(await result.text());
     return result.ok;
+}
+
+export async function requestListVideos() {
+    console.log('requesting list of videos');
+    const result = await fetch(`${httpURL}/listvideos`);
+    const json = await result.json();
+    console.log(JSON.stringify(json));
+    return json;
 }
 
 //Establish a WebSocket connection to server 

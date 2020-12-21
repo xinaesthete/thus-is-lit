@@ -14,6 +14,7 @@ import * as consts from '../common/constants'
 import KaleidModel from '../common/KaleidModel';
 import { getNextScreen, useFullscreen } from './screen_config';
 import initFileConfig, * as file_config  from './assets/file_config'
+import * as media_server from './assets/media_server'
 import { OscCommandType } from '../common/osc_util';
 
 
@@ -130,6 +131,8 @@ expApp.post(consts.rendererStarted, (req, res) => {
 //but I currently lose type inference this way, so when I enable noImplicitAny etc the build will break.
 expApp.post('/setMainAssetPath', file_config.post_setMainAssetPath);
 expApp.get('/getConfigPrefs', file_config.get_getConfigPrefs);
+expApp.get('/video/:id', media_server.getVideo);
+expApp.get('/listvideos', media_server.listvideos);
 
 export function start() {
     console.log("initialising server_comms...");

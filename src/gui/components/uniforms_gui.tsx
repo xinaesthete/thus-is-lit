@@ -1,5 +1,5 @@
 import { 
-    Accordion, AccordionSummary, AccordionDetails, Slider, makeStyles, Typography, Grid 
+    Accordion, AccordionSummary, AccordionDetails, Slider, makeStyles, Typography
 } from '@material-ui/core'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import React from 'react'
@@ -11,6 +11,7 @@ import KaleidModel from '../../common/KaleidModel';
 //import DatGui, {DatNumber, DatString} from 'react-dat-gui'
 import {Uniforms, Numeric, Tweakable, isNum, vec2} from '../../common/tweakables'
 import { sendModel } from '../gui_comms';
+import ChooseVideo from './choose_video'
 
 interface SliderProp<T extends Numeric> extends Tweakable<T> {
     // onChangeX: React.ChangeEventHandler<number>
@@ -94,6 +95,15 @@ interface KProps {
 export function KaleidGUI(props: KProps) {
     const classes = useStyles();
     const [model, setModel] = React.useState(props.kaleid);
+    const [filename, setFilename] = React.useState(props.kaleid.filename);
+
+    const handleSetFilename = (newName: string) => {
+        setFilename(newName);
+        const newModel = produce(model, draftState => {
+            draftState.filename = newName;
+        });
+        setModel(newModel);
+    };
     // const [filterText, setFilterText] = React.useState(/.*/g);
 
     function makeSliderHandler(key: string, i: number) {
@@ -137,7 +147,8 @@ export function KaleidGUI(props: KProps) {
             </AccordionSummary>
             <AccordionDetails>
             <div>
-            {model.tweakables.map((u, i) => {
+                <ChooseVideo currentVideo={props.kaleid.filename} setFilename={handleSetFilename} />
+                {model.tweakables.map((u, i) => {
 //                if (isNum(u.value)) {
                     // {...u as T} definitely not right here: TS is happy with that, React is not.
                     const {name, min, max, value, step} = u;

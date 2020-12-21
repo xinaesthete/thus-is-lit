@@ -9,7 +9,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import { FileConfigPrefs } from '../../common/media_model';
-import { requestFileConfigPrefs, requestSetMainAssetPath } from '../gui_comms';
+import * as media from '../medialib'
 import produce from 'immer';
 
 
@@ -19,7 +19,7 @@ export default function MediaConfig() {
   if (!config) {
     //theoretically could get some crossed wires here, but hopefully not an issue
     // with a one-off component like this where the config itself very infequently changes.
-    requestFileConfigPrefs().then(c => {
+    media.getFileConfigPrefs().then(async c => {
       setConfig(c);
       setPath(c.mainAssetPath);
     });
@@ -40,12 +40,12 @@ export default function MediaConfig() {
     const newConf = produce(config, draftConfig => {
       draftConfig.mainAssetPath = path;
     });
-    const ok = await requestSetMainAssetPath(path);
+    const ok = await media.setMainAssetPath(path);
     if (ok) {
       setConfig(newConf);
       handleClose();
     } else {
-      //error...
+      //error... TODO nicer display
       alert(`failed to set config with path '${path}'`);
     }
   }
