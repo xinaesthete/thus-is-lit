@@ -88,7 +88,7 @@ function animate(time: number) {
   renderer.render(scene, camera);
 }
 animate(t0);
-window.onresize = _ => {
+window.onresize = () => {
     renderer.setSize(window.innerWidth, window.innerHeight);
     //camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();

@@ -5,7 +5,7 @@ import {rendererStarted, host_port} from '../common/constants'
 import KaleidModel from '../common/KaleidModel'
 import { init } from "./renderer_comms"
 
-function lerp(s, t, a) {
+function lerp(s: number, t: number, a: number) {
     if (a<0) return s;
     if (a>1) return t;
     return s + a*(t-s);
@@ -160,9 +160,9 @@ export class ShaderParam {
     name: string;
     min: number;
     max: number;
-    uniforms: any; //the structure of which this is a member
+    uniforms: any; //the structure of which this is a member: ** mutating this should cause graphics to change ***
     uniformObj: any; //TODO: type
-    constructor(uniforms, name, init: Numeric = 0.5, min= 0, max= 1, lagTime = 10000) {
+    constructor(uniforms: any, name: string, init: Numeric = 0.5, min= 0, max= 1, lagTime = 10000) {
         this.uniforms = uniforms;
         // if (this.uniforms[name]) this.uniformObj = this.uniforms[name];
         // else 

@@ -106,7 +106,8 @@ export function addRestAPI(expApp: express.Application) {
         }
         let dirList = await fs.promises.readdir(root, {withFileTypes: true});
         dirList.filter(dFilter).forEach(d => expand(d, ''));
-        console.log(`file listing:\n  ${files.join('\n  ')}\n------/listvideo`);
+        //console.log(`file listing:\n  ${files.join('\n  ')}\n------/listvideo`);
+        console.log(`[media_server] returning listvideo length ${files.length}`);
         res.send(files);    
     });
 

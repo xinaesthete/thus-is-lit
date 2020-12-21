@@ -8,7 +8,7 @@ import { makeStyles, Theme } from '@material-ui/core';
 import KaleidModel from '../../common/KaleidModel'
 import { KaleidGUI } from './uniforms_gui';
 
-function Alert(props) {
+function Alert(props: any) {
     return <MuiAlert elevation={6} variant="filled" {...props} />
 }
 const useStyles = makeStyles((theme: Theme) => ({
