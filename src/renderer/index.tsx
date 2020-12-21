@@ -9,6 +9,7 @@ import * as THREE from 'three'
 import * as params from './params'
 import * as vid from './video_state'
 import {Uniforms} from '../common/tweakables'
+import { onMessage } from './renderer_comms'
 
 const scene = new THREE.Scene();
 const camera = new THREE.OrthographicCamera(0, 1, 1, 0, 0, 10);
@@ -65,6 +66,13 @@ vid.setup(renderer, uniforms);
 
 const geo = new THREE.PlaneGeometry(2, 2);
 const mat = new THREE.ShaderMaterial({vertexShader: vs, fragmentShader: fs, uniforms: uniforms, transparent: true});
+// I want to set up a listener for when fragmentShader source changes. 
+onMessage('fragCode', (json) => {
+  console.log(`shader code changed...`);
+  mat.fragmentShader = json.code;
+  mat.needsUpdate = true;
+});
+
 const mesh = new THREE.Mesh(geo, mat);
 mesh.position.x = 0.5;
 mesh.position.y = 0.5;

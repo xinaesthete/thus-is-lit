@@ -68,7 +68,7 @@ export async function init(specs: Tweakable<Numeric>[]) {
 socket.onclose = (ev) => {
     console.log(`socket closed`);
 }
-
+const onMsgs: Map<string, (msg:any) => void> = new Map();
 socket.onmessage = (ev) => {
     //How shall we specify our message schema?
     //and model in general?
@@ -82,6 +82,11 @@ socket.onmessage = (ev) => {
         //but if I want to add jumping to cue points then I don't want to set that here
         //need to be more careful about what I'm setting.
     }
+    if (onMsgs.has(json.address)) {
+        onMsgs.get(json.address)(json);
+    }
 }
 
-
+export const onMessage = (key: string, callback: (msg: any) => void) => {
+    onMsgs.set(key, callback);
+}

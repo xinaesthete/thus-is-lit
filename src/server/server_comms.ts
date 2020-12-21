@@ -17,6 +17,7 @@ import initFileConfig, * as file_config  from './assets/file_config'
 import * as media_server from './assets/media_server'
 import { OscCommandType } from '../common/osc_util';
 import { buildDir } from '.';
+import { watchFragmentShader } from './code_watch';
 
 
 export const expApp = express();
@@ -158,6 +159,10 @@ export function start() {
     const controllers: WebSocket[] = [];
     //const models: Map<number, KaleidModel> = new Map(); // we could never remove from this and it'll be fine for the time being.
     // ->
+    watchFragmentShader((newCode) => {
+        const msg = JSON.stringify({address: 'fragCode', code: newCode});
+        for (let r of renderers.values()) r.send(msg);
+    });
 
     wsServer.on('connection', (socket) => {
         console.log(`new ws connection:::`);
