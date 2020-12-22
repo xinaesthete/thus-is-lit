@@ -11,7 +11,8 @@ import KaleidModel from '../../common/KaleidModel';
 //import DatGui, {DatNumber, DatString} from 'react-dat-gui'
 import {Uniforms, Numeric, Tweakable, isNum, vec2} from '../../common/tweakables'
 import { sendModel } from '../gui_comms';
-import ChooseVideo from './choose_video'
+import VideoController from './video/video_controller'
+import {VideoState} from '../../common/media_model'
 
 interface SliderProp<T extends Numeric> extends Tweakable<T> {
     // onChangeX: React.ChangeEventHandler<number>
@@ -83,24 +84,19 @@ function TweakableSliderPair(u: SliderProp<vec2>) {
 //     )
 // }
 
-function FilenameBox(){
-
-}
 
 //maybe more like KaleidModel rather than Uniforms here.
-//so how do we make it?
 interface KProps {
     kaleid: KaleidModel,
 }
 export function KaleidGUI(props: KProps) {
     const classes = useStyles();
     const [model, setModel] = React.useState(props.kaleid);
-    //const [filename, setFilename] = React.useState(props.kaleid.filename);
 
-    const handleSetFilename = (newName: string) => {
+    const handleSetVideo = (newVid: VideoState) => {
         //setFilename(newName);
         const newModel = produce(model, draftState => {
-            draftState.filename = newName;
+            draftState.video = newVid; //turtles all the way down (there is a better way)
         });
         setModel(newModel);
         //sending model to renderer might be an idea (via host ws)
@@ -149,7 +145,7 @@ export function KaleidGUI(props: KProps) {
             </AccordionSummary>
             <AccordionDetails>
             <div>
-                <ChooseVideo currentVideo={props.kaleid.filename} setFilename={handleSetFilename} />
+                <VideoController video={model.video} setVideo={handleSetVideo} />
                 {model.tweakables.map((u, i) => {
 //                if (isNum(u.value)) {
                     // {...u as T} definitely not right here: TS is happy with that, React is not.

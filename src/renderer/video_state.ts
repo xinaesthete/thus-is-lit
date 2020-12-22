@@ -1,4 +1,5 @@
 import * as THREE from 'three'
+import { VideoState } from '../common/media_model';
 
 export const vidEl = document.getElementById("vid1") as HTMLVideoElement;
 let vidUrl = "red.mp4";
@@ -21,6 +22,19 @@ export function setVideoURL(url: string) {
     vidEl.play();
 }
 
+export function setVideoState(state: VideoState) {
+    setVideoURL(state.url);
+    vidEl.muted = state.muted;
+    vidEl.volume = state.volume;
+}
+export function getVideoState() : VideoState {
+    return {
+        url: vidUrl,
+        duration: vidEl.duration,
+        muted: vidEl.muted,
+        volume: vidEl.volume
+    }
+}
 
 /** make sure texture settings are not going to force it to be scaled down to POT size before it gets used. */
 function setTextureParams(t: THREE.Texture) {

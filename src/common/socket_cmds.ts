@@ -23,6 +23,6 @@ export function makeRegisterControllerMessage() : LitMsg {
     return JSON.stringify({address: OscCommandType.RegisterController});
 }
 
-export function makeSetVideoFilenameMessage(id: number, filename: string) : LitMsg {
-    return JSON.stringify({address: OscCommandType.SetVideoFilename, id: id, filename: filename});
-}
+// export function makeSetVideoFilenameMessage(id: number, filename: string) : LitMsg {
+//     return JSON.stringify({address: OscCommandType.SetVideoFilename, id: id, filename: filename});
+// }

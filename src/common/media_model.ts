@@ -12,3 +12,11 @@ export interface FileConfigPrefs {
     version: string; //no clear spec for reasoning about this yet...
 }
 
+export interface VideoState {
+    url: string,
+    muted: boolean;
+    volume: number;
+    duration: number;
+    //seek time, cue points...
+    //VideoPlaybackQuality...
+}

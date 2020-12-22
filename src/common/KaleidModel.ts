@@ -6,21 +6,24 @@
 // reflection of that (serving also a guide to what generated).
 
 
+import { VideoState } from "./media_model";
 import { Numeric, Tweakable } from "./tweakables";
 
 export default interface KaleidModel {
     /// auxiliary / housekeeping stuff:::
     /** id key may be subject to change eg when we think about how to restore saved state... */
-    id: number,
+    id: number;
 
     /// stuff that effects the content:::
-    filename: string,
-    tweakables: Tweakable<any>[]
+    //filename: string; //first was this...
+    video: VideoState; //next this...
+    //later--- textureSource: VideoPlayer | FeedbackTexture | ... ///observable
+    tweakables: Tweakable<any>[];
 }
 
 //passing entire KaleidModel as JSON is heavy.
 export interface KaleidControlMessage {
-    id: number,
+    id: number;
 
-    changed: Record<string, Numeric>
+    changed: Record<string, Numeric>;
 }

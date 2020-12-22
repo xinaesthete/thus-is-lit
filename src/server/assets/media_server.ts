@@ -12,8 +12,21 @@ const mimeTypes = {
     png: 'image/png',
     js: 'text/javascript',
     css: 'text/css',
-    mp4: 'video/mp4'
+    mp4: 'video/mp4',
 };
+
+const vidMimeTypes = {
+    mp4: 'video/mp4',
+    webm: 'video/webm',
+    mov: 'video/quicktime',
+    //mts, mkv...
+    //-- instv -- ??
+}
+
+
+function isSupportedType(name: string) {
+    //const isVid = (d: Dirent) => !hidden(d.name) && path.extname(d.name) === '.mp4';
+}
 
 export function addRestAPI(expApp: express.Application) {
     expApp.get('/xvideo/:id', async function (req, res) {res.status(200).send(req.params.id)});
@@ -86,6 +99,7 @@ export function addRestAPI(expApp: express.Application) {
         //TODO let's give them some metadata as well
         const files: string[] = ["red.mp4"];
         const hidden = (n: string) => n[0] === '.';
+        //we want more filetypes supported...
         const isVid = (d: Dirent) => !hidden(d.name) && path.extname(d.name) === '.mp4';
         const dFilter = (d: Dirent) => {
             if (d.isDirectory()) return true;
