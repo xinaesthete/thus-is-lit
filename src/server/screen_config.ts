@@ -29,7 +29,7 @@ let i = 0;
 export function getNextScreen() {
     //For some reason I think calling screen.getAllDisplays() felt like it may have been a bit slow
     //likely mis-diagnosis.
-    return displays[i++ % displays.length];
+    return displays[0];//[i++ % displays.length];
 }
 
 export function useFullscreen() {
@@ -98,9 +98,9 @@ export async function createRendererWindow(id: number) {
         //there seems to be a bug in electron when we have multiple fullscreen videos playing
         //(and not being seen directly, but rather fed in to THREE.VideoTexture)
         //using frame: false appears to work better.  I should have an argument for that.
-        fullscreen: fullscreen,
-        frame: !fullscreen,
-        x: x, y: y, width: width, height: height,
+        // fullscreen: fullscreen,
+        // frame: !fullscreen,
+        x: x+width/4, y: y+width/4, width: width/2, height: height/2,
         webPreferences: {
             contextIsolation: true,
             nodeIntegration: false,
