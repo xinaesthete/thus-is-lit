@@ -11,7 +11,7 @@
 export enum OscCommandType {
     Set = "/set", Get = "/get", ModelList = "/model_list",
     RegisterRenderer = "/register_renderer", RegisterController = "/register_controller",
-    SetVideoFilename = "/vid_file"
+    SetVideoFilename = "/vid_file", ReportTime = "/report_time", SeekTime = "/seek_time"
 }
 
 type LitMsg = string;

@@ -22,7 +22,7 @@ export default function ChooseVideo(props: {
   const [video, setVideo] = React.useState(props.currentVideo);
   //const video = props.currentVideo;
   const handleChoose = (n: string) => {
-    setVideo(n);
+    setVideo(n); //consider resetting time as well...
     props.setFilename(n);
   }
   console.log(`rendering <ChooseVideo currentVideo={"${video}"}`);

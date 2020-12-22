@@ -18,11 +18,11 @@
 
 import { rendererStarted, host_port, websocketURL, httpURL } from "../common/constants";
 import KaleidModel from "../common/KaleidModel";
-import { makeRegisterRendererMessage, OscCommandType } from "../common/osc_util";
+import { makeRegisterRendererMessage, OscCommandType } from "../common/socket_cmds";
 import { Numeric, Tweakable } from "../common/tweakables";
 
 import { paramState } from './params'
-import { getVideoURL, setVideoURL } from "./video_state";
+import { getVideoURL, setVideoURL, vidEl } from "./video_state";
 
 let socket = new WebSocket(websocketURL);
 
@@ -36,6 +36,10 @@ async function setupWebSocket(model: KaleidModel) {
     }
 }
 
+const params = new URLSearchParams(location.search);
+//nb, remembering that if we have more than one model in a JS context, we need to revise this scope.
+const id = params.has("id") ? Number.parseInt(params.get("id")) : -1;
+
 export async function init(specs: Tweakable<Numeric>[]) {
 
     //send a message to the server so that it knows what GUI to show...
@@ -44,7 +48,7 @@ export async function init(specs: Tweakable<Numeric>[]) {
     //but this scenario is not currently being tested.
     const params = new URLSearchParams(location.search);
     if (params.has("id")) {
-        const id = Number.parseInt(params.get("id"));
+        //const id = Number.parseInt(params.get("id"));
         const model: KaleidModel = {
             id: id,
             filename: getVideoURL(),
@@ -79,8 +83,10 @@ socket.onmessage = (ev) => {
         paramState.setValues(model.tweakables);
         setVideoURL(model.filename);
         //vidEl.currentTime// server should understand "Accept-Ranges": "bytes"
-        //but if I want to add jumping to cue points then I don't want to set that here
+        //but if I want to add jumping to cue points then I don't want to set that with every update
         //need to be more careful about what I'm setting.
+        //// adding a 'time' that will only be there when restoring state
+        if (json.time) vidEl.currentTime = json.time;
     }
     if (onMsgs.has(json.address)) {
         onMsgs.get(json.address)(json);
@@ -90,3 +96,8 @@ socket.onmessage = (ev) => {
 export const onMessage = (key: string, callback: (msg: any) => void) => {
     onMsgs.set(key, callback);
 }
+
+export const reportTime = (t: number) => {
+    if (socket.readyState !== WebSocket.OPEN) return;
+    socket.send(JSON.stringify({address: OscCommandType.ReportTime, time: vidEl.currentTime, id: id}));
+};

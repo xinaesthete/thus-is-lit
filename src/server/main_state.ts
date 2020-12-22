@@ -4,13 +4,17 @@
 
 import KaleidModel from "../common/KaleidModel";
 
-// Without being too tied to a particular dependency, this may be a MobX tree thingy?
+export const currentModels = new Map<number, KaleidModel>();
+
+// Without being too tied to a particular dependency, this may be a MobX state tree?
+// I think MobX is a good idea, not going to dive right in with state-tree, though.
 
 //Application state (here)
 //derivations
 //reactions
 //actions
 
+//TODO::::
 class LitState {
     
     //"Kaleid" generally indicates a point about which an abstraction for other kinds of models may at some point be made.

@@ -9,7 +9,7 @@ import * as THREE from 'three'
 import * as params from './params'
 import * as vid from './video_state'
 import {Uniforms} from '../common/tweakables'
-import { onMessage } from './renderer_comms'
+import { onMessage, reportTime } from './renderer_comms'
 
 const scene = new THREE.Scene();
 const camera = new THREE.OrthographicCamera(0, 1, 1, 0, 0, 10);
@@ -44,13 +44,14 @@ const uniforms: Uniforms = {
 
 //this will also (for the time being) be responsible for reporting that we've started to the server.
 const parms = params.makeGUI([
+    {name: "LagTime", value: 2, min: 0, max: 40000}, //log scale...
     {name: "Leaves", value: 3, min: 1, max: 8, step: 1},
     {name: "Angle", value: 1.05, min: -Math.PI, max: Math.PI},
     {name: "AngleGain", value: 0.5, min: 0, max: 1},
     {name: "OutAngle", value: 0, min: -1, max: 1},
     {name: "Zoom", value: 1.3, min: 0, max: 10},
     {name: "KaleidMix", value: 0.999, min: 0, max: 1},
-    {name: "Mozaic", value: 4, min: 1, max: 40},
+    {name: "Mozaic", value: 4, min: 1, max: 40}, //log scale...
     {name: "MozGain", value: .5, min: 0, max: 1},
     {name: "ContrastPreBias", value: 0.5, min: 0, max: 1},
     {name: "ContrastGain", value: 0.5, min: 0, max: 1},
@@ -86,14 +87,17 @@ function animate(time: number) {
   //uniforms.iTime.value = Date.now() / 1000;
   let w = window.innerWidth, h = window.innerHeight;
   uniforms.ScreenAspect.value = w/h;
-  const img = uniforms.texture1.value;
+  //const img = uniforms.texture1.value;
   const vw = vid.vidEl.videoWidth;
   const vh = vid.vidEl.videoHeight;
   const longSide = Math.max(vw, vh);
   uniforms.UVLimit.value = {x: vw/longSide, y: vh/longSide};
+  
+  const vt = vid.vidEl.currentTime; //->
+  reportTime(vt);
+
   const dt = time - t0;
   t0 = time;
-//   parms.forEach(p => p.update(dt))
   parms.update(dt);
   renderer.render(scene, camera);
 }

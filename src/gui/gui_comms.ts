@@ -9,7 +9,7 @@ import { Uniforms } from '../common/tweakables';
 
 import { httpURL, newRenderer, websocketURL } from '../common/constants'
 import KaleidModel from '../common/KaleidModel';
-import { makeRegisterControllerMessage, OscCommandType } from '../common/osc_util';
+import { makeRegisterControllerMessage, OscCommandType } from '../common/socket_cmds';
 import { FileConfigPrefs } from '../common/media_model';
 // let's make a button that creates a renderer...
 // and then very soon refactor this code somewhere sensible.
