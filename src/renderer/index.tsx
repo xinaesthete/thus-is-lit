@@ -48,7 +48,7 @@ const parms = params.makeGUI([
     {name: "AngleGain", value: 0.5, min: 0, max: 1},
     {name: "OutAngle", value: 0, min: -1, max: 1},
     {name: "Zoom", value: 1.3, min: 0, max: 10},
-    {name: "KaleidMix", value: 0.999, min: 0, max: 1},
+    {name: "KaleidMix", value: 0.999, min: 0, max: 1, step: 1},
     {name: "Mozaic", value: 4, min: 1, max: 40}, //log scale...
     {name: "MozGain", value: .5, min: 0, max: 1},
     {name: "ContrastPreBias", value: 0.5, min: 0, max: 1},

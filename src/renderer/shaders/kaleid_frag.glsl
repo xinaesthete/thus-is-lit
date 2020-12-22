@@ -112,8 +112,10 @@ void main(void) {
 
   //---> still need to think about this +0.5 business.
   //   it looks like it's compensating somewhat correctly for -0.5 at start
-  uv2 = mirrorRepeat(uv2, UVLimit+0.5);
+  uv2 = mirrorRepeat(uv2, UVLimit+(0.5*UVLimit));
 
+  //sometimes x&y end up flipped? (portrait, eg trying-to-climb)
+  //maybe I need to use textureMatrix...
   vec4 col = texture2D(texture1, uv2);
   vec3 colHSV = rgb2hsv(col.rgb);
   colHSV.y = bias(gain(colHSV.y, SaturationGain), SaturationBias);
