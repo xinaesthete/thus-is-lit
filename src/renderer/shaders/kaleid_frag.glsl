@@ -32,6 +32,7 @@ vec2 pol2car(vec2 IN) { return vec2(IN.x * cos(IN.y), IN.x * sin(IN.y)); }
 vec2 mirrorRepeat(vec2 uv, vec2 limit) {
   // https://www.desmos.com/calculator/jqniynd1hh
   // return abs(mod((vec2(-1.)-uv),vec2(2.))+vec2(1.));
+  //hmm.
   return min(abs(mod(uv, 2. * limit)), abs(mod(2. * limit - uv, 2. * limit)));
 }
 // https://cis700-procedural-graphics.github.io/files/toolbox_functions.pdf
@@ -81,20 +82,18 @@ vec2 mozaic(vec2 uv, float num, float strength, float p, float g) {
   return mix(uv, uv2, strength);
 }
 
-void mainX() {
-  vec2 uv = vertTexCoord.xy;
-  //uv.y /= ScreenAspect; //fit width
-  
-  uv.x *= ScreenAspect; //fit height;
-  uv /= UVLimit*ScreenAspect; //fix aspect.
-  gl_FragColor = texture2D(texture1, uv);
-}
-
-void main(void) {
-  vec2 uv = vertTexCoord.xy; // / UVLimit;
-  uv -= vec2(0.5);
+vec2 correctAspect(vec2 uv) {
   uv.x *= ScreenAspect; // doesn't seem to make sense to do this after "/ UVLimit".
   uv /= UVLimit*ScreenAspect;
+  return uv;  
+}
+void main(void) {
+  vec2 uv = vertTexCoord.xy; // / UVLimit;
+  uv -= 0.5;
+  uv = correctAspect(uv);
+  uv.x *= ScreenAspect; // doesn't seem to make sense to do this after "/ UVLimit".
+  uv /= UVLimit*ScreenAspect;
+  vec2 normalAspectUV = correctAspect(vertTexCoord.xy);
   
   vec2 c = Centre; //maybe change this so 0 is in the middle.
   //c.x *= ScreenAspect;
@@ -105,17 +104,16 @@ void main(void) {
   float fr = fract(polar.y / segAng);
   fr = gain(fr, AngleGain);
   polar.y = Angle + (fr > 0.5 ? 1. - fr : fr) * segAng;
+  ///consider something more interesting here...
   polar.x *= Zoom;
 
-  vec2 uv2 = mix(uv, pol2car(polar) + ImageCentre, KaleidMix);
+  vec2 uv2 = mix(normalAspectUV, pol2car(polar) + ImageCentre, KaleidMix);
   uv2 = mozaic(uv2, Mozaic, MozMix, MozPow, MozGain);
 
-  // uv2 = vertTexCoord;
+  //---> still need to think about this +0.5 business.
+  //   it looks like it's compensating somewhat correctly for -0.5 at start
+  uv2 = mirrorRepeat(uv2, UVLimit+0.5);
 
-  // uv2.x *= ScreenAspect;
-  uv2 = mirrorRepeat(uv2, UVLimit);
-
-  //uv2 = vertTexCoord.xy;
   vec4 col = texture2D(texture1, uv2);
   vec3 colHSV = rgb2hsv(col.rgb);
   colHSV.y = bias(gain(colHSV.y, SaturationGain), SaturationBias);
