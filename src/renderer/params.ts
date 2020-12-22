@@ -1,5 +1,6 @@
 import * as dat from "dat.gui"
 import * as THREE from 'three'
+import { action, autorun, computed, makeAutoObservable, makeObservable, observable, reaction } from 'mobx';
 import {isNum, MovementType, Numeric, vec2, Tweakable, Uniforms} from '../common/tweakables'
 import {rendererStarted, host_port} from '../common/constants'
 import KaleidModel from '../common/KaleidModel'
@@ -15,6 +16,7 @@ interface Lagger<T extends Numeric> {
     lagTime: number;
     update(dt: number) : T;
     targVal: T;
+    curVal: T;
 }
 class LagNum implements Lagger<number> {
     lagTime: number;
@@ -67,6 +69,9 @@ class LagVec2 implements Lagger<vec2> {
         //nb, I did already have controlVec
         this._targVal.copy(v);
     }
+    public get curVal() {
+        return this.outputVec;
+    }
 }
 
 function getLagger(v: Numeric, lagTime: number): Lagger<Numeric> {
@@ -99,8 +104,9 @@ export let paramState: ParamGroup;
  * for what a Renderer needs to do as a bare minimum would not be met.
  */
 export const makeGUI = (specs: Tweakable<Numeric>[], uniforms:Uniforms = {}) => {
-    specs.forEach(s => s.movement = MovementType.Modulatable);
     Object.keys(uniforms).forEach(k => uniforms[k].movement = MovementType.Fixed);
+    //I don't (yet) use movement parameter, but if I do then I don't want to overwrite specs = Modulatable
+    specs.forEach(s => s.movement = MovementType.Modulatable);
     const parms = new ParamGroup(specs, uniforms);
     init(specs).then(()=>{});
     paramState = parms;
@@ -111,9 +117,10 @@ export const makeGUI = (specs: Tweakable<Numeric>[], uniforms:Uniforms = {}) => 
 export class ParamGroup {
     parms: ShaderParam[] = [];
     lagTime: number = 1000;
+    lagParam: ShaderParam;
     constructor(specs: Tweakable<Numeric>[], uniforms:Uniforms = {}) {
         const parms = this.parms;
-        gui.add(this, 'lagTime', 0, 20000);
+        // gui.add(this, 'lagTime', 0, 20000);
         specs.forEach(s => {
             //uniforms[s.name] = {value: s.value}
             const v = s.value;
@@ -122,6 +129,12 @@ export class ParamGroup {
                 const p = new ShaderParam(uniforms, s.name, v, s.min, s.max);
                 parms.push(p);
                 gui.add(p.val, 'targVal', s.min, s.max, s.step).name(s.name);
+                if (s.name === 'LagTime') {
+                    //Should I make this observable (mobx?)
+                    //probably don't need a special case here, but gotta start somewhere
+                    //makeObservable(p) //how exactly would I use this? I should think...
+                    this.lagParam = p;
+                }
             } else { //if (isVec2(v)) {
                 //make the initial value v passed to ShaderParam contain the 'target' values
                 //to be updated by the GUI, while the actual values passed to uniform will be encapsulated
@@ -148,6 +161,12 @@ export class ParamGroup {
         });
     }
     update(dt: number) {
+        //hacking in, pending more coherent approach
+        if (this.lagParam) {
+            const n = this.lagParam.val.curVal as number;
+            const hz = 440 * Math.pow(2, (n-69)/12);
+            this.lagTime = 1000 / hz;
+        }
         this.parms.forEach(p=>{
             p.val.lagTime = this.lagTime;
             p.update(dt);

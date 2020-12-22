@@ -42,7 +42,7 @@ const uniforms: Uniforms = {
 
 //this will also (for the time being) be responsible for reporting that we've started to the server.
 const parms = params.makeGUI([
-    {name: "LagTime", value: 2, min: 0, max: 40000}, //log scale...
+    {name: "LagTime", value: -10, min: -100, max: 20}, //log scale... also, make it work
     {name: "Leaves", value: 3, min: 1, max: 8, step: 1},
     {name: "Angle", value: 1.05, min: -Math.PI, max: Math.PI},
     {name: "AngleGain", value: 0.5, min: 0, max: 1},
