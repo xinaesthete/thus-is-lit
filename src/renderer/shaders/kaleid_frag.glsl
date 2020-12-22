@@ -1,7 +1,6 @@
 varying float segAng;
 uniform sampler2D texture1;
-uniform sampler2D texture2;
-uniform sampler2D texture3;
+uniform mat3 textureMatrix1;
 uniform float ScreenAspect;
 uniform vec2 UVLimit;
 uniform float Zoom;
@@ -83,17 +82,28 @@ vec2 mozaic(vec2 uv, float num, float strength, float p, float g) {
 }
 
 vec2 correctAspect(vec2 uv) {
-  uv.x *= ScreenAspect; // doesn't seem to make sense to do this after "/ UVLimit".
-  uv /= UVLimit*ScreenAspect;
-  return uv;  
+  //uv.x *= ScreenAspect; // doesn't seem to make sense to do this after "/ UVLimit".
+  //uv /= UVLimit*ScreenAspect;
+  
+  return (vec3(uv, 1.) * textureMatrix1).xy;
+  //return (textureMatrix1*vec3(uv, 1.)).yx * vec2(1., -1.);
+  // return vec2(-1., 1.) * (1. - (textureMatrix1*vec3(uv, 1.)).yx);
 }
-void main(void) {
-  vec2 uv = vertTexCoord.xy; // / UVLimit;
+
+void xmain() {
+  vec2 uv = correctAspect(vertTexCoord);
+  uv = mirrorRepeat(uv, UVLimit + (0.5*UVLimit));
+  gl_FragColor = texture2D(texture1, uv);
+}
+
+void main() {
+  //see https://gist.github.com/bartwttewaall/5a1168d04a07d52eaf0571f7990191c2 for setting up textureMatrix
+  vec2 uv = vertTexCoord;
+  //uv = (textureMatrix1* vec3(uv, 1.)).xy; // / UVLimit;
+  vec2 normalAspectUV = correctAspect(vertTexCoord.xy);
+  // normalAspectUV = uv;
   uv -= 0.5;
   uv = correctAspect(uv);
-  uv.x *= ScreenAspect; // doesn't seem to make sense to do this after "/ UVLimit".
-  uv /= UVLimit*ScreenAspect;
-  vec2 normalAspectUV = correctAspect(vertTexCoord.xy);
   
   vec2 c = Centre; //maybe change this so 0 is in the middle.
   //c.x *= ScreenAspect;
@@ -110,12 +120,8 @@ void main(void) {
   vec2 uv2 = mix(normalAspectUV, pol2car(polar) + ImageCentre, KaleidMix);
   uv2 = mozaic(uv2, Mozaic, MozMix, MozPow, MozGain);
 
-  //---> still need to think about this +0.5 business.
-  //   it looks like it's compensating somewhat correctly for -0.5 at start
-  uv2 = mirrorRepeat(uv2, UVLimit+(0.5*UVLimit));
+  uv2 = mirrorRepeat(uv2, UVLimit);
 
-  //sometimes x&y end up flipped? (portrait, eg trying-to-climb)
-  //maybe I need to use textureMatrix...
   vec4 col = texture2D(texture1, uv2);
   vec3 colHSV = rgb2hsv(col.rgb);
   colHSV.y = bias(gain(colHSV.y, SaturationGain), SaturationBias);

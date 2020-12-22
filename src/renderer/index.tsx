@@ -38,6 +38,7 @@ const uniforms: Uniforms = {
     'ImageCentre': {value: new Vector2(0.5, 0.)},
     'UVLimit': {value: new Vector2(1920/2048, 1080/2048)},// vidTex.repeat},
     'texture1': {value: vid.vidTex},
+    'textureMatrix1': {value: vid.vidTex.matrix},
 };
 
 //this will also (for the time being) be responsible for reporting that we've started to the server.
@@ -83,13 +84,29 @@ let t0 = Date.now();
 function animate(time: number) {
   requestAnimationFrame(animate);
   //uniforms.iTime.value = Date.now() / 1000;
+  
+  /// How necessary are ScreenAspect & UVLimit?
   let w = window.innerWidth, h = window.innerHeight;
   uniforms.ScreenAspect.value = w/h;
   //const img = uniforms.texture1.value;
   const vw = vid.vidEl.videoWidth;
   const vh = vid.vidEl.videoHeight;
   const longSide = Math.max(vw, vh);
-  uniforms.UVLimit.value = {x: vw/longSide, y: vh/longSide};
+  // UVLimit is a vec2 because it traces its origins to portion of POT texture
+  // { x/NPOT(x), y/NPOT(y) }
+  // -- the way we're using longSide is probably responsible for a lot that's wrong just now --
+  // -- but actually the UVs should be normalised to the whole image anyway,
+  // so (I hypothesise) that where it's used for mirrorRepeat could be replaced with a simpler version
+  //uniforms.UVLimit.value = {x: vw/longSide, y: vh/longSide};
+
+  uniforms.UVLimit.value = vid.vidTex.repeat; //this is similar to how it was set before (maybe not the assignment), 
+  //but I realised repeat was always {1, 1}, (maybe it was ok with stills).
+
+
+  vid.fitTexture(vid.vidTex, w/h, vw/vh, "fill");
+  
+  
+  vid.vidTex.updateMatrix();
   
   const vt = vid.vidEl.currentTime; //->
   reportTime(vt);
