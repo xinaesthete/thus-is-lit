@@ -106,11 +106,11 @@ export function addRestAPI(expApp: express.Application) {
         
         
         function expand(d: Dirent, dir: string) {  //need path of parent relative to root too.
-            console.log(`expanding ${dir}/${d.name}...`);
+            // console.log(`expanding ${dir}/${d.name}...`);
             const pathFromAssetRoot = path.join(dir, d.name);
             const absDir = path.join(root, dir, d.name);
             if (isVid(d)) {
-                console.log(`<<adding>> '${pathFromAssetRoot}'`);
+                // console.log(`<<adding>> '${pathFromAssetRoot}'`);
                 //trying to get this so that URL is in the form expected by server
                 ///might change with e.g. different named asset locations
                 files.push(encodeURI(`${httpURL}/video/${pathFromAssetRoot}`));
