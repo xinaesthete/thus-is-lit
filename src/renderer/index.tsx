@@ -38,8 +38,6 @@ const uniforms: Uniforms = {
     'ImageCentre': {value: new Vector2(0.5, 0.)},
     'UVLimit': {value: new Vector2(1920/2048, 1080/2048)},// vidTex.repeat},
     'texture1': {value: vid.vidTex},
-    // texture2: {value: vidTex2},
-    // texture3: {value: vidTex3}
 };
 
 //this will also (for the time being) be responsible for reporting that we've started to the server.
@@ -59,7 +57,7 @@ const parms = params.makeGUI([
     {name: "SaturationBias", value: 0.5, min: 0, max: 1},
     {name: "SaturationGain", value: 0.5, min: 0, max: 1},
     {name: "ImageCentre", value: new Vector2(0.5, 0), min: -1, max: 1},
-    {name: "Centre", value: new Vector2(0.5, 0.5), min: 0, max: 1},
+    {name: "Centre", value: new Vector2(0., 0.), min: -1, max: 1},
     {name: "Vignette", value: new Vector2(0.1, 0.1), min: 0, max: 0.2},
 ], uniforms);
 

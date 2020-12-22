@@ -92,11 +92,15 @@ void mainX() {
 
 void main(void) {
   vec2 uv = vertTexCoord.xy; // / UVLimit;
+  uv -= vec2(0.5);
   uv.x *= ScreenAspect; // doesn't seem to make sense to do this after "/ UVLimit".
-  uv /= UVLimit*ScreenAspect;    // TODO think coherently about coordinates :)
-  vec2 c = Centre;
-  c.x *= ScreenAspect;
-  vec2 polar = car2pol(uv - c / UVLimit);
+  uv /= UVLimit*ScreenAspect;
+  
+  vec2 c = Centre; //maybe change this so 0 is in the middle.
+  //c.x *= ScreenAspect;
+  ////c.y /= ScreenAspect;
+  
+  vec2 polar = car2pol(uv - c);
   polar.y += OutAngle * segAng;
   float fr = fract(polar.y / segAng);
   fr = gain(fr, AngleGain);
