@@ -163,7 +163,7 @@ export class ParamGroup {
     update(dt: number) {
         //hacking in, pending more coherent approach
         if (this.lagParam) {
-            const n = this.lagParam.val.curVal as number;
+            const n = this.lagParam.val.targVal as number;
             const hz = 440 * Math.pow(2, (n-69)/12);
             this.lagTime = 1000 / hz;
         }
