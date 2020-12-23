@@ -19,6 +19,7 @@ export abstract class ThreactTrackballBase implements IThree {
     }
     init(): void {}
     update() {
+        if (!this.trackCtrl) return; //TODO figure out component lifecycle etc.
         this.trackCtrl!.update();
     }
     disposeThree() {

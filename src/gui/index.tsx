@@ -11,8 +11,8 @@ import BugReportIcon from '@material-ui/icons/BugReport';
 import SettingsIcon from '@material-ui/icons/Settings';
 import { IconButton } from '@material-ui/core';
 
-// import { Threact } from '../common/threact/threact';
-// import { DefaultCube } from '../common/threact/threexample';
+import { Threact } from '../common/threact/threact';
+import { DefaultCube } from '../common/threact/threexample';
 import RendererControl from './components/renderer_control'
 import MediaConfig from './components/media_config';
 
@@ -45,7 +45,8 @@ function App() {
   const classes = useStyles();
   // AppBar, Tabs, (Persistent)Drawer...
   const [tab, setTab] = React.useState(0 as AppTabs);
-  // const cube = new DefaultCube();
+  // const cube = new DefaultCube(); //is now able to render, although not a good React citizen.
+  const [cube] = React.useState(new DefaultCube());
   
   //seems like it'd be more efficient to only render the tab we want to see,
   //but...
@@ -73,7 +74,7 @@ function App() {
           <div role="tabpanel" hidden={tab !== 1}><RendererControl /></div>
           <div role="tabpanel" hidden={tab !== 2}><DebugPanel /></div>
           
-          {/* <DefaultCube /> */}
+          {/* <DefaultCube /> this isn't a component, it's an implementation of a type of prop that can be rendered... */}
           {/* <Threact gfx={cube} /> */}
           
         </Container>

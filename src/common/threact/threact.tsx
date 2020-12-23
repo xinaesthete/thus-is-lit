@@ -30,7 +30,7 @@ export const globalUniforms = {
     iTime: { value: 0 }
 }
 
-export const clearColor = new THREE.Color(0xffffff);
+export const clearColor = new THREE.Color(0x000000);
 
 function init() {
     //NB:: I should consider the implications of having these values determined in a global GL context, 
@@ -70,11 +70,11 @@ function animate() {
     globalUniforms.iTime.value = (Date.now()-startTime) / 1000;
     //TODO: don't always assume we need to render every frame, or every view every time we render.
     views.forEach(v => v.updateLayout());
-    renderer.setClearColor(clearColor);
+    renderer.setClearColor(clearColor, 0);
     renderer.autoClear = false;
     renderer.setRenderTarget(null);
     renderer.clear();
-    //renderer.render(compositeScene, compositeCamera);
+    renderer.render(compositeScene, compositeCamera);
 }
 
 init();
@@ -178,9 +178,10 @@ export class Threact extends React.Component<IThreact, any> {
         //::: this also demonstrates that using 'state' for things unrelated to React rendering is ill-advised.
         //be clear about what causes Three things to need rendering, and what causes React things need rendering.
         const rt = renderer.getRenderTarget();
+        const oldAlpha = renderer.getClearAlpha();
         renderer.setRenderTarget(this.renderTarget);
         //renderer.setViewport //alternative to renderTarget...
-        renderer.setClearColor(this.color);
+        renderer.setClearColor(this.color, 1);
         renderer.clear();
         this.props.gfx.update();
         //we may want to do things like handle multi-pass configurations, as well as debug overlays etc etc (that's what I want right now).
