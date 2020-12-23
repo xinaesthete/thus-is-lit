@@ -4,7 +4,7 @@ import * as os from 'os'
 import { buildDir } from '.';
 import KaleidModel from '../common/KaleidModel';
 import * as consts from '../common/constants'
-import { currentModels } from './main_state';
+import main_state from './main_state';
 
 let displays: Electron.Display[];
 
@@ -119,7 +119,7 @@ export async function createRendererWindow(id: number) {
         console.log(`setting pendingRenderInits '${id}'...`);
         pendingRenderInits.set(id, (v: KaleidModel) => {
             console.log(`resolving '${id}'... sending model as response to gui`);
-            currentModels.set(id, v); //remember to remove as well.
+            main_state.currentModels.set(id, v); //remember to remove as well.
             //consider lifecycle / what we actually use this for...
             resolve(v);
         })

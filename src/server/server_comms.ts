@@ -11,7 +11,7 @@ import * as consts from '../common/constants'
 import * as screen_server from './screen_config';
 import initFileConfig, * as file_config  from './assets/file_config'
 import * as media_server from './assets/media_server'
-import { currentModels } from './main_state';
+import main_state from './main_state';
 import startWsServer from './ws_server';
 
 
@@ -30,15 +30,11 @@ expApp.use(bodyParser.text({type: 'text/*'}));
 
 
 file_config.addRestAPI(expApp);
-// expApp.post('/setMainAssetPath', file_config.post_setMainAssetPath);
-// expApp.get('/getConfigPrefs', file_config.get_getConfigPrefs);
 media_server.addRestAPI(expApp);
-// expApp.get('/video/:id', media_server.getVideo);
-// expApp.get('/listvideos', media_server.listvideos);
 screen_server.addRestAPI(expApp);
 expApp.get('/modelList', async (req, res) => {
     console.log(`GET /modelList`);
-    const v = [...currentModels.values()];
+    const v = [...main_state.currentModels.values()];
     res.send(v);
 });
 

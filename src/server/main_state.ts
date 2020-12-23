@@ -15,12 +15,15 @@ import WebSocket from 'ws' //https://github.com/websockets/ws/issues/1583
 //actions
 
 class LitState {
+    //"Kaleid" generally indicates a point about which an abstraction for other kinds of models may at some point be made.
+    
     //could be possible (maybe useful at a later date) to have more than one renderer of same thing
+    //-- embedded in gui (without associated socket, state from controller)
     //-- broadcasting generative art to the internet (potentially key feature)
-    //-- testing native renderer implementations
+    //-- "master of puppets":: interactive online thing with phone gyro controllers.
+    //-- testing different renderer implementations
     //-- installation environment
     currentModels = new Map<number, KaleidModel>();
-    //"Kaleid" generally indicates a point about which an abstraction for other kinds of models may at some point be made.
     //kaleidModels: KaleidModel[] = [];
 
     //in a sense, renderers can be seen as derivations of models...
@@ -30,6 +33,9 @@ class LitState {
     //any other controller (like on an iPad) would be started manually.
     renderers = new Map<number, WebSocket>();
     playbackTimes = new Map<number, number>();
+    
+    
+    /// all of above can be Map<id, Model> where Model is responsible for state of an entity
     controllers: WebSocket[] = [];
     constructor() {
 
