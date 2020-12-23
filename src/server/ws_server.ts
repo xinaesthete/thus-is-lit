@@ -4,16 +4,12 @@ import WebSocket from 'ws' //https://github.com/websockets/ws/issues/1583
 import KaleidModel from "../common/KaleidModel";
 import { OscCommandType } from "../common/socket_cmds";
 import { watchFragmentShader } from "./code_watch";
-import { currentModels } from "./main_state";
+import main_state from "./main_state";
 
 
 export default function startWsServer(server: Server) {
-    /// -> main_state
-    const renderers: Map<number, WebSocket> = new Map();
-    const playbackTimes = new Map<number, number>();
-    const controllers: WebSocket[] = [];
-    //const models: Map<number, KaleidModel> = new Map(); // we could never remove from this and it'll be fine for the time being.
-    // ->
+    const {renderers, currentModels, playbackTimes, controllers} = {...main_state};
+
     watchFragmentShader((newCode) => {
         const msg = JSON.stringify({address: 'fragCode', code: newCode});
         for (let r of renderers.values()) r.send(msg);
@@ -30,6 +26,7 @@ export default function startWsServer(server: Server) {
         socket.onclose = (closedEvent) => {
             const { code, reason, target } = closedEvent;
             // code 1000 - normal closure, 1001 going away, 1012 service restart...
+            // always 1001 when window reloading or 
             console.log(`[ws] socket close ${code} ${reason ? reason : ''}`);
             ///remove from collections...
             if (controllers.includes(target)) controllers.splice(controllers.indexOf(target),1);

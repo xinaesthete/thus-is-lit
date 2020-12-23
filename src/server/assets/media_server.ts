@@ -29,9 +29,6 @@ function isSupportedType(name: string) {
 }
 
 export function addRestAPI(expApp: express.Application) {
-    expApp.get('/xvideo/:id', async function (req, res) {res.status(200).send(req.params.id)});
-    
-    
     //https://medium.com/better-programming/video-stream-with-node-js-and-html5-320b3191a6b6
     expApp.get('/video/*', async function (req, res) {
         //tried to use '/video/:id' & req.params.id but params, but complex paths get 404,
@@ -59,6 +56,7 @@ export function addRestAPI(expApp: express.Application) {
             ///XXX: I think this range stuff might just be noise.
             //one of the answers here https://stackoverflow.com/questions/46625044/how-to-stream-a-m4v-video-with-nodejs
             //mentions 'strimming' with a simple res.status(200).sendFile()
+            //maybe test that once seek support is added.
             const range = req.headers.range
             if (range) {
                 const parts = range.replace(/bytes=/, "").split("-")

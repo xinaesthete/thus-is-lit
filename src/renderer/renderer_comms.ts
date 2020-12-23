@@ -68,7 +68,8 @@ export async function init(specs: Tweakable<Numeric>[]) {
         //that's up to the server once the connection is registered.
     }
 }
-
+window.onbeforeunload = () => alert('unload');
+window.onclose = () => alert('close')
 socket.onclose = (ev) => {
     console.log(`socket closed`);
 }
