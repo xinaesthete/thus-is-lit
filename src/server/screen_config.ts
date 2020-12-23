@@ -75,7 +75,7 @@ export function addRestAPI(expApp: express.Application) {
             //and then be able to get it to send the same values back and get back to similar state...
             console.log(`/rendererStarted ${id} was not pending init - reloaded?`);
         } else {
-            pendingRenderInits.get(id)(info);
+            pendingRenderInits.get(id)!(info);
             pendingRenderInits.delete(id);
         }
         // const id = Number.parseInt(req.params['id']);

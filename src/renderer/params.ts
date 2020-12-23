@@ -117,7 +117,7 @@ export const makeGUI = (specs: Tweakable<Numeric>[], uniforms:Uniforms = {}) => 
 export class ParamGroup {
     parms: ShaderParam[] = [];
     lagTime: number = 1000;
-    lagParam: ShaderParam;
+    lagParam?: ShaderParam;
     constructor(specs: Tweakable<Numeric>[], uniforms:Uniforms = {}) {
         const parms = this.parms;
         // gui.add(this, 'lagTime', 0, 20000);
@@ -126,9 +126,9 @@ export class ParamGroup {
             const v = s.value;
             if (v === undefined) return;
             if (typeof v === "number") {
-                const p = new ShaderParam(uniforms, s.name, v, s.min, s.max);
+                const p = new ShaderParam(uniforms, s.name!, v, s.min, s.max);
                 parms.push(p);
-                gui.add(p.val, 'targVal', s.min, s.max, s.step).name(s.name);
+                gui.add(p.val, 'targVal', s.min, s.max, s.step).name(s.name!);
                 if (s.name === 'LagTime') {
                     //Should I make this observable (mobx?)
                     //probably don't need a special case here, but gotta start somewhere
@@ -138,7 +138,7 @@ export class ParamGroup {
             } else { //if (isVec2(v)) {
                 //make the initial value v passed to ShaderParam contain the 'target' values
                 //to be updated by the GUI, while the actual values passed to uniform will be encapsulated
-                const p = new ShaderParam(uniforms, s.name, v, s.min, s.max);
+                const p = new ShaderParam(uniforms, s.name!, v, s.min, s.max);
                 parms.push(p);
                 gui.add(v, 'x', s.min, s.max, s.step).name(s.name + '.x');
                 gui.add(v, 'y', s.min, s.max, s.step).name(s.name + '.y');
@@ -149,6 +149,7 @@ export class ParamGroup {
         newValues.forEach(t => {
             //so slow and wrong in various ways but probably not enough to matter for a while.
             const p = this.parms.find(p => p.name === t.name);
+            if (!p) return;
             if (isNum(t.value)) {
                 p.val.targVal = t.value; 
             } else {

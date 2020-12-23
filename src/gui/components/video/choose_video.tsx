@@ -4,12 +4,15 @@ import Select from '@material-ui/core/Select'
 import MenuItem from '@material-ui/core/MenuItem'
 import * as media from '../../medialib'
 import { httpURL } from '../../../common/constants'
+import { useStyles } from '../../theme'
+
 
 export default function ChooseVideo(props: { 
   currentVideo: string, setURL: (url: string) => void,
-//  availableVideos: string[] //feels like we shouldn't have to pass this in as a prop.
+  //  availableVideos: string[] //feels like we shouldn't have to pass this in as a prop.
 }) {
   
+  const classes = useStyles();
   const [availableVideos, setAvailableVideos] = React.useState([props.currentVideo]);
   useEffect(() => {
     media.getListVideos().then(vids => {
@@ -18,7 +21,6 @@ export default function ChooseVideo(props: {
   });
   //TODO options for advance to next video in sequence / random after it finishes.
   const [video, setVideo] = React.useState(props.currentVideo);
-  //const video = props.currentVideo;
   const handleChoose = (n: string) => {
     setVideo(n); //consider resetting time as well...
     props.setURL(n);
@@ -30,7 +32,7 @@ export default function ChooseVideo(props: {
   const availableMenu = availableVideos.map(v => ( <MenuItem key={v} value={v}>{niceName(v)}</MenuItem> ));
   return (
     <>
-      <Select label="video file" value={video} 
+      <Select className={classes.vidDropdown} label="video file" value={video} 
         onChange={e=>handleChoose(e.target.value as string)}>
         {availableMenu}
       </Select>

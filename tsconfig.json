@@ -1,6 +1,7 @@
 
 {
     "compilerOptions": {
+        "strict": true,
         "moduleResolution": "node",
         "resolveJsonModule": true,
         "importHelpers": true,

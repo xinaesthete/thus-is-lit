@@ -3,9 +3,12 @@
 // but everything to eg recreate state of controllers after a refresh etc.
 
 import KaleidModel from "../common/KaleidModel";
-
+import * as file_config from './assets/file_config'
+import * as fs from 'fs'
+import * as os from 'os'
+import * as path from 'path'
 import WebSocket from 'ws' //https://github.com/websockets/ws/issues/1583
-
+import {app} from 'electron'
 // Without being too tied to a particular dependency, this may be a MobX state tree?
 // I think MobX is a good idea, not going to dive right in with state-tree, though.
 
@@ -45,3 +48,32 @@ class LitState {
 const main_state = new LitState();
 
 export default main_state;
+
+export async function getStateAsJsonString() {
+    return JSON.stringify(main_state, null, 2);
+}
+
+//TODO...
+export async function restoreJsonStateFromDisk(filename: string) {
+    const text = await fs.promises.readFile(filename, 'utf-8');
+    // const modelReviver = (k: string, v: any) => {}
+    JSON.parse(text);
+}
+
+app.addListener('before-quit', async () => {
+    //TODO init tempPath / appDataPath etc
+    saveMainStateToDisk(path.join(os.tmpdir(), 'autosave.json'));
+})
+export async function saveMainStateToDisk(filename: string) {
+    console.log(`saving to ${filename}`);
+    try {
+        const dir = path.dirname(filename);
+        if (!fs.existsSync(dir)) await fs.promises.mkdir(dir);
+        const json = await getStateAsJsonString();
+        console.log(json);
+        await fs.promises.writeFile(filename, json);
+    } catch (e) {
+        console.error(`[file_config] error saving main_state to disk: '${e}'`);
+    }
+    
+}

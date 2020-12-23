@@ -5,6 +5,7 @@ import * as path from 'path'
 import * as fs from 'fs'
 import { FileConfigPrefs } from '../../common/media_model';
 import express from 'express';
+import main_state from '../main_state';
 
 const currentVersion = require('../../../package.json').version;
 console.log(`currentVersion: ` + currentVersion);
@@ -17,11 +18,11 @@ export default async function setup() {
     console.log(`config: ${await getConfigJsonString()}`);
 }
 
-const homePath = path.join(os.homedir(), '/thusislit');
-const appPath = app.getAppPath();
-const appDataPath = path.join(app.getPath('appData'), '/thusislit');
-const tempPath = path.join(os.tmpdir(), '/thusislit');
-const configFilePath = path.join(appDataPath, 'config.json');
+export const homePath = path.join(os.homedir(), '/thusislit');
+export const appPath = app.getAppPath();
+export const appDataPath = path.join(app.getPath('appData'), '/thusislit');
+export const tempPath = path.join(os.tmpdir(), '/thusislit');
+export const configFilePath = path.join(appDataPath, 'config.json');
 
 console.log(`homePath: ${homePath}`);
 console.log(`appPath: ${appPath}`);
@@ -31,9 +32,9 @@ console.log(`tempPath: ${tempPath}`);
 class FileConfigPrefsModel implements FileConfigPrefs {
     private _version: string;
     private _mainAssetPath: string;
-    constructor(initial?: FileConfigPrefs) {
+    constructor(initial: FileConfigPrefs) {
         this._version = initial.version;
-        this._mainAssetPath = initial.mainAssetPath;
+        this._mainAssetPath = initial.mainAssetPath || "";
     }
     public get version() {
         return this._version;
@@ -149,6 +150,7 @@ export async function getConfig() : Promise<FileConfigPrefs> {
     } catch (error) {
         console.error(`[file_config error] '${error}'`);
     }
+    return {version: 'broken'}
 }
 
 function defaultConfig() : FileConfigPrefs {

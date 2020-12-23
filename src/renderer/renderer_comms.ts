@@ -38,7 +38,7 @@ async function setupWebSocket(model: KaleidModel) {
 
 const params = new URLSearchParams(location.search);
 //nb, remembering that if we have more than one model in a JS context, we need to revise this scope.
-const id = params.has("id") ? Number.parseInt(params.get("id")) : -1;
+const id = params.has("id") ? Number.parseInt(params.get("id")!) : -1;
 document.title = "this is renderer " + id;
 export async function init(specs: Tweakable<Numeric>[]) {
 
@@ -53,6 +53,7 @@ export async function init(specs: Tweakable<Numeric>[]) {
             id: id,
             video: getVideoState(),
             tweakables: specs,
+            muted: vidEl.muted
         }
     
         const body = JSON.stringify(model);
@@ -91,7 +92,7 @@ socket.onmessage = (ev) => {
             if (json.time) vidEl.currentTime = json.time;
         }
         if (onMsgs.has(json.address)) {
-            onMsgs.get(json.address)(json);
+            onMsgs.get(json.address)!(json);
         }
     } catch (error) {
         console.error(error);
@@ -104,5 +105,6 @@ export const onMessage = (key: string, callback: (msg: any) => void) => {
 
 export const reportTime = (t: number) => {
     if (socket.readyState !== WebSocket.OPEN) return;
-    socket.send(JSON.stringify({address: OscCommandType.ReportTime, time: vidEl.currentTime, id: id}));
+    const msg = {address: OscCommandType.ReportTime, time: vidEl.currentTime, id: id};
+    socket.send(JSON.stringify(msg));
 };

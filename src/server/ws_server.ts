@@ -68,10 +68,10 @@ export default function startWsServer(server: Server) {
                         // const vals = model.tweakables.
                         //     map(t => `${t.name}:\t\t${JSON.stringify(t.value)}`).join('\n  ');
                         // console.log(`[ws] forwarding set message \n  ${vals}`);
-                        renderers.get(model.id).send(message);
+                        renderers.get(model.id)!.send(message);
                     }
                 } else {
-                    if (msgCmds.has(json.address)) msgCmds.get(json.address)(socket, json); //maybe I could associate OscCommandType with message type.
+                    if (msgCmds.has(json.address)) msgCmds.get(json.address)!(socket, json); //maybe I could associate OscCommandType with message type.
                     else console.log(`[ws] message not handled: ${message}`);
                 }
             } catch (e) {

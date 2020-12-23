@@ -97,21 +97,22 @@ export function fitTexture(texture: THREE.Texture,
 export function setup(renderer: THREE.Renderer, uniforms: any) {
     renderer.domElement.ondragover = e => {
         e.preventDefault();
-        e.dataTransfer.dropEffect = 'copy';
+        if (e.dataTransfer) e.dataTransfer.dropEffect = 'copy';
     };
     renderer.domElement.ondrop = e => {
         e.preventDefault();
-        if (e.dataTransfer.items) {
+        if (e.dataTransfer && e.dataTransfer.items) {
             const item = e.dataTransfer.items[0];
             if (item.kind === 'file') {
                 const t = Date.now();
-                const file = item.getAsFile();
+                const file = item.getAsFile()!;
                 const reader = new FileReader();
                 //seems like this will attempt to read entire file, blocking, before continuing...
                 reader.readAsDataURL(file);
                 console.log(`readAsDataURL took ${Date.now() - t}`);
                 reader.onload = readEvent => {
                     console.log(`onload took ${Date.now() - t}`);
+                    if (!readEvent.target) return;
                     const result = readEvent.target.result as string;
                     if (file.type.startsWith('video/')) {
                         vidEl.src = result;

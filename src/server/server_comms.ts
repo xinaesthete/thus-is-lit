@@ -11,7 +11,7 @@ import * as consts from '../common/constants'
 import * as screen_server from './screen_config';
 import initFileConfig, * as file_config  from './assets/file_config'
 import * as media_server from './assets/media_server'
-import main_state from './main_state';
+import main_state, { getStateAsJsonString } from './main_state';
 import startWsServer from './ws_server';
 
 
@@ -37,7 +37,10 @@ expApp.get('/modelList', async (req, res) => {
     const v = [...main_state.currentModels.values()];
     res.send(v);
 });
-
+expApp.get('/getJsonState', async (req, res) => {
+    console.log(`GET /getJsonState`);
+    res.send(await getStateAsJsonString());
+});
 
 export function startServer() {
     console.log("initialising server_comms...");

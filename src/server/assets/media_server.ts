@@ -42,7 +42,7 @@ export function addRestAPI(expApp: express.Application) {
         if (!c.mainAssetPath) {
             res.status(404).send(`asset path hasn't been configured`);
         }
-        const vidPath = id==="red.mp4" ? "red.mp4" : path.join(c.mainAssetPath, id);
+        const vidPath = id==="red.mp4" ? "red.mp4" : path.join(c.mainAssetPath||"", id);
         
         try {
             const stat = await fs.promises.stat(vidPath);

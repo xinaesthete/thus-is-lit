@@ -13,6 +13,7 @@ import {Uniforms, Numeric, Tweakable, isNum, vec2} from '../../common/tweakables
 import { sendModel } from '../gui_comms';
 import VideoController from './video/video_controller'
 import {VideoState} from '../../common/media_model'
+import { useStyles } from '../theme'
 
 interface SliderProp<T extends Numeric> extends Tweakable<T> {
     // onChangeX: React.ChangeEventHandler<number>
@@ -20,30 +21,32 @@ interface SliderProp<T extends Numeric> extends Tweakable<T> {
 }
 
 
-const useStyles = makeStyles({
-    root: {
-        width: 200
-    }
-});
-
 function RowLabel(props: {name: string}) {
     const classes = useStyles();
     return <Typography className={classes.root}>{props.name}</Typography>
 }
-const defaultStep = (u: SliderProp<Numeric>) => (u.max - u.min) / 200.;
+interface hasOptionalRange {min?: number, max?: number}
+const defaultStep = (u: hasOptionalRange) => {
+    const {max=1, min=0} = {...u};
+    return (max - min) / 200.;
+}
 function TweakableSlider(u: SliderProp<Numeric>) {
     ///AAARGGGH noooo... this isNum thing is bad & I seem to be having a bad time with TS generics just now.
     //isVec2() was flat-out useless???
     if (!isNum(u.value)) return TweakableSliderPair(u as SliderProp<vec2>);
     const classes = useStyles();
     //--- state should be owned further up the hierarchy ---
-    const { name, min, max, value, step = defaultStep(u), onChange } = u as SliderProp<number>;
+    const { name ='', min, max, value, step = defaultStep(u), onChange } = u as SliderProp<number>;
     
     return (
         <>
             <RowLabel name={name} />
-            <Slider className={classes.root} name={name} min={min} max={max} value={value as number} step={step}
-                onChange={onChange} 
+            <Slider className={classes.slider} name={name} min={min} max={max} value={value as number} step={step}
+                onChange={(e, v) => {
+                    //Slider onChange can define number[]
+                    if (typeof v !== 'number') return;
+                    onChange(e, v)
+                }} 
                 valueLabelDisplay="auto" />
         </>
     )
@@ -51,10 +54,11 @@ function TweakableSlider(u: SliderProp<Numeric>) {
 
 function TweakableSliderPair(u: SliderProp<vec2>) {
     const classes = useStyles();
-    const { name, min, max, value, step = defaultStep(u) } = u;
+    const { name='', min, max, value, step = defaultStep(u) } = u;
     //just enough state so that when any one slider changes, we can pass a vec2 to onChange
     const [val, setVal] = React.useState(value); 
-    const makeChange = (k: "x" | "y") => (event: any, newComponentValue: number) => {
+    const makeChange = (k: "x" | "y") => (event: any, newComponentValue: number | number[]) => {
+        if (typeof newComponentValue !== "number") return;
         const newVal = {...val};
         newVal[k] = newComponentValue;
         setVal(newVal);
@@ -64,10 +68,10 @@ function TweakableSliderPair(u: SliderProp<vec2>) {
     return (
         <>
             <RowLabel name={name} />
-            <Slider className={classes.root} name={name} min={min} max={max} value={val.x} step={step} 
+            <Slider className={classes.slider} name={name} min={min} max={max} value={val.x} step={step} 
                 onChange={makeChange('x')} 
                 valueLabelDisplay="auto" />
-            <Slider className={classes.root} name={name} min={min} max={max} value={val.y} step={step} 
+            <Slider className={classes.slider} name={name} min={min} max={max} value={val.y} step={step} 
                 onChange={makeChange('y')} 
                 valueLabelDisplay="auto" />
         </>
@@ -149,10 +153,10 @@ export function KaleidGUI(props: KProps) {
                 {model.tweakables.map((u, i) => {
 //                if (isNum(u.value)) {
                     // {...u as T} definitely not right here: TS is happy with that, React is not.
-                    const {name, min, max, value, step} = u;
+                    const {name='', min, max, value, step} = u;
                     return (
                         <TweakableSlider key={i} name={name} min={min} max={max} value={value} step={step}
-                        onChange={makeSliderHandler(u.name, i)
+                        onChange={makeSliderHandler(name, i)
                         }
                         />
                         )
