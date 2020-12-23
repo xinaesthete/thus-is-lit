@@ -43,7 +43,7 @@ expApp.get('/modelList', async (req, res) => {
 });
 
 
-export function start() {
+export function startServer() {
     console.log("initialising server_comms...");
     const server = expApp.listen(consts.host_port, () => {
         console.log(`express server listening at ${consts.httpURL}`);

@@ -1,11 +1,11 @@
 import 'source-map-support/register' //evanw delivers yet again
 import { app, BrowserWindow } from 'electron'
 import * as path from 'path'
-import {start} from './server_comms'
+import {startServer} from './server_comms'
 import { getNextScreen } from './screen_config';
-import installReactDevtool from './devtool'
+// import installReactDevtool from './devtool'
 
-start();
+startServer();
 
 export const buildDir = path.join(__dirname, '..');
 

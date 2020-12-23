@@ -8,7 +8,7 @@ import { currentModels } from "./main_state";
 
 
 export default function startWsServer(server: Server) {
-        /// -> main_state
+    /// -> main_state
     const renderers: Map<number, WebSocket> = new Map();
     const playbackTimes = new Map<number, number>();
     const controllers: WebSocket[] = [];
@@ -30,7 +30,7 @@ export default function startWsServer(server: Server) {
         socket.onclose = (closedEvent) => {
             const { code, reason, target } = closedEvent;
             // code 1000 - normal closure, 1001 going away, 1012 service restart...
-            console.log(`[ws] socket close ${reason}`);
+            console.log(`[ws] socket close ${code} ${reason ? reason : ''}`);
             ///remove from collections...
             if (controllers.includes(target)) controllers.splice(controllers.indexOf(target),1);
             //if (renderers.values...)) //lodash?....

@@ -24,7 +24,8 @@ app.on('ready', () => {
     })
 });
 
-
+/// --- for now I'm bypassing anything to do with automatic screen assignment
+//      could be handled by the gui at some point.
 let i = 0;
 export function getNextScreen() {
     //For some reason I think calling screen.getAllDisplays() felt like it may have been a bit slow
@@ -35,6 +36,7 @@ export function getNextScreen() {
 export function useFullscreen() {
     return os.platform() !== 'win32';
 }
+// ----
 
 //moved from server_comms.
 //it may still be cleaner to have some of the housekeeping of open renderers etc in another module.
@@ -107,6 +109,7 @@ export async function createRendererWindow(id: number) {
             sandbox: true
         }
     });
+    //let's keep track of windows, load/save... not too much boilerplate preferably.
     
     //establish communication link here.
     //renderer will be responsible for sending us a '/rendererStarted' request with its id, along with details of Uniforms...

@@ -1,10 +1,13 @@
+import { app } from 'electron'
+//import { version } from '../../../package.json' //why not working?
 import * as os from 'os'
 import * as path from 'path'
 import * as fs from 'fs'
 import { FileConfigPrefs } from '../../common/media_model';
 import express from 'express';
 
-const currentVersion = "0.0.1";
+const currentVersion = require('../../../package.json').version;
+console.log(`currentVersion: ` + currentVersion);
 let config: FileConfigPrefs;
 
 
@@ -15,7 +18,15 @@ export default async function setup() {
 }
 
 const homePath = path.join(os.homedir(), '/thusislit');
-const configPath = path.join(homePath, 'config.json');
+const appPath = app.getAppPath();
+const appDataPath = path.join(app.getPath('appData'), '/thusislit');
+const tempPath = path.join(os.tmpdir(), '/thusislit');
+const configFilePath = path.join(appDataPath, 'config.json');
+
+console.log(`homePath: ${homePath}`);
+console.log(`appPath: ${appPath}`);
+console.log(`appDataPath: ${appDataPath}`);
+console.log(`tempPath: ${tempPath}`);
 
 class FileConfigPrefsModel implements FileConfigPrefs {
     private _version: string;
@@ -34,7 +45,7 @@ class FileConfigPrefsModel implements FileConfigPrefs {
         //MobX? ... maybe good to spend some time looking into that sooner than later
         //not that I shouldn't be able to be less stupid about serializing this anyway.
         this._mainAssetPath = newPath;
-        fs.writeFileSync(configPath, JSON.stringify(
+        fs.writeFileSync(configFilePath, JSON.stringify(
             //FFS
             {version: this.version, mainAssetPath: this.mainAssetPath}
         ));
@@ -106,19 +117,19 @@ export function addRestAPI(expApp: express.Application) {
 async function initConfigFile() {
     console.log(`[file_config] init config file`);
     //consider adding version to filename
-    const confExists = await fs.existsSync(path.join(homePath, 'config.json'));
+    const confExists = await fs.existsSync(configFilePath);
     if (confExists) {
         console.log(`[file_config] using existing config`);
-        await fs.promises.readFile(configPath, 'utf-8');
+        await fs.promises.readFile(configFilePath, 'utf-8');
         return;
     }
     
     try {
-        const stat = await fs.existsSync(homePath);
+        const stat = await fs.existsSync(appDataPath);
         if (!stat) {
-            await fs.promises.mkdir(homePath);
+            await fs.promises.mkdir(appDataPath);
         }
-        await fs.promises.writeFile(configPath, JSON.stringify(defaultConfig()));
+        await fs.promises.writeFile(configFilePath, JSON.stringify(defaultConfig()));
     } catch (error) {
         console.error(`[file_config error] '${error}'`);
     }
@@ -128,7 +139,7 @@ export async function getConfig() : Promise<FileConfigPrefs> {
     if (config) return config;
     await initConfigFile();
     try {
-        const dataStr = await fs.promises.readFile(configPath, 'utf-8');
+        const dataStr = await fs.promises.readFile(configFilePath, 'utf-8');
         const data = JSON.parse(dataStr);
         if (data.version) {
             config = new FileConfigPrefsModel(data as FileConfigPrefs);

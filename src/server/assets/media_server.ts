@@ -95,6 +95,8 @@ export function addRestAPI(expApp: express.Application) {
     /** respond with a flat array of mp4s contained under mainAssetPath */
     expApp.get('/listvideos', async function (req, res) {
         const root = await (await config.getConfig()).mainAssetPath!;
+        const t = Date.now();
+        console.log(`[media_server] listing videos from ${root}`);
     
         //TODO let's give them some metadata as well
         const files: string[] = ["red.mp4"];
@@ -134,10 +136,11 @@ export function addRestAPI(expApp: express.Application) {
                 children.filter(dFilter).forEach(async d2 => expand(d2, pathFromAssetRoot));
             }
         }
+        //root may be undefined if there's no config set?
         let dirList = await fs.promises.readdir(root, {withFileTypes: true});
         dirList.filter(dFilter).forEach(d => expand(d, ''));
         //console.log(`file listing:\n  ${files.join('\n  ')}\n------/listvideo`);
-        console.log(`[media_server] returning listvideo length ${files.length}`);
+        console.log(`[media_server] returning listvideo length ${files.length} (took ${Date.now()-t}ms)`);
         res.send(files);    
     });
 
