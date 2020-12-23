@@ -1,5 +1,7 @@
-import { AppBar, CssBaseline, Tabs, Tab,
-Container } from '@material-ui/core';
+import {
+  AppBar, CssBaseline, Tabs, Tab,
+  Container
+} from '@material-ui/core';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import clsx from 'clsx';
@@ -23,20 +25,6 @@ function tabProps(name: string) {
 }
 
 type tabName = "media" | "rendering" | "debug";
-interface TabProps {
-  children?: React.ReactNode;
-  index: tabName;
-  value: tabName;
-}
-function TabPanel(props: TabProps) {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <div role="tabpanel" hidden={value != index}>
-
-    </div>
-  )
-}
 enum AppTabs {
   Media, Renderer, Debug
 }
@@ -47,7 +35,7 @@ function App() {
   const [tab, setTab] = React.useState(0 as AppTabs);
   // const cube = new DefaultCube(); //is now able to render, although not a good React citizen.
   const [cube] = React.useState(new DefaultCube());
-  
+
   //seems like it'd be more efficient to only render the tab we want to see,
   //but...
   //https://reactjs.org/docs/hooks-rules.html
@@ -57,13 +45,13 @@ function App() {
   //I was trying to avoid unnecessary API calls in useEffects() for inactive tabs
   //const content = {0: MediaBrowser, 1: RendererControl, 2: DebugPanel}
   //const el = content[tab]();
-  
+
   return (
     <>
       <CssBaseline />
       <div className={classes.root}>
         <AppBar className={classes.appBar}>
-          <Tabs value={tab} onChange={(e, v)=> setTab(v)} aria-label="top navigation">
+          <Tabs value={tab} onChange={(e, v) => setTab(v)} aria-label="top navigation">
             <Tab label="media" />
             <Tab label="rendering" />
             <Tab label="debug" />
@@ -73,10 +61,10 @@ function App() {
           <div role="tabpanel" hidden={tab !== 0}><MediaBrowser /></div>
           <div role="tabpanel" hidden={tab !== 1}><RendererControl /></div>
           <div role="tabpanel" hidden={tab !== 2}><DebugPanel /></div>
-          
+
           {/* <DefaultCube /> this isn't a component, it's an implementation of a type of prop that can be rendered... */}
           {/* <Threact gfx={cube} /> */}
-          
+
         </Container>
       </div>
     </>
