@@ -64,7 +64,7 @@ export function fitTexture(texture: THREE.Texture,
     switch (mode) {
         // case 'contain':
         case 'fit': {
-            if (screenAspect < imageAspect) {
+            if (screenAspect < imageAspect) { //landscape
                 texture.offset.set(0, offsetY * alignV);
                 texture.repeat.set(1, scale);
             } else {

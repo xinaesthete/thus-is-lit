@@ -65,13 +65,6 @@ vec3 rgb2hsv(in vec3 c) {
   return vec3(abs(q.z + (q.w - q.y) / (6.0 * d + e)), d / (q.x + e), q.x);
 }
 vec2 mozaic(vec2 uv, float num, float strength, float p, float g) {
-  // TODO change GLSL version, use round
-  //        vec2 uv2 = 0.5 + uv*num;
-  //        vec2 _frac = abs(fract(uv2)-0.5) * 2.;
-  //        _frac = gain(pow(_frac, vec2(p)), g);
-  //        vec2 _floor = floor(uv2);
-  //        uv2 = _floor / num;
-  //        return mix(uv, uv2, strength* (1.-_frac));
   vec2 uv2 = (uv - 0.5) * num;
   vec2 _frac = gain(fract(uv2), g);
   vec2 _floor = floor(uv2);
@@ -101,7 +94,6 @@ void main() {
   vec2 uv = vertTexCoord;
   //uv = (textureMatrix1* vec3(uv, 1.)).xy; // / UVLimit;
   vec2 normalAspectUV = correctAspect(vertTexCoord.xy);
-  // normalAspectUV = uv;
   uv -= 0.5;
   uv = correctAspect(uv);
   
@@ -120,8 +112,8 @@ void main() {
   vec2 uv2 = mix(normalAspectUV, pol2car(polar) + ImageCentre, KaleidMix);
   uv2 = mozaic(uv2, Mozaic, MozMix, MozPow, MozGain);
 
-  uv2 = mirrorRepeat(uv2, UVLimit);
-
+  uv2 = mirrorRepeat(uv2, UVLimit); //WRONG why oh why yx?
+  // uv2 = mirrorRepeat(uv2, UVLimit+vec2(0.0, 0.01));
   vec4 col = texture2D(texture1, uv2);
   vec3 colHSV = rgb2hsv(col.rgb);
   colHSV.y = bias(gain(colHSV.y, SaturationGain), SaturationBias);

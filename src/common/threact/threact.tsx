@@ -10,6 +10,9 @@
  */
 
 
+// nb, consider re-use of VideoTexture here...
+
+
 import React from 'react'
 import * as THREE from 'three'
 import './threact.css'

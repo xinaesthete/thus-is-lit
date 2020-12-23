@@ -102,8 +102,8 @@ function animate(time: number) {
   uniforms.UVLimit.value = vid.vidTex.repeat; //this is similar to how it was set before (maybe not the assignment), 
   //but I realised repeat was always {1, 1}, (maybe it was ok with stills).
 
-
-  vid.fitTexture(vid.vidTex, w/h, vw/vh, "fill");
+  //expose a property for "fit"
+  vid.fitTexture(vid.vidTex, w/h, vw/vh, "fit");
   
   
   vid.vidTex.updateMatrix();

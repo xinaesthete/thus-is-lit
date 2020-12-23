@@ -39,7 +39,7 @@ async function setupWebSocket(model: KaleidModel) {
 const params = new URLSearchParams(location.search);
 //nb, remembering that if we have more than one model in a JS context, we need to revise this scope.
 const id = params.has("id") ? Number.parseInt(params.get("id")) : -1;
-
+document.title = "this is renderer " + id;
 export async function init(specs: Tweakable<Numeric>[]) {
 
     //send a message to the server so that it knows what GUI to show...
@@ -77,19 +77,23 @@ socket.onmessage = (ev) => {
     //How shall we specify our message schema?
     //and model in general?
     //very roughly, for now....
-    const json = JSON.parse(ev.data as string);
-    if (json.address === OscCommandType.Set) {
-        const model = json.model as KaleidModel;
-        paramState.setValues(model.tweakables);
-        setVideoState(model.video);
-        //vidEl.currentTime// server should understand "Accept-Ranges": "bytes"
-        //but if I want to add jumping to cue points then I don't want to set that with every update
-        //need to be more careful about what I'm setting.
-        //// adding a 'time' that will only be there when restoring state
-        if (json.time) vidEl.currentTime = json.time;
-    }
-    if (onMsgs.has(json.address)) {
-        onMsgs.get(json.address)(json);
+    try {
+        const json = JSON.parse(ev.data as string);
+        if (json.address === OscCommandType.Set) {
+            const model = json.model as KaleidModel;
+            paramState.setValues(model.tweakables);
+            setVideoState(model.video);
+            //vidEl.currentTime// server should understand "Accept-Ranges": "bytes"
+            //but if I want to add jumping to cue points then I don't want to set that with every update
+            //need to be more careful about what I'm setting.
+            //// adding a 'time' that will only be there when restoring state
+            if (json.time) vidEl.currentTime = json.time;
+        }
+        if (onMsgs.has(json.address)) {
+            onMsgs.get(json.address)(json);
+        }
+    } catch (error) {
+        console.error(error);
     }
 }
 
