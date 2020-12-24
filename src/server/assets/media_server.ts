@@ -22,20 +22,75 @@ const vidMimeTypes = {
     //mts, mkv...
     //-- instv -- ??
 }
-
-
-function isSupportedType(name: string) {
-    //const isVid = (d: Dirent) => !hidden(d.name) && path.extname(d.name) === '.mp4';
+const imageMimeTypes = {
+    jpeg: "image/jpeg",
+    jpg: "image/jpeg",
+    png: "image/png",
+};
+const mediaMimeTypes = {
+    'video': vidMimeTypes,
+    'image': imageMimeTypes
 }
+type MediaType = 'video' | 'image';
+function validExtensions(type: MediaType) {
+    return Object.keys(mediaMimeTypes[type]).map(e => '.'+e);
+}
+function hasValidExtention(name: string, type: MediaType) {
+    return validExtensions(type).includes(path.extname(name));
+}
+
+async function getMediaList(type: MediaType) {
+    const root = await(await config.getConfig()).mainAssetPath!;
+    const t = Date.now();
+    console.log(`[media_server] listing ${type}s from ${root}`);
+
+    //TODO let's give them some metadata as well
+    const files: string[] = type === 'video' ? ["red.mp4"] : [];
+    const validExt = validExtensions(type);
+    const hidden = (n: string) => n[0] === ".";
+    //we want more filetypes supported...
+    const isValid = (d: Dirent) =>
+        !hidden(d.name) && validExt.includes(path.extname(d.name));
+    const dFilter = (d: Dirent) => {
+        if (d.isDirectory()) return true;
+        if (d.isFile()) return isValid(d);
+        return false;
+    };
+    function expand(d: Dirent, dir: string) {
+        //need path of parent relative to root too.
+        // console.log(`expanding ${dir}/${d.name}...`);
+        const pathFromAssetRoot = path.join(dir, d.name);
+        const absDir = path.join(root, dir, d.name);
+        if (isValid(d)) {
+        // console.log(`<<adding>> '${pathFromAssetRoot}'`);
+        //trying to get this so that URL is in the form expected by server
+        ///might change with e.g. different named asset locations
+        files.push(encodeURI(`${httpURL}/${type}/${pathFromAssetRoot}`));
+        } else {
+        const children = fs.readdirSync(absDir, { withFileTypes: true });
+        children
+            .filter(dFilter)
+            .forEach(async (d2) => expand(d2, pathFromAssetRoot));
+        }
+    }
+    //root may be undefined if there's no config set?
+    let dirList = await fs.promises.readdir(root, { withFileTypes: true });
+    dirList.filter(dFilter).forEach((d) => expand(d, ""));
+    return files;
+}
+
 
 export function addRestAPI(expApp: express.Application) {
     //https://medium.com/better-programming/video-stream-with-node-js-and-html5-320b3191a6b6
-    expApp.get('/video/*', async function (req, res) {
+    expApp.get('/video/*', async (req, res) => {
         //tried to use '/video/:id' & req.params.id but params, but complex paths get 404,
         //without hitting this route - maybe there's a way of expressing what I wanted with parameters
+        const id = decodeURI(req.url.substring(7));
         //(and maybe there's another flaw with this if it lets you walk back up into the FS "../../")
         //do I need to add some middleware to express to decode URI?
-        const id = decodeURI(req.url.substring(7));
+        if (id.startsWith('..') || id.startsWith('/')  || id.startsWith('\\')) {
+            res.status(403).send();
+        }
         
         console.log(`[media_server] (trying to) serve video ${id}`);
         const c = await config.getConfig();
@@ -43,7 +98,13 @@ export function addRestAPI(expApp: express.Application) {
             res.status(404).send(`asset path hasn't been configured`);
         }
         const vidPath = id==="red.mp4" ? "red.mp4" : path.join(c.mainAssetPath||"", id);
-        
+        const ext = path.extname(vidPath);
+        if (!hasValidExtention(vidPath, 'video')) {
+            res.send(404).send(`can't server ${id} as video`);
+            return;
+        }
+        const typeKey = path.extname(vidPath).substring(1) as 'mp4' | 'mov' | 'webm'; //sorry
+        const contentType = vidMimeTypes[typeKey];
         try {
             const stat = await fs.promises.stat(vidPath);
             
@@ -70,14 +131,14 @@ export function addRestAPI(expApp: express.Application) {
                     'Content-Range': `bytes ${start}-${end}/${fileSize}`,
                     'Accept-Ranges': 'bytes',
                     'Content-Length': chunksize,
-                    'Content-Type': 'video/mp4',
+                    'Content-Type': contentType,
                 }
                 res.writeHead(206, head);
                 file.pipe(res);
             } else {
                 const head = {
                     'Content-Length': fileSize,
-                    'Content-Type': 'video/mp4',
+                    'Content-Type': contentType,
                 }
                 res.writeHead(200, head)
                 fs.createReadStream(vidPath).pipe(res);
@@ -86,59 +147,23 @@ export function addRestAPI(expApp: express.Application) {
             res.status(500).send(`error '${error}' reading ${vidPath}`);
         }
     });
-    
-    
-    
-    
+        
     /** respond with a flat array of mp4s contained under mainAssetPath */
-    expApp.get('/listvideos', async function (req, res) {
-        const root = await (await config.getConfig()).mainAssetPath!;
+    expApp.get('/videoList', async (req, res) => {
         const t = Date.now();
-        console.log(`[media_server] listing videos from ${root}`);
+        const files = await getMediaList('video');
+        console.log(`[media_server] returning video list length ${files.length} (took ${Date.now()-t}ms)`);
+        res.send(files);    
+    });
     
-        //TODO let's give them some metadata as well
-        const files: string[] = ["red.mp4"];
-        const hidden = (n: string) => n[0] === '.';
-        //we want more filetypes supported...
-        const isVid = (d: Dirent) => !hidden(d.name) && path.extname(d.name) === '.mp4';
-        const dFilter = (d: Dirent) => {
-            if (d.isDirectory()) return true;
-            if (d.isFile()) return isVid(d);
-            return false;
-        }
-        //couldn't immediately think how to do async here.
-        //--- in principle this is called only sporadically, during initialisation 
-        //    or when changing config,
-        //  : but this could easily go awry with unclear React logic etc.
-        // -> in which case, the fact that this call will block the main server thread
-        //    could be potentially rather bad...
-        // I was feeling pretty thick when I first wrote this, so might take a moment to do it properly
-        // or just cache the result and only recompute when config changes.
-        // (nb, I ultimately want to watch the files as well and push change notifications to clients
-        // but for an early version saying that you may need to restart if you rearrange video files is ok,
-        // better than risk features that could cause unpredictable results during a gig)
-        
-        
-        function expand(d: Dirent, dir: string) {  //need path of parent relative to root too.
-            // console.log(`expanding ${dir}/${d.name}...`);
-            const pathFromAssetRoot = path.join(dir, d.name);
-            const absDir = path.join(root, dir, d.name);
-            if (isVid(d)) {
-                // console.log(`<<adding>> '${pathFromAssetRoot}'`);
-                //trying to get this so that URL is in the form expected by server
-                ///might change with e.g. different named asset locations
-                files.push(encodeURI(`${httpURL}/video/${pathFromAssetRoot}`));
-            }
-            else {
-                const children = fs.readdirSync(absDir, {withFileTypes: true});
-                children.filter(dFilter).forEach(async d2 => expand(d2, pathFromAssetRoot));
-            }
-        }
-        //root may be undefined if there's no config set?
-        let dirList = await fs.promises.readdir(root, {withFileTypes: true});
-        dirList.filter(dFilter).forEach(d => expand(d, ''));
-        //console.log(`file listing:\n  ${files.join('\n  ')}\n------/listvideo`);
-        console.log(`[media_server] returning listvideo length ${files.length} (took ${Date.now()-t}ms)`);
+    expApp.get('/image/*', async (req, res) => {
+
+    })
+
+    expApp.get('/imageList', async function (req, res) {
+        const t = Date.now();
+        const files = await getMediaList('image');
+        console.log(`[media_server] returning image list length ${files.length} (took ${Date.now()-t}ms)`);
         res.send(files);    
     });
 

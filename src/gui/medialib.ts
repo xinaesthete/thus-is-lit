@@ -2,11 +2,11 @@ import * as API from "./gui_comms";
 
 let videoList: string[] = [];
 
-export async function getListVideos(forceRefresh = false) {
+export async function getVideoList(forceRefresh = false) {
     if (!forceRefresh && videoList.length > 0)
         return videoList;
     //cache this list and return when asked.
-    videoList = await API.requestListVideos();
+    videoList = await API.requestVideoList();
     console.log(`got new video list: ${videoList}`);
     return videoList;
 }
@@ -14,7 +14,7 @@ export async function getListVideos(forceRefresh = false) {
 export async function setMainAssetPath(path: string) {
     const ok = await API.requestSetMainAssetPath(path);
     if (ok) {
-        getListVideos(true);
+        getVideoList(true);
     }
     return ok;
 }

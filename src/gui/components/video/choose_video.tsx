@@ -15,7 +15,7 @@ export default function ChooseVideo(props: {
   const classes = useStyles();
   const [availableVideos, setAvailableVideos] = React.useState([props.currentVideo]);
   useEffect(() => {
-    media.getListVideos().then(vids => {
+    media.getVideoList().then(vids => {
       setAvailableVideos(vids);
     });
   });

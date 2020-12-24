@@ -48,9 +48,9 @@ export async function requestSetMainAssetPath(path: string) {
     return result.ok;
 }
 
-export async function requestListVideos() { //TODO rename
+export async function requestVideoList() { //TODO rename
     console.log('requesting list of videos');
-    const result = await fetch(`${httpURL}/listvideos`);
+    const result = await fetch(`${httpURL}/videoList`);
     const json = await result.json();
     console.log(JSON.stringify(json));
     return json;

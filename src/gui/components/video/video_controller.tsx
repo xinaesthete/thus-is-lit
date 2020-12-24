@@ -6,6 +6,7 @@ import ToggleButton from '@material-ui/lab/ToggleButton/ToggleButton'
 import VolumeMute from '@material-ui/icons/VolumeMute'
 import VolumeOff from '@material-ui/icons/VolumeOff'
 import VolumeUp from '@material-ui/icons/VolumeUp'
+import { useStyles } from '../../theme'
 
 interface VProps {
   video: VideoState;
@@ -13,6 +14,7 @@ interface VProps {
 }
 
 function MuteToggle(props: VProps) {
+  const classes = useStyles();
   const setMuted=(muted: boolean) => {
     const newVideo = produce(props.video, (draft) => {draft.muted = muted; return draft});
     props.setVideo(newVideo); //should be fine way of changing state?
@@ -27,7 +29,7 @@ function MuteToggle(props: VProps) {
   //actually, let's just switch the icon instead of using selected (todo review purpose of selected).
   return (
     <>
-      <ToggleButton value={props.video.muted} onChange={()=>setMuted(!props.video.muted)}>
+      <ToggleButton className="mute" value={props.video.muted} onChange={()=>setMuted(!props.video.muted)}>
         { props.video.muted ? <VolumeOff /> : <VolumeUp /> }
       </ToggleButton>
     </>
