@@ -157,8 +157,37 @@ export function addRestAPI(expApp: express.Application) {
     });
     
     expApp.get('/image/*', async (req, res) => {
+        const id = decodeURI(req.url.substring(7));
+        //(and maybe there's another flaw with this if it lets you walk back up into the FS "../../")
+        //do I need to add some middleware to express to decode URI?
+        if (id.startsWith("..") || id.startsWith("/") || id.startsWith("\\")) {
+            res.status(403).send();
+        }
 
-    })
+        console.log(`[media_server] (trying to) serve image ${id}`);
+        const c = await config.getConfig();
+        if (!c.mainAssetPath) {
+            res.status(404).send(`asset path hasn't been configured`);
+        }
+        const imgPath = path.join(c.mainAssetPath || "", id);
+        const ext = path.extname(imgPath);
+        if (!hasValidExtention(imgPath, "image")) {
+            res.send(404).send(`can't server ${id} as image`);
+            return;
+        }
+        const typeKey = path.extname(imgPath).substring(1) as
+            | "jpeg"
+            | "jpg"
+            | "png"; //sorry
+        const contentType = imageMimeTypes[typeKey]; //sendFile does this automatically.
+        try {
+            res.sendFile(imgPath);
+            return;
+        } catch (e) {
+            console.error(`error '${e}' serving image ${imgPath}`);
+        }
+
+    });
 
     expApp.get('/imageList', async function (req, res) {
         const t = Date.now();

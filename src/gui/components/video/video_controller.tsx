@@ -8,7 +8,7 @@ import VolumeOff from '@material-ui/icons/VolumeOff'
 import VolumeUp from '@material-ui/icons/VolumeUp'
 import { useStyles } from '../../theme'
 
-interface VProps {
+export interface VProps {
   video: VideoState;
   setVideo: (newVid: VideoState)=>void
 }
@@ -19,14 +19,6 @@ function MuteToggle(props: VProps) {
     const newVideo = produce(props.video, (draft) => {draft.muted = muted; return draft});
     props.setVideo(newVideo); //should be fine way of changing state?
   };
-  /*
-  Warning: Failed prop type: The prop `value` is marked as required in `ForwardRef(ToggleButton4)`, but its value is `undefined`.
-    at ToggleButton4 (file:///C:/code/thus-is-lit/public/build/gui.js:22302:28)
-    at WithStyles(ForwardRef(ToggleButton4)) (file:///C:/code/thus-is-lit/public/build/gui.js:27388:33)
-    at MuteToggle (file:///C:/code/thus-is-lit/public/build/gui.js:46313:23)
-  */
-  //selected={props.video.muted} is not enough, we need value or react shouts at us.
-  //actually, let's just switch the icon instead of using selected (todo review purpose of selected).
   return (
     <>
       <ToggleButton className="mute" value={props.video.muted} onChange={()=>setMuted(!props.video.muted)}>

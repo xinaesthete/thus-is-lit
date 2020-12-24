@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import { VideoState } from '../common/media_model';
+import { AbstractImageState, VideoState } from '../common/media_model';
 
 export const vidEl = document.getElementById("vid1") as HTMLVideoElement;
 let vidUrl = "red.mp4";
@@ -22,18 +22,26 @@ export function setVideoURL(url: string) {
     vidEl.play();
 }
 
-export function setVideoState(state: VideoState) {
+function setVideoState(state: VideoState) {
     setVideoURL(state.url);
     vidEl.muted = state.muted;
     vidEl.volume = state.volume;
 }
-export function getVideoState() : VideoState {
+function getVideoState() : VideoState {
     return {
         url: vidUrl,
         duration: vidEl.duration,
         muted: vidEl.muted,
         volume: vidEl.volume
     }
+}
+
+export function setImageState(state: AbstractImageState) {
+    setVideoState(state as VideoState);
+}
+
+export function getImageState() : AbstractImageState {
+    return getVideoState();
 }
 
 /** make sure texture settings are not going to force it to be scaled down to POT size before it gets used. */
@@ -67,9 +75,11 @@ export function fitTexture(texture: THREE.Texture,
             if (screenAspect < imageAspect) { //landscape
                 texture.offset.set(0, offsetY * alignV);
                 texture.repeat.set(1, scale);
+                texture.rotation = 0;
             } else {
                 texture.offset.set(offsetX * alignH, 0);
                 texture.repeat.set(1 / scale, 1);
+                texture.rotation = Math.PI / 2;
             }
             break;
         }
@@ -78,9 +88,12 @@ export function fitTexture(texture: THREE.Texture,
             if (screenAspect < imageAspect) {
                 texture.offset.set(offsetX * alignH, 0);
                 texture.repeat.set(1 / scale, 1);
+                texture.rotation = 0;
             } else {
                 texture.offset.set(0, offsetY * alignV);
                 texture.repeat.set(1, scale);
+                // texture.flipY = false;
+                texture.rotation = Math.PI / 2;
             }
             break;
         }
@@ -108,6 +121,9 @@ export function setup(renderer: THREE.Renderer, uniforms: any) {
                 const file = item.getAsFile()!;
                 const reader = new FileReader();
                 //seems like this will attempt to read entire file, blocking, before continuing...
+                //---> could we politely ask the server to serve this file?
+                //     I think I'm maybe not going to do that in case it complicates how I think about
+                //     security model, serialization...? but maybe it's not a problem and I should just do it.
                 reader.readAsDataURL(file);
                 console.log(`readAsDataURL took ${Date.now() - t}`);
                 reader.onload = readEvent => {

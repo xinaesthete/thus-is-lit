@@ -12,8 +12,9 @@ import KaleidModel from '../../common/KaleidModel';
 import {Uniforms, Numeric, Tweakable, isNum, vec2} from '../../common/tweakables'
 import { sendModel } from '../gui_comms';
 import VideoController from './video/video_controller'
-import {VideoState} from '../../common/media_model'
+import {AbstractImageState, VideoState} from '../../common/media_model'
 import { useStyles } from '../theme'
+import AbstractImageController from './video/abstract_image_controller'
 
 interface SliderProp<T extends Numeric> extends Tweakable<T> {
     // onChangeX: React.ChangeEventHandler<number>
@@ -105,10 +106,10 @@ export function KaleidGUI(props: KProps) {
     const classes = useStyles();
     const [model, setModel] = React.useState(props.kaleid);
 
-    const handleSetVideo = (newVid: VideoState) => {
+    const handleSetVideo = (newVid: AbstractImageState) => {
         //setFilename(newName);
         const newModel = produce(model, draftState => {
-            draftState.video = newVid; //turtles all the way down (there is a better way)
+            draftState.imageSource = newVid; //turtles all the way down (there is a better way)
         });
         setModel(newModel);
         //sending model to renderer might be an idea (via host ws)
@@ -157,7 +158,7 @@ export function KaleidGUI(props: KProps) {
             </AccordionSummary>
             <AccordionDetails>
             <div>
-                <VideoController video={model.video} setVideo={handleSetVideo} />
+                <AbstractImageController image={model.imageSource} setImage={handleSetVideo} />
                 <Grid container spacing={1}>
                 {model.tweakables.map((u, i) => {
                     return (

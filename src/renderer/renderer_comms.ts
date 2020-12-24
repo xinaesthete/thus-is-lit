@@ -22,7 +22,7 @@ import { makeRegisterRendererMessage, OscCommandType } from "../common/socket_cm
 import { Numeric, Tweakable } from "../common/tweakables";
 
 import { paramState } from './params'
-import { getVideoState, getVideoURL, setVideoState, vidEl } from "./video_state";
+import { getImageState, getVideoURL, setImageState, vidEl } from "./video_state";
 
 let socket = new WebSocket(websocketURL);
 
@@ -51,7 +51,7 @@ export async function init(specs: Tweakable<Numeric>[]) {
         //const id = Number.parseInt(params.get("id"));
         const model: KaleidModel = {
             id: id,
-            video: getVideoState(),
+            imageSource: getImageState(),
             tweakables: specs,
             // muted: vidEl.muted //no, this is part of video
         }
@@ -84,7 +84,7 @@ socket.onmessage = (ev) => {
         if (json.address === OscCommandType.Set) {
             const model = json.model as KaleidModel;
             paramState.setValues(model.tweakables);
-            setVideoState(model.video);
+            setImageState(model.imageSource);
             //vidEl.currentTime// server should understand "Accept-Ranges": "bytes"
             //but if I want to add jumping to cue points then I don't want to set that with every update
             //need to be more careful about what I'm setting.

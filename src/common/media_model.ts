@@ -12,11 +12,19 @@ export interface FileConfigPrefs {
     version: string; //no clear spec for reasoning about this yet...
 }
 
-export interface VideoState {
-    url: string,
+
+export interface AbstractImageState {}
+
+export interface ImageFileState extends AbstractImageState {
+    url: string;
+    //resolution...
+}
+
+export interface VideoState extends ImageFileState {
     muted: boolean;
     volume: number;
     duration: number;
     //seek time, cue points...
     //VideoPlaybackQuality...
 }
+
