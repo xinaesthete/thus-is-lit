@@ -8,11 +8,16 @@ import { httpURL } from '../../../common/constants';
 
 export default function JsonView() {
     const [data, setData] = useState({waiting: '...'});
+    const [updateTime, setUpdateTime] = useState(Date.now());
     
     const update = () => {
-        fetch(`${httpURL}/getJsonState`).then(async (val) => {
-            setData(await val.json());
-        });
+        const t = Date.now();
+        if (t-updateTime > 1000) {
+            setUpdateTime(t);
+            fetch(`${httpURL}/getJsonState`).then(async (val) => {
+                setData(await val.json());
+            });
+        }
     };
     
     useEffect(update);
