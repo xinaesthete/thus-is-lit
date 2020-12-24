@@ -146,8 +146,8 @@ export function KaleidGUI(props: KProps) {
     }
 
     return (
-        <div className={classes.root}>
-        <Accordion>
+        <div className={classes.uniformsGui}>
+        <Accordion TransitionProps={{unmountOnExit: true, timeout: 50}}>
             <AccordionSummary
                 expandIcon={<ExpandMoreIcon />}
                 aria-controls="panel{model.id}-content" 

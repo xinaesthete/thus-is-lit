@@ -57,8 +57,12 @@ export const useStyles = makeStyles((theme: Theme) =>
     sliderLabel: {
       //
     },
+    uniformsGui: {
+      marginTop: theme.spacing(2)
+    },
     slider: {
       // width: 350,
+      maxWidth: 300
       // padding: theme.spacing(3)
     },
     vidDropdown: {
