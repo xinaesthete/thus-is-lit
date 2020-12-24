@@ -11,16 +11,15 @@ export default function JsonView() {
     const [updateTime, setUpdateTime] = useState(Date.now());
     
     const update = () => {
-        const t = Date.now();
-        if (t-updateTime > 1000) {
-            setUpdateTime(t);
-            fetch(`${httpURL}/getJsonState`).then(async (val) => {
-                setData(await val.json());
-            });
-        }
+        setUpdateTime(Date.now());
+        fetch(`${httpURL}/getJsonState`).then(async (val) => {
+            setData(await val.json());
+        });
     };
     
-    useEffect(update);
+    useEffect(()=> {
+        if (Date.now()-updateTime > 1000) update()
+    });
 
     let i=0;
     //https://www.marklogic.com/blog/recursively-transform-json/
