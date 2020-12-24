@@ -17,6 +17,9 @@ import {app} from 'electron'
 //reactions
 //actions
 
+// https://mobx.netlify.app/guides/json/ is about dart / flutter... which I may want to look into, but it's not what I want now.
+
+
 class LitState {
     //"Kaleid" generally indicates a point about which an abstraction for other kinds of models may at some point be made.
     

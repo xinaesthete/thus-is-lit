@@ -5,7 +5,8 @@ import red from '@material-ui/core/colors/red';
 //TOOD:::
 
 
-// Create a theme instance.
+// Create a theme instance. (nb, this was hanging around, not doing anything now, but useStyles is)
+// (don't have a strong sense of how the more complex hook-based one helps)
 const theme = createMuiTheme({
   palette: {
     primary: {
@@ -41,6 +42,7 @@ export const useStyles = makeStyles((theme: Theme) =>
     },
     content: {
       flexGrow: 1,
+      marginTop: 40, //can't figure out interaction with appBar.
       padding: theme.spacing(3),
       transition: theme.transitions.create('margin', {
         easing: theme.transitions.easing.sharp,
@@ -49,6 +51,7 @@ export const useStyles = makeStyles((theme: Theme) =>
     },
     sliderContainer: {
       display: 'grid',
+      //where does the magic number '12' for spacing come from?
       // gridTemplateColumns: 'repeat(24, 1fr)'
     },
     sliderLabel: {
