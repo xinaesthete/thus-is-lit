@@ -1,5 +1,5 @@
 import { 
-    Accordion, AccordionSummary, AccordionDetails, Slider, makeStyles, Typography
+    Accordion, AccordionSummary, AccordionDetails, Slider, Typography, Grid
 } from '@material-ui/core'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import React from 'react'
@@ -40,7 +40,10 @@ function TweakableSlider(u: SliderProp<Numeric>) {
     
     return (
         <>
+            <Grid item xs={4} sm={3}>
             <RowLabel name={name} />
+            </Grid>
+            <Grid item xs={8} sm={9}>
             <Slider className={classes.slider} name={name} min={min} max={max} value={value as number} step={step}
                 onChange={(e, v) => {
                     //Slider onChange can define number[]
@@ -48,6 +51,7 @@ function TweakableSlider(u: SliderProp<Numeric>) {
                     onChange(e, v)
                 }} 
                 valueLabelDisplay="auto" />
+            </Grid>
         </>
     )
 }
@@ -67,13 +71,17 @@ function TweakableSliderPair(u: SliderProp<vec2>) {
     }
     return (
         <>
-            <RowLabel name={name} />
+            <Grid item xs={4} sm={3}>
+                <RowLabel name={name} />
+            </Grid>
+            <Grid item xs={8} sm={9}>
             <Slider className={classes.slider} name={name} min={min} max={max} value={val.x} step={step} 
                 onChange={makeChange('x')} 
                 valueLabelDisplay="auto" />
             <Slider className={classes.slider} name={name} min={min} max={max} value={val.y} step={step} 
                 onChange={makeChange('y')} 
                 valueLabelDisplay="auto" />
+            </Grid>
         </>
     )
 }
@@ -150,20 +158,15 @@ export function KaleidGUI(props: KProps) {
             <AccordionDetails>
             <div>
                 <VideoController video={model.video} setVideo={handleSetVideo} />
+                <Grid container spacing={1}>
                 {model.tweakables.map((u, i) => {
-//                if (isNum(u.value)) {
-                    // {...u as T} definitely not right here: TS is happy with that, React is not.
-                    const {name='', min, max, value, step} = u;
                     return (
-                        <TweakableSlider key={i} name={name} min={min} max={max} value={value} step={step}
-                        onChange={makeSliderHandler(name, i)
-                        }
+                        <TweakableSlider key={i} {...u}
+                        onChange={makeSliderHandler(u.name!, i)}
                         />
-                        )
-//                    } else if (isVec2(u.value)) {
-                        //TODO.
-//                    }
+                    )
                 })}
+                </Grid>
             </div>
             </AccordionDetails>
         </Accordion>

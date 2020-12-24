@@ -53,7 +53,7 @@ export async function init(specs: Tweakable<Numeric>[]) {
             id: id,
             video: getVideoState(),
             tweakables: specs,
-            muted: vidEl.muted
+            // muted: vidEl.muted //no, this is part of video
         }
     
         const body = JSON.stringify(model);

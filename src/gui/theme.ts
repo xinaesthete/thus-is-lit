@@ -37,7 +37,7 @@ export const useStyles = makeStyles((theme: Theme) =>
       display: 'flex',
     },
     appBar: {
-      flexDirection: 'row'    
+      flexDirection: 'row'
     },
     content: {
       flexGrow: 1,
@@ -47,9 +47,16 @@ export const useStyles = makeStyles((theme: Theme) =>
         duration: theme.transitions.duration.leavingScreen,
       })
     },
+    sliderContainer: {
+      display: 'grid',
+      // gridTemplateColumns: 'repeat(24, 1fr)'
+    },
+    sliderLabel: {
+      //
+    },
     slider: {
-      width: 350,
-      padding: theme.spacing(3)
+      // width: 350,
+      // padding: theme.spacing(3)
     },
     vidDropdown: {
       margin: theme.spacing(2),

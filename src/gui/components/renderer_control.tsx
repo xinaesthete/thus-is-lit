@@ -26,7 +26,8 @@ export default function RendererControl() {
     //this is not nice, but may be ok for now.
     useEffect(() => {
         if (renderModels.length === 0) requestModelList().then(models => {
-            setRenderModels(models);
+            setRenderModels(models); //bang. we had models[0].muted as well as models[0].video.muted ->> red herring
+            //is setting the array like this bad? immer version doesn't fix anything.
         });
     }, []);
 

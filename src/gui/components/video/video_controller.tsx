@@ -13,7 +13,7 @@ interface VProps {
 function MuteToggle(props: VProps) {
   const setMuted=(muted: boolean) => {
     const newVideo = produce(props.video, (draft) => {draft.muted = muted; return draft});
-    props.setVideo(newVideo);
+    props.setVideo(newVideo); //should be fine way of changing state?
   };
   return (
     <>

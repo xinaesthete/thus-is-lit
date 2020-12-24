@@ -28,13 +28,12 @@ type tabName = "media" | "rendering" | "debug";
 enum AppTabs {
   Media, Renderer, Debug
 }
-
+// const cube = new DefaultCube();
 function App() {
-  const classes = useStyles();
+  const classes = useStyles(); //error? check console...
   // AppBar, Tabs, (Persistent)Drawer...
-  const [tab, setTab] = React.useState(0 as AppTabs);
+  const [tab, setTab] = React.useState(1 as AppTabs);
   // const cube = new DefaultCube(); //is now able to render, although not a good React citizen.
-  const [cube] = React.useState(new DefaultCube());
 
   //seems like it'd be more efficient to only render the tab we want to see,
   //but...

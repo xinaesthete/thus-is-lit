@@ -19,7 +19,6 @@ export default interface KaleidModel {
     video: VideoState; //next this...
     //later--- textureSource: VideoPlayer | FeedbackTexture | ... ///observable
     tweakables: Tweakable<any>[];
-    muted: boolean;
 }
 
 //passing entire KaleidModel as JSON is heavy.

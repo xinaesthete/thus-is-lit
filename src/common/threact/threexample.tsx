@@ -1,4 +1,5 @@
 import * as THREE from "three";
+// import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader"
 import { TrackballControls } from "three/examples/jsm/controls/TrackballControls";
 import { IThree } from "./threact";
 
@@ -53,6 +54,8 @@ export class DefaultCube extends ThreactTrackballBase {
     init() {
         const mesh = new THREE.Mesh(DefaultCube.geo, DefaultCube.mat);
         this.scene.add(mesh);
+        // const loader = new OBJLoader();
+        // loader.load('assets/barbican stage.obj', (o)=>this.scene.add(o));
     }
 }
 
