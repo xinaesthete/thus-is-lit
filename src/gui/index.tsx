@@ -5,8 +5,8 @@ import {
 import React from 'react';
 import ReactDOM from 'react-dom';
 import clsx from 'clsx';
-import { makeStyles, useTheme, Theme, createStyles } from '@material-ui/core/styles';
-import { useStyles } from './theme'
+import { ThemeProvider } from '@material-ui/core/styles';
+import theme, { useStyles } from './theme'
 import DebugPanel from './components/debug/debug_panel';
 import MediaBrowser from './components/media_browser';
 import BugReportIcon from '@material-ui/icons/BugReport';
@@ -18,13 +18,6 @@ import { DefaultCube } from '../common/threact/threexample';
 import RendererControl from './components/renderer_control'
 import MediaConfig from './components/media_config';
 
-function tabProps(name: string) {
-  return {
-    id: `tab-${name}`, 'aria-controls': `tabpanel-${name}`
-  }
-}
-
-type tabName = "media" | "rendering" | "debug";
 enum AppTabs {
   Media, Renderer, Debug
 }
@@ -47,25 +40,27 @@ function App() {
 
   return (
     <>
-      <CssBaseline />
-      <div className={classes.root}>
-        <AppBar className={classes.appBar}>
-          <Tabs value={tab} onChange={(e, v) => setTab(v)} aria-label="top navigation">
-            <Tab label="media" />
-            <Tab label="rendering" />
-            <Tab label="debug" />
-          </Tabs>
-        </AppBar>
-        <Container className={classes.content}>
-          <div role="tabpanel" hidden={tab !== 0}><MediaBrowser /></div>
-          <div role="tabpanel" hidden={tab !== 1}><RendererControl /></div>
-          <div role="tabpanel" hidden={tab !== 2}><DebugPanel /></div>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <div className={classes.root}>
+          <AppBar className={classes.appBar}>
+            <Tabs value={tab} onChange={(e, v) => setTab(v)} aria-label="top navigation">
+              <Tab label="media" />
+              <Tab label="rendering" />
+              <Tab label="debug" />
+            </Tabs>
+          </AppBar>
+          <Container className={classes.content}>
+            <div role="tabpanel" hidden={tab !== 0}><MediaBrowser /></div>
+            <div role="tabpanel" hidden={tab !== 1}><RendererControl /></div>
+            <div role="tabpanel" hidden={tab !== 2}><DebugPanel /></div>
 
-          {/* <DefaultCube /> this isn't a component, it's an implementation of a type of prop that can be rendered... */}
-          {/* <Threact gfx={cube} /> */}
+            {/* <DefaultCube /> this isn't a component, it's an implementation of a type of prop that can be rendered... */}
+            {/* <Threact gfx={cube} /> */}
 
-        </Container>
-      </div>
+          </Container>
+        </div>
+      </ThemeProvider>
     </>
 
 

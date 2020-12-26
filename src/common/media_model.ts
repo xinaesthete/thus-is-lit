@@ -12,12 +12,21 @@ export interface FileConfigPrefs {
     version: string; //no clear spec for reasoning about this yet...
 }
 
+export enum ImageType {
+    Null, VideoFile, // ImageFile //, Feedback, CameraStream, RtcStream
+}
 
-export interface AbstractImageState {}
+export interface AbstractImageState {
+    width: number;
+    height: number;
+    imgType: ImageType; //seems logical for this to be generic type, 
+    //but I need to figure out how to usefully use that at runtime.
+    //also consider how to differentiate 360s / associated fisheye pairs...???
+    //projection: 'plane' | 'equirectangular' | 'fisheye' ?? 'fisheyeA' | 'fisheyeB' ?
+}
 
 export interface ImageFileState extends AbstractImageState {
     url: string;
-    //resolution...
 }
 
 export interface VideoState extends ImageFileState {
@@ -28,3 +37,7 @@ export interface VideoState extends ImageFileState {
     //VideoPlaybackQuality...
 }
 
+//for future implementation: not exported until implemented.
+interface ImageFeedbackState extends AbstractImageState {}
+interface CameraStreamState extends AbstractImageState {}
+interface WebRTCStreamState extends AbstractImageState {}

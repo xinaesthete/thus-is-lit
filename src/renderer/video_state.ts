@@ -1,12 +1,15 @@
 import * as THREE from 'three'
-import { AbstractImageState, VideoState } from '../common/media_model';
+import { AbstractImageState, ImageFileState, ImageType, VideoState } from '../common/media_model';
 
 export const vidEl = document.getElementById("vid1") as HTMLVideoElement;
 let vidUrl = "red.mp4";
 console.log(vidUrl);
 vidEl.src = vidUrl;
-setTimeout(() => vidEl.play(), 3000);
+// vidEl.onchange //this is the type of thing I should be using...
+let __uniforms: any;
+// setTimeout(() => vidEl.play(), 3000);
 export const vidTex: THREE.Texture = new THREE.VideoTexture(vidEl);
+export let activeTexture: THREE.Texture = vidTex;
 
 //nb this isn't what we want the interface to look like anyway...
 //(we want to be able to ideally have several copies on a page, other differences...)
@@ -22,26 +25,86 @@ export function setVideoURL(url: string) {
     vidEl.play();
 }
 
+//XXX noooo...
+let imageState: AbstractImageState = {imgType: ImageType.VideoFile, 
+    width: 1920, height: 1080, duration: 999, muted: true, volume: 1,
+    url: vidUrl} as VideoState; //not the way we do it...
 function setVideoState(state: VideoState) {
     setVideoURL(state.url);
     vidEl.muted = state.muted;
     vidEl.volume = state.volume;
-}
-function getVideoState() : VideoState {
-    return {
+    // ?? there is a metadata field for portrait that at least some browsers understand, but can we interpret it here?
+    //    or perhaps we need to try to do something in the server?  Will that be more reliable anyway?
+    // vidEl.rotation
+    activeTexture = vidTex;
+    imageState = {
+        imgType: ImageType.VideoFile,
         url: vidUrl,
         duration: vidEl.duration,
         muted: vidEl.muted,
-        volume: vidEl.volume
+        volume: vidEl.volume,
+        width: vidEl.videoWidth,
+        height: vidEl.videoHeight,
+    } as VideoState; //using object literal and "as" is bad.
+}
+function getVideoState() : VideoState {
+    return {
+        imgType: ImageType.VideoFile,
+        url: vidUrl,
+        duration: vidEl.duration,
+        muted: vidEl.muted,
+        volume: vidEl.volume,
+        width: vidEl.videoWidth,
+        height: vidEl.videoHeight
     }
 }
-
+let imgUrl = '';
 export function setImageState(state: AbstractImageState) {
+    if (Object.keys(state).includes('muted')) {
+        setVideoState(state as VideoState);
+        imgUrl = '';
+    } else {
+        //assume it's a still for now...
+        const img = state as ImageFileState;
+        imageState = state;
+        if (imgUrl !== img.url) imgUrl = img.url;
+        console.log(`loading ${img.url}`);
+
+        new THREE.TextureLoader().load(img.url, (t)=>{
+            console.log(`loaded ${img.url}`);
+            setTextureParams(t);
+            __uniforms.texture1.value = t;
+            activeTexture = t;
+            imageState.width = img.width;
+            imageState.height = img.height;
+        });
+    }
     setVideoState(state as VideoState);
 }
 
-export function getImageState() : AbstractImageState {
-    return getVideoState();
+
+export async function getImageState() : Promise<AbstractImageState> {
+    if (imageState.imgType == ImageType.Null) {
+        //we're not ready yet. I'm sure we should be observing, definitely not doing this...
+        //procrastination...
+        //I do see dimensions, but imgType = 0.
+        async function sleep(ms: number) {
+            return new Promise((resolve) => {
+                setTimeout(resolve, ms);
+            });
+        }
+        const promise: Promise<AbstractImageState> = new Promise(async (resolve, reject) => {
+            while (imageState.imgType == ImageType.Null) {
+                await sleep(100);
+            }
+            imageState.height = vidEl.videoHeight;
+            imageState.width = vidEl.videoWidth;
+            return imageState;
+        });
+        return promise;
+    } else {
+        return imageState;
+    }
 }
 
 /** make sure texture settings are not going to force it to be scaled down to POT size before it gets used. */
@@ -75,11 +138,11 @@ export function fitTexture(texture: THREE.Texture,
             if (screenAspect < imageAspect) { //landscape
                 texture.offset.set(0, offsetY * alignV);
                 texture.repeat.set(1, scale);
-                texture.rotation = 0;
+                // texture.rotation = 0;
             } else {
                 texture.offset.set(offsetX * alignH, 0);
                 texture.repeat.set(1 / scale, 1);
-                texture.rotation = Math.PI / 2;
+                // texture.rotation = Math.PI / 2;
             }
             break;
         }
@@ -88,12 +151,12 @@ export function fitTexture(texture: THREE.Texture,
             if (screenAspect < imageAspect) {
                 texture.offset.set(offsetX * alignH, 0);
                 texture.repeat.set(1 / scale, 1);
-                texture.rotation = 0;
+                // texture.rotation = 0;
             } else {
                 texture.offset.set(0, offsetY * alignV);
                 texture.repeat.set(1, scale);
                 // texture.flipY = false;
-                texture.rotation = Math.PI / 2;
+                // texture.rotation = Math.PI / 2;
             }
             break;
         }
@@ -106,8 +169,8 @@ export function fitTexture(texture: THREE.Texture,
         }
     }
 }
-
 export function setup(renderer: THREE.Renderer, uniforms: any) {
+    __uniforms = uniforms;
     renderer.domElement.ondragover = e => {
         e.preventDefault();
         if (e.dataTransfer) e.dataTransfer.dropEffect = 'copy';

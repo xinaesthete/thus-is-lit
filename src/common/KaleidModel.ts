@@ -13,6 +13,9 @@ export default interface KaleidModel {
     /// auxiliary / housekeeping stuff:::
     /** id key may be subject to change eg when we think about how to restore saved state... */
     id: number;
+    //thinking of having something like this, separate from VideoState etc, for not updating
+    //embedded gui previews.
+    // paused: boolean; //probably not this name.
 
     /// stuff that effects the content:::
     //filename: string; //first was this...

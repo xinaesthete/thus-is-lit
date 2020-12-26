@@ -51,9 +51,8 @@ export async function init(specs: Tweakable<Numeric>[]) {
         //const id = Number.parseInt(params.get("id"));
         const model: KaleidModel = {
             id: id,
-            imageSource: getImageState(),
+            imageSource: await getImageState(),
             tweakables: specs,
-            // muted: vidEl.muted //no, this is part of video
         }
     
         const body = JSON.stringify(model);

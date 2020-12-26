@@ -106,10 +106,10 @@ export function KaleidGUI(props: KProps) {
     const classes = useStyles();
     const [model, setModel] = React.useState(props.kaleid);
 
-    const handleSetVideo = (newVid: AbstractImageState) => {
+    const handleSetImage = (newImg: AbstractImageState) => {
         //setFilename(newName);
         const newModel = produce(model, draftState => {
-            draftState.imageSource = newVid; //turtles all the way down (there is a better way)
+            draftState.imageSource = newImg; //turtles all the way down (there is a better way)
         });
         setModel(newModel);
         //sending model to renderer might be an idea (via host ws)
@@ -158,7 +158,7 @@ export function KaleidGUI(props: KProps) {
             </AccordionSummary>
             <AccordionDetails>
             <div>
-                <AbstractImageController image={model.imageSource} setImage={handleSetVideo} />
+                <AbstractImageController image={model.imageSource} setImage={handleSetImage} />
                 <Grid container spacing={1}>
                 {model.tweakables.map((u, i) => {
                     return (

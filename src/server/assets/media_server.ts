@@ -21,11 +21,13 @@ const vidMimeTypes = {
     mov: 'video/quicktime',
     //mts, mkv...
     //-- instv -- ??
+    instv: 'video/mp4' //might just be mad enough to work?
 }
 const imageMimeTypes = {
     jpeg: "image/jpeg",
     jpg: "image/jpeg",
     png: "image/png",
+    instp: "image/jpeg", //might just be mad enough to work?
 };
 const mediaMimeTypes = {
     'video': vidMimeTypes,

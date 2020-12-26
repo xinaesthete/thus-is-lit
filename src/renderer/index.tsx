@@ -29,6 +29,7 @@ let w = window.innerWidth, h = window.innerHeight;
 const Vector2 = THREE.Vector2;
 const uniforms: Uniforms = {
     'ScreenAspect': {value: w/h},
+    'ImageAspect': {value: 1920/1080},
     'Leaves': {value: 3},
     'Angle': {value: 1.05},
     'OutAngle': {value: 0},
@@ -42,6 +43,7 @@ const uniforms: Uniforms = {
 };
 
 //this will also (for the time being) be responsible for reporting that we've started to the server.
+///--> mobx -->
 const parms = params.makeGUI([
     {name: "LagTime", value: -10, min: -180, max: 20}, //"midi pitch" log scale.
     {name: "Leaves", value: 3, min: 1, max: 8, step: 1},
@@ -81,32 +83,39 @@ mesh.position.y = 0.5;
 //mesh.updateMatrix();
 scene.add(mesh);
 let t0 = Date.now();
-function animate(time: number) {
+async function animate(time: number) { //nb this SHOULD ABSOLUTELY NOT be async but it's convenient for a quick hack.
   requestAnimationFrame(animate);
   //uniforms.iTime.value = Date.now() / 1000;
   
   /// How necessary are ScreenAspect & UVLimit?
   let w = window.innerWidth, h = window.innerHeight;
   uniforms.ScreenAspect.value = w/h;
+  const im = await vid.getImageState(); //I shouldn't be updating this stuff every frame anyway, don't need to await here.
+  //but it will only take time when things are still being set up.
   //const img = uniforms.texture1.value;
-  const vw = vid.vidEl.videoWidth;
-  const vh = vid.vidEl.videoHeight;
+  const vw = im.width;
+  const vh = im.height;
+  uniforms.ImageAspect.value = vw/vh;
   const longSide = Math.max(vw, vh);
   // UVLimit is a vec2 because it traces its origins to portion of POT texture
   // { x/NPOT(x), y/NPOT(y) }
   // -- the way we're using longSide is probably responsible for a lot that's wrong just now --
   // -- but actually the UVs should be normalised to the whole image anyway,
   // so (I hypothesise) that where it's used for mirrorRepeat could be replaced with a simpler version
-  //uniforms.UVLimit.value = {x: vw/longSide, y: vh/longSide};
-
-  uniforms.UVLimit.value = vid.vidTex.repeat; //this is similar to how it was set before (maybe not the assignment), 
+  // uniforms.UVLimit.value = {x: vw/longSide, y: vh/longSide};
+  
+  //TODO expose a property for "fit"
+  vid.fitTexture(vid.activeTexture, w/h, vw/vh, "fit");
+  //I have a problem with debugger in electron... 
+  //I could try to fix that, or just implement that part of server and use browser.
+  //how about switching these values based on whether screen or image aspect are portrait?
+  //also it seems to me that we still need to rotate(?) portrait images sometimes(?!) (see fitTexture)
+  
+  vid.activeTexture.updateMatrix();
+  uniforms.UVLimit.value = vid.activeTexture.repeat; //this is similar to how it was set before (maybe not the assignment), 
   //but I realised repeat was always {1, 1}, (maybe it was ok with stills).
-
-  //expose a property for "fit"
-  vid.fitTexture(vid.vidTex, w/h, vw/vh, "fit");
   
   
-  vid.vidTex.updateMatrix();
   
   const vt = vid.vidEl.currentTime; //->
   reportTime(vt);

@@ -3,10 +3,11 @@ import * as API from "./gui_comms";
 let videoList: string[] = [];
 
 export async function getVideoList(forceRefresh = false) {
-    if (!forceRefresh && videoList.length > 0)
+    if (!forceRefresh && videoList.length > 0) //<< review
         return videoList;
     //cache this list and return when asked.
     videoList = await API.requestVideoList();
+    // videoList = await API.requestImageList();
     console.log(`got new video list: ${videoList}`);
     return videoList;
 }

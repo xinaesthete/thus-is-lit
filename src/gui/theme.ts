@@ -8,20 +8,6 @@ import red from '@material-ui/core/colors/red';
 // Create a theme instance. (nb, this was hanging around, not doing anything now, but useStyles is)
 // (don't have a strong sense of how the more complex hook-based one helps)
 const theme = createMuiTheme({
-  palette: {
-    primary: {
-      main: '#556cd6',
-    },
-    secondary: {
-      main: '#19857b',
-    },
-    error: {
-      main: red.A400,
-    },
-    background: {
-      default: '#fff',
-    },
-  },
 });
 
 export default theme;
