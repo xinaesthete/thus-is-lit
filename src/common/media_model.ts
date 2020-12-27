@@ -15,11 +15,12 @@ export interface FileConfigPrefs {
 export enum ImageType {
     Null, VideoFile, // ImageFile //, Feedback, CameraStream, RtcStream
 }
-
+export type ImRot = 0 | 90 | -90 | 180;
 export interface AbstractImageDecriptor {
     width: number; //derived rather than computed, and often not known when making one of these
     height: number;
-    imgType: ImageType; //seems logical for this to be generic type, 
+    imgType: ImageType; //seems logical for this to be generic type,
+    rotation?: ImRot;
     //but I need to figure out how to usefully use that at runtime.
     //also consider how to differentiate 360s / associated fisheye pairs...???
     //projection: 'plane' | 'equirectangular' | 'fisheye' ?? 'fisheyeA' | 'fisheyeB' ?
@@ -44,6 +45,7 @@ export class VideoDescriptor implements IVideoDescriptor {
     width: number;
     height: number;
     imgType: ImageType;
+    rotation?: ImRot;
     constructor(url: string, data: any) {
         this.url = url; //nb, we may want to pass info differently...
         this.imgType = ImageType.VideoFile;
@@ -58,6 +60,12 @@ export class VideoDescriptor implements IVideoDescriptor {
         this.duration = Number.parseFloat(vidStream.duration);
         this.muted = true;
         this.volume = 1;
+        if (vidStream.side_data_list) {
+            const rotation = vidStream.side_data_list[0].rotation;
+            if (rotation) this.rotation = rotation;
+            //now that I understand this, I think I want to change the order of how things are set...
+            //generally more of this Descriptor pushed to the renderer...
+        }
     }
 }
 

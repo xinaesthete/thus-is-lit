@@ -79,6 +79,15 @@ async function getMediaList(type: MediaType) {
     //root may be undefined if there's no config set?
     let dirList = await fs.promises.readdir(root, { withFileTypes: true });
     dirList.filter(dFilter).forEach((d) => expand(d, ""));
+    // useful for stress-test, not intended for release.
+    // try {
+    //     //when this blocks, it totally blocks main GUI.
+    //     //also disrupts streaming - could consider streaming in separate process?
+    //     await Promise.all(files.slice(0).map(probeMp4));
+    // } catch (e) {
+    //     console.error(e);
+    // }
+    console.log(`finished list&probe of ${files.length} files in ${Date.now()-t}ms`);
     return files;
 }
 
@@ -101,7 +110,7 @@ export function addRestAPI(expApp: express.Application) {
             res.status(404).send(`asset path hasn't been configured`);
         }
         const vidPath = id==="red.mp4" ? "red.mp4" : path.join(c.mainAssetPath||"", id);
-        probeMp4(vidPath);
+        probeMp4(req.url);
         const ext = path.extname(vidPath);
         if (!hasValidExtention(vidPath, 'video')) {
             res.send(404).send(`can't server ${id} as video`);

@@ -52,7 +52,7 @@ export async function requestVideoList() {
     console.log('requesting list of videos');
     const result = await fetch(`${httpURL}/videoList`);
     const json = await result.json();
-    console.log(JSON.stringify(json));
+    // console.log(JSON.stringify(json));
     return json;
 }
 export async function requestImageList() {

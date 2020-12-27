@@ -75,7 +75,7 @@ export async function saveMainStateToDisk(filename: string) {
         const dir = path.dirname(filename);
         if (!fs.existsSync(dir)) await fs.promises.mkdir(dir);
         const json = await getStateAsJsonString();
-        console.log(json);
+        // console.log(json);
         await fs.promises.writeFile(filename, json);
     } catch (e) {
         console.error(`[file_config] error saving main_state to disk: '${e}'`);
