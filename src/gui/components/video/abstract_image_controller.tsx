@@ -1,19 +1,19 @@
 import { Typography } from '@material-ui/core'
 import React from 'react'
-import { AbstractImageState, VideoState } from '../../../common/media_model'
+import { AbstractImageDecriptor, VideoDescriptor } from '../../../common/media_model'
 
 import VideoController, { VProps } from './video_controller'
 
 interface AbsImgProps {
-    image: AbstractImageState;
-    setImage: (newImage: AbstractImageState)=>void
+    image: AbstractImageDecriptor;
+    setImage: (newImage: AbstractImageDecriptor)=>void
 }
 export default function AbstractImageController(props: AbsImgProps) {
-    const setAsVideo = props.setImage as (n: AbstractImageState) => void
+    const setAsVideo = props.setImage as (n: AbstractImageDecriptor) => void
     return (
         <>
         <Typography variant="caption">{props.image.width} * {props.image.height}</Typography>
-        <VideoController video={props.image as VideoState} setVideo={setAsVideo} />
+        <VideoController video={props.image as VideoDescriptor} setVideo={setAsVideo} />
         </>
     )
 }

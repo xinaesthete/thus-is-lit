@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import { AbstractImageState, ImageFileState, ImageType, VideoState } from '../common/media_model';
+import { AbstractImageDecriptor, ImageFileDescriptor, ImageType, VideoDescriptor } from '../common/media_model';
 
 export const vidEl = document.getElementById("vid1") as HTMLVideoElement;
 let vidUrl = "red.mp4";
@@ -26,28 +26,31 @@ export function setVideoURL(url: string) {
 }
 
 //XXX noooo...
-let imageState: AbstractImageState = {imgType: ImageType.VideoFile, 
+let imageState: AbstractImageDecriptor = {imgType: ImageType.VideoFile, 
     width: 1920, height: 1080, duration: 999, muted: true, volume: 1,
-    url: vidUrl} as VideoState; //not the way we do it...
-function setVideoState(state: VideoState) {
+    url: vidUrl} as VideoDescriptor; //not the way we do it...
+function setVideoState(state: VideoDescriptor) {
+    console.log(`setVideoState: ${JSON.stringify(state, null, 2)}`);
+    vidEl.onchange = () => {
+        activeTexture = vidTex;
+        imageState = {
+            imgType: ImageType.VideoFile,
+            url: vidUrl,
+            duration: vidEl.duration,
+            muted: vidEl.muted,
+            volume: vidEl.volume,
+            width: vidEl.videoWidth,
+            height: vidEl.videoHeight,
+        } as VideoDescriptor; //using object literal and "as" is bad.
+    }
     setVideoURL(state.url);
     vidEl.muted = state.muted;
     vidEl.volume = state.volume;
     // ?? there is a metadata field for portrait that at least some browsers understand, but can we interpret it here?
     //    or perhaps we need to try to do something in the server?  Will that be more reliable anyway?
     // vidEl.rotation
-    activeTexture = vidTex;
-    imageState = {
-        imgType: ImageType.VideoFile,
-        url: vidUrl,
-        duration: vidEl.duration,
-        muted: vidEl.muted,
-        volume: vidEl.volume,
-        width: vidEl.videoWidth,
-        height: vidEl.videoHeight,
-    } as VideoState; //using object literal and "as" is bad.
 }
-function getVideoState() : VideoState {
+function getVideoState() : VideoDescriptor {
     return {
         imgType: ImageType.VideoFile,
         url: vidUrl,
@@ -59,13 +62,13 @@ function getVideoState() : VideoState {
     }
 }
 let imgUrl = '';
-export function setImageState(state: AbstractImageState) {
-    if (Object.keys(state).includes('muted')) {
-        setVideoState(state as VideoState);
+export function setImageState(state: AbstractImageDecriptor) {
+    if (state.imgType === ImageType.VideoFile) {
+        setVideoState(state as VideoDescriptor);
         imgUrl = '';
     } else {
         //assume it's a still for now...
-        const img = state as ImageFileState;
+        const img = state as ImageFileDescriptor;
         imageState = state;
         if (imgUrl !== img.url) imgUrl = img.url;
         console.log(`loading ${img.url}`);
@@ -79,11 +82,10 @@ export function setImageState(state: AbstractImageState) {
             imageState.height = img.height;
         });
     }
-    setVideoState(state as VideoState);
 }
 
 
-export async function getImageState() : Promise<AbstractImageState> {
+export async function getImageState() : Promise<AbstractImageDecriptor> {
     if (imageState.imgType == ImageType.Null) {
         //we're not ready yet. I'm sure we should be observing, definitely not doing this...
         //procrastination...
@@ -93,7 +95,7 @@ export async function getImageState() : Promise<AbstractImageState> {
                 setTimeout(resolve, ms);
             });
         }
-        const promise: Promise<AbstractImageState> = new Promise(async (resolve, reject) => {
+        const promise: Promise<AbstractImageDecriptor> = new Promise(async (resolve, reject) => {
             while (imageState.imgType == ImageType.Null) {
                 await sleep(100);
             }

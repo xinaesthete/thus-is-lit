@@ -12,7 +12,7 @@ import KaleidModel from '../../common/KaleidModel';
 import {Uniforms, Numeric, Tweakable, isNum, vec2} from '../../common/tweakables'
 import { sendModel } from '../gui_comms';
 import VideoController from './video/video_controller'
-import {AbstractImageState, VideoState} from '../../common/media_model'
+import {AbstractImageDecriptor, VideoDescriptor} from '../../common/media_model'
 import { useStyles } from '../theme'
 import AbstractImageController from './video/abstract_image_controller'
 
@@ -106,7 +106,7 @@ export function KaleidGUI(props: KProps) {
     const classes = useStyles();
     const [model, setModel] = React.useState(props.kaleid);
 
-    const handleSetImage = (newImg: AbstractImageState) => {
+    const handleSetImage = (newImg: AbstractImageDecriptor) => {
         //setFilename(newName);
         const newModel = produce(model, draftState => {
             draftState.imageSource = newImg; //turtles all the way down (there is a better way)

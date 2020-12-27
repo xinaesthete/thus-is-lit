@@ -16,8 +16,8 @@ export enum ImageType {
     Null, VideoFile, // ImageFile //, Feedback, CameraStream, RtcStream
 }
 
-export interface AbstractImageState {
-    width: number;
+export interface AbstractImageDecriptor {
+    width: number; //derived rather than computed, and often not known when making one of these
     height: number;
     imgType: ImageType; //seems logical for this to be generic type, 
     //but I need to figure out how to usefully use that at runtime.
@@ -25,19 +25,43 @@ export interface AbstractImageState {
     //projection: 'plane' | 'equirectangular' | 'fisheye' ?? 'fisheyeA' | 'fisheyeB' ?
 }
 
-export interface ImageFileState extends AbstractImageState {
+export interface ImageFileDescriptor extends AbstractImageDecriptor {
     url: string;
 }
 
-export interface VideoState extends ImageFileState {
-    muted: boolean;
-    volume: number;
-    duration: number;
+export interface IVideoDescriptor extends ImageFileDescriptor {
+    muted: boolean; //I renamed 'state' to 'descriptor'
+    volume: number; //- but maybe things like this belong to a 'state'
+    duration: number; //(not this, though)
     //seek time, cue points...
     //VideoPlaybackQuality...
 }
+export class VideoDescriptor implements IVideoDescriptor {
+    muted: boolean;
+    volume: number;
+    duration: number;
+    url: string;
+    width: number;
+    height: number;
+    imgType: ImageType;
+    constructor(url: string, data: any) {
+        this.url = url; //nb, we may want to pass info differently...
+        this.imgType = ImageType.VideoFile;
+        if (!data.streams) throw new Error(`no streams`);
+        const streams = data.streams as object[];
+        const vidStream = streams.find(
+            (s: any) => s["codec_type"] === "video"
+        ) as any;
+        if (!vidStream) throw new Error(`no video stream`);
+        this.width = vidStream.width;
+        this.height = vidStream.height;
+        this.duration = Number.parseFloat(vidStream.duration);
+        this.muted = true;
+        this.volume = 1;
+    }
+}
 
 //for future implementation: not exported until implemented.
-interface ImageFeedbackState extends AbstractImageState {}
-interface CameraStreamState extends AbstractImageState {}
-interface WebRTCStreamState extends AbstractImageState {}
+interface ImageFeedbackState extends AbstractImageDecriptor {}
+interface CameraStreamState extends AbstractImageDecriptor {}
+interface WebRTCStreamState extends AbstractImageDecriptor {}

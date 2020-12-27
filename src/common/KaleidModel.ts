@@ -6,7 +6,7 @@
 // reflection of that (serving also a guide to what generated).
 
 
-import { VideoState, AbstractImageState } from "./media_model";
+import { VideoDescriptor, AbstractImageDecriptor } from "./media_model";
 import { Numeric, Tweakable } from "./tweakables";
 
 export default interface KaleidModel {
@@ -21,7 +21,7 @@ export default interface KaleidModel {
     //filename: string; //first was this...
     //video: VideoState; //next this...
     //later--- textureSource: VideoState | FeedbackTexture | ... ///observable
-    imageSource: AbstractImageState;
+    imageSource: AbstractImageDecriptor;
     tweakables: Tweakable<any>[];
 }
 

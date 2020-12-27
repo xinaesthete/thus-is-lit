@@ -1,6 +1,6 @@
 import React from 'react'
 import produce from 'immer'
-import { VideoState } from '../../../common/media_model'
+import { VideoDescriptor } from '../../../common/media_model'
 import ChooseVideo from './choose_video'
 import ToggleButton from '@material-ui/lab/ToggleButton/ToggleButton'
 import VolumeMute from '@material-ui/icons/VolumeMute'
@@ -9,8 +9,8 @@ import VolumeUp from '@material-ui/icons/VolumeUp'
 import { useStyles } from '../../theme'
 
 export interface VProps {
-  video: VideoState;
-  setVideo: (newVid: VideoState)=>void
+  video: VideoDescriptor;
+  setVideo: (newVid: VideoDescriptor)=>void
 }
 
 function MuteToggle(props: VProps) {

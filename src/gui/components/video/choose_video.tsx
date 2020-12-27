@@ -8,6 +8,13 @@ import { useStyles } from '../../theme'
 
 
 export default function ChooseVideo(props: { 
+  //if this component only understands currentVideo as a string
+  //other parts of the system (unreasonably as of now) expect things to be able to create
+  //a fully formed representation... worse, in a couple of places I use 'as' probably badly.
+  ////?? how about if we always *did* have the proper metadata??
+  ////   if the server, when retrieving the relevant lists, also transmitted that...
+  ////   would seem like it would be a lot heavier than just reading the filenames
+  ////   might want more fully-fledged catalog at some point (in which case info cached)
   currentVideo: string, setURL: (url: string) => void,
   //  availableVideos: string[] //feels like we shouldn't have to pass this in as a prop.
 }) {
@@ -25,7 +32,7 @@ export default function ChooseVideo(props: {
     setVideo(n); //consider resetting time as well...
     props.setURL(n);
   }
-  console.log(`rendering <ChooseVideo currentVideo={"${video}"}`);
+  console.log(`rendering <ChooseVideo currentVideo={${JSON.stringify(video)}} />`);
   
   const notNice = `${httpURL}/video/`.length;
   const niceName = (v: string) => (v.length > notNice) ? decodeURI(v.substring(notNice)) : v;

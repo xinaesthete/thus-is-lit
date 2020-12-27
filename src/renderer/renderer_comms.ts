@@ -83,6 +83,7 @@ socket.onmessage = (ev) => {
         if (json.address === OscCommandType.Set) {
             const model = json.model as KaleidModel;
             paramState.setValues(model.tweakables);
+            //just because we've decided which config we want, doesn't mean it'll be ready straight away
             setImageState(model.imageSource);
             //vidEl.currentTime// server should understand "Accept-Ranges": "bytes"
             //but if I want to add jumping to cue points then I don't want to set that with every update

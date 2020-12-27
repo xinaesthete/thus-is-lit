@@ -1,6 +1,7 @@
 
 {
     "compilerOptions": {
+        "experimentalDecorators": true,
         "strict": true,
         "moduleResolution": "node",
         "resolveJsonModule": true,
@@ -9,6 +10,6 @@
         "esModuleInterop": true,
         "target": "ES2017",
         "noImplicitAny": true,
-        "sourceMap": true
+        "sourceMap": true,
     }
 }
