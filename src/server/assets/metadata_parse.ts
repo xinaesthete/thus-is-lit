@@ -1,11 +1,7 @@
 /**
  * Extraction of metadata from media files.
  * 
- * FFProbe via node-ffprobe & @ffprobe-installer/ffprobe
- * vs mp4, mux.js? Latter looks like a well-maintained option
- * but I went off it for inital attempt because of lack of types & complexity for what I need.
- * ffprobe-client is very simple in its implementation, minimalistic wrapper to ffprobe with a
- * fixed set of arguments.
+ * Using FFProbe, but mediainfo.js probably leaner, I could maybe switch.
  */
 
 //import * as muxjs from 'mux.js'

@@ -1,25 +1,36 @@
+import { makeObservable } from "mobx";
+import { observable, action } from "mobx";
 import * as API from "./gui_comms";
 
-let videoList: string[] = [];
+export class MediaLibrary {
+    mainAssetPath: string = "";
+    availableVideos: string[] = ['red.mp4'];
 
-export async function getVideoList(forceRefresh = false) {
-    if (!forceRefresh && videoList.length > 0) //<< review
-        return videoList;
-    //cache this list and return when asked.
-    videoList = await API.requestVideoList();
-    // videoList = await API.requestImageList();
-    console.log(`got new video list: ${videoList}`);
-    return videoList;
-}
-
-export async function setMainAssetPath(path: string) {
-    const ok = await API.requestSetMainAssetPath(path);
-    if (ok) {
-        getVideoList(true);
+    constructor() {
+        makeObservable(this, {
+            mainAssetPath: observable,
+            //really, this should be 'computed' as an async result of changing mainAssetPath
+            //but this is not a simple case for mobx... 'computed-async-mobx' requires older mobx...
+            //hmmm. maybe I'm making life hard for myself.
+            availableVideos: observable,
+            setMainAssetPath: action
+        });
+        API.requestFileConfigPrefs().then(c => {
+            this.setMainAssetPath(c.mainAssetPath!);
+        })
     }
-    return ok;
+    setMainAssetPath(newPath: string) {
+        const oldPath = this.mainAssetPath;
+        this.mainAssetPath = newPath;
+        API.requestSetMainAssetPath(newPath).then(async ok => {
+            if (ok) {
+                this.availableVideos = await API.requestVideoList();
+            } else {
+                console.error(`failed to set asset path ${newPath}, reverting to ${oldPath}`);
+                this.mainAssetPath = oldPath;
+            }
+        });
+    }
 }
 
-export async function getFileConfigPrefs() {
-    return await API.requestFileConfigPrefs();
-}
+export const mediaLib = new MediaLibrary();

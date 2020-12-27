@@ -1,13 +1,13 @@
-import React, { useEffect } from 'react'
-import produce from 'immer'
+import React from 'react'
+import { observer } from 'mobx-react'
 import Select from '@material-ui/core/Select'
 import MenuItem from '@material-ui/core/MenuItem'
-import * as media from '../../medialib'
+import { mediaLib } from '../../medialib'
 import { httpURL } from '../../../common/constants'
 import { useStyles } from '../../theme'
 
 
-export default function ChooseVideo(props: { 
+export default observer( function ChooseVideo(props: { 
   //if this component only understands currentVideo as a string
   //other parts of the system (unreasonably as of now) expect things to be able to create
   //a fully formed representation... worse, in a couple of places I use 'as' probably badly.
@@ -20,12 +20,7 @@ export default function ChooseVideo(props: {
 }) {
   
   const classes = useStyles();
-  const [availableVideos, setAvailableVideos] = React.useState([props.currentVideo]);
-  useEffect(() => {
-    media.getVideoList().then(vids => {
-      setAvailableVideos(vids);
-    });
-  });
+  const availableVideos = mediaLib.availableVideos;
   //TODO options for advance to next video in sequence / random after it finishes.
   const [video, setVideo] = React.useState(props.currentVideo);
   const handleChoose = (n: string) => {
@@ -45,4 +40,4 @@ export default function ChooseVideo(props: {
       </Select>
     </>
   )
-}
+});

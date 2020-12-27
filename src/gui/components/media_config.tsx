@@ -8,24 +8,13 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import { FileConfigPrefs } from '../../common/media_model';
 import * as media from '../medialib'
-import produce from 'immer';
+import { observer } from 'mobx-react'
 
-
-export default function MediaConfig() {
-  const mockConfing = {version: 'pending...', mainAssetPath: ''} as FileConfigPrefs;
-  const [config, setConfig] = React.useState(mockConfing);
-  React.useEffect(()=> {
-    if (!config) media.getFileConfigPrefs().then(async c => {
-      setConfig(c);
-      setPath(c.mainAssetPath || '');
-    });
-  });
-  
+const MediaConfig = observer( function MediaConfig() {
   const [open, setOpen] = React.useState(false);
   //keep state of path local and only call update from parent when submit is pressed.
-  const [path, setPath] = React.useState(config.mainAssetPath!);
+  const [path, setPath] = React.useState(media.mediaLib.mainAssetPath!);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -36,17 +25,8 @@ export default function MediaConfig() {
   };
 
   const handleSubmit = async () => {
-    const newConf = produce(config, draftConfig => {
-      draftConfig.mainAssetPath = path;
-    });
-    const ok = await media.setMainAssetPath(path);
-    if (ok) {
-      setConfig(newConf);
-      handleClose();
-    } else {
-      //error... TODO nicer display
-      alert(`failed to set config with path '${path}'`);
-    }
+    media.mediaLib.setMainAssetPath(path);
+    handleClose();
   }
 
   return (
@@ -83,5 +63,6 @@ export default function MediaConfig() {
       </Dialog>
     </div>
   );
-}
+});
 
+export default MediaConfig;
