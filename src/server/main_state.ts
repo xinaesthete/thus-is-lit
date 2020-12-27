@@ -40,7 +40,7 @@ class LitState {
     renderers = new Map<number, WebSocket>();
     playbackTimes = new Map<number, number>();
     
-    
+    videoMetadata: any[] = []; //for quick debug...
     /// all of above can be Map<id, Model> where Model is responsible for state of an entity
     controllers: WebSocket[] = [];
     constructor() {

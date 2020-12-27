@@ -32,7 +32,7 @@ async function watch(name, node=false) {
         platform: node ? "node" : "browser",
         //may need a better approach to electron externals soon...
         //also... why am I getting several copies of three in my renderer bundle?!
-        external: ["electron", "fsevents", "express"],
+        external: ["electron", "fsevents", "express", "@ffprobe-installer"],
         plugins: [externaliseThreePlugin], //this is not a keeper... but...
         entryPoints: [`./src/${name}/index.tsx`],
         outfile: `./public/build/${name}.js`, //putting build artefacts here, adding to .gitignore and removing old file.

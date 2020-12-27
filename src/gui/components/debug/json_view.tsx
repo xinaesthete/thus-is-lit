@@ -1,12 +1,25 @@
 import React, { useEffect, useState } from 'react'
-import { Button } from '@material-ui/core';
+import { Button, createStyles, makeStyles, Theme, Typography } from '@material-ui/core';
 import TreeView from '@material-ui/lab/TreeView';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import TreeItem from '@material-ui/lab/TreeItem';
 import { httpURL } from '../../../common/constants';
 
+const useTreeLabelStyles = makeStyles((theme: Theme) => createStyles({
+    labelRoot: {
+        display: 'flex',
+        alignItems: 'center'
+    },
+    labelText: {
+        fontWeight: 'inherit',
+        flexGrow: 1
+    }
+}))
+
+
 export default function JsonView() {
+    const classes = useTreeLabelStyles();
     const [data, setData] = useState({waiting: '...'});
     const [updateTime, setUpdateTime] = useState(Date.now());
     
@@ -27,17 +40,21 @@ export default function JsonView() {
     //document-node, object-node, array-node, number-node, boolean-node, null-node, and text.
     //in js typeof node: 
     //'bigint' | 'boolean' | 'function' | 'number' | 'object' | 'string' | 'symbol' | 'undefined'
-    //however, I can be more lazy than that in checking recursion logic
-    //hypothesis being that Object.keys() of any leaf apart from string will be []
-    const recurseNode = (node: any) => { 
-        return node !== undefined && node !== null && typeof node !== 'string';
+    const hasChildren = (node: any) => { 
+        return node !== undefined && node !== null || typeof node === 'object';
     }
+    const renderLeaf = (node: any, k: string) => (
+            <div className={classes.labelRoot}>
+            <Typography className={classes.labelText}>{k}</Typography>
+            <Typography variant='caption'>{node}</Typography>
+            </div>
+    );
     const renderTree = (node: any, k: string) => {
         return (
-            <TreeItem key={i} nodeId={"_" + i++} label={k}>
+            <TreeItem key={i} nodeId={"_" + i++} label={hasChildren(node) ? k : renderLeaf(node, k)}>
             {
                 //note Object.keys of string returns indices / stackoverflow
-                recurseNode(node) ? Object.keys(node).map((key) => renderTree(node[key], key)) : ''
+                hasChildren(node) ? Object.keys(node).map((key) => renderTree(node[key], key)) : ''
             }
             </TreeItem>
         )

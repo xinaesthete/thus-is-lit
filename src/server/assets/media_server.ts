@@ -1,4 +1,5 @@
 import * as config from './file_config'
+import probeMp4 from './metadata_parse'
 import * as fs from 'fs'
 import * as path from 'path'
 import { Dirent } from 'original-fs';
@@ -21,13 +22,13 @@ const vidMimeTypes = {
     mov: 'video/quicktime',
     //mts, mkv...
     //-- instv -- ??
-    instv: 'video/mp4' //might just be mad enough to work?
+    insv: 'video/mp4' //might just be mad enough to work?
 }
 const imageMimeTypes = {
     jpeg: "image/jpeg",
     jpg: "image/jpeg",
     png: "image/png",
-    instp: "image/jpeg", //might just be mad enough to work?
+    insp: "image/jpeg", //might just be mad enough to work?
 };
 const mediaMimeTypes = {
     'video': vidMimeTypes,
@@ -100,6 +101,7 @@ export function addRestAPI(expApp: express.Application) {
             res.status(404).send(`asset path hasn't been configured`);
         }
         const vidPath = id==="red.mp4" ? "red.mp4" : path.join(c.mainAssetPath||"", id);
+        probeMp4(vidPath);
         const ext = path.extname(vidPath);
         if (!hasValidExtention(vidPath, 'video')) {
             res.send(404).send(`can't server ${id} as video`);
