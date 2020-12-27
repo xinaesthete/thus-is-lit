@@ -41,7 +41,7 @@ export default function JsonView() {
     //in js typeof node: 
     //'bigint' | 'boolean' | 'function' | 'number' | 'object' | 'string' | 'symbol' | 'undefined'
     const hasChildren = (node: any) => { 
-        return node !== undefined && node !== null || typeof node === 'object';
+        return (node !== undefined && node !== null) && typeof node == 'object';
     }
     const renderLeaf = (node: any, k: string) => (
             <div className={classes.labelRoot}>
