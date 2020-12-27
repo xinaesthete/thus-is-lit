@@ -8,13 +8,13 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import * as media from '../medialib'
+import { mediaLib } from '../medialib'
 import { observer } from 'mobx-react'
 
 const MediaConfig = observer( function MediaConfig() {
   const [open, setOpen] = React.useState(false);
-  //keep state of path local and only call update from parent when submit is pressed.
-  const [path, setPath] = React.useState(media.mediaLib.mainAssetPath!);
+  //keep state of path local, so if we cancel it doesn't change anything.
+  const [path, setPath] = React.useState(mediaLib.mainAssetPath!);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -25,7 +25,7 @@ const MediaConfig = observer( function MediaConfig() {
   };
 
   const handleSubmit = async () => {
-    media.mediaLib.setMainAssetPath(path);
+    mediaLib.setMainAssetPath(path);
     handleClose();
   }
 

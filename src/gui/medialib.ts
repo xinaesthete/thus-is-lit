@@ -2,7 +2,7 @@ import { makeObservable } from "mobx";
 import { observable, action } from "mobx";
 import * as API from "./gui_comms";
 
-export class MediaLibrary {
+class MediaLibrary {
     mainAssetPath: string = "";
     availableVideos: string[] = ['red.mp4'];
 

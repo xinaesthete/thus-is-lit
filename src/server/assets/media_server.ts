@@ -110,7 +110,7 @@ export function addRestAPI(expApp: express.Application) {
             res.status(404).send(`asset path hasn't been configured`);
         }
         const vidPath = id==="red.mp4" ? "red.mp4" : path.join(c.mainAssetPath||"", id);
-        probeMp4(req.url);
+        // probeMp4(req.url);
         const ext = path.extname(vidPath);
         if (!hasValidExtention(vidPath, 'video')) {
             res.send(404).send(`can't server ${id} as video`);

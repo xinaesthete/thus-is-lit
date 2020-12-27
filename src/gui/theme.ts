@@ -57,6 +57,10 @@ export const useStyles = makeStyles((theme: Theme) =>
     },
     mute: {
       align: 'right', opacity: 0
+    },
+    videoPreview: {
+      width: '100%',
+      padding: theme.spacing(3)
     }
   }),
 );
