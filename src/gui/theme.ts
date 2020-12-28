@@ -58,11 +58,25 @@ export const useStyles = makeStyles((theme: Theme) =>
     mute: {
       align: 'right', opacity: 0
     },
+    videoGridList: {
+    },
+    videoTile: {
+      display: 'flex', //was this getting through?
+      //a <div class="MuiGridListTile-tile"> is created inside with display: block
+      //maybe would be better off taking a less Material-UI centric approach
+      //using flexbox more directly.
+      maxHeight: '300px',
+      justifyContent: 'center',
+      alignItems: 'center'
+    },
     videoPreview: {
+      display: 'flex',
       width: '100%',
-      padding: 0
+      margin: 'auto',
+      justifyContent: 'center',
+      padding: 0,
+      objectFit: 'contain' //the element is larger than its container, so this doesn't work
     }
   }),
 );
-
 

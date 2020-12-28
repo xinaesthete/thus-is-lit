@@ -17,9 +17,8 @@ const VideoCard = (url: string, classes: any,
         });
         setSeekTimes(newTimes);
     }
-    //todo: lazy video.
     return (
-        <GridListTile key={url} cols={1}>
+        <GridListTile key={url} cols={1} className={classes.videoTile} >
             <video src={url} className={classes.videoPreview} style={{width: '100%'}}
                 onMouseMove={(e) => {
                     const target = e.target as HTMLVideoElement;
@@ -53,7 +52,7 @@ export default observer(function MediaBrowser() {
     return (
         <>
             <MediaConfig />
-            <GridList cellHeight={200} cols={4} >
+            <GridList cellHeight='auto' cols={4} className={classes.videoGridList} >
                 {displayedVideos.map((v) => VideoCard(v, classes, seekTimes, setSeekTimes))}
             </GridList>
             <Pagination count={pageCount} page={page} onChange={(e, p) => setPage(p)} />
