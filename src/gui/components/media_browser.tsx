@@ -1,6 +1,7 @@
 import React from 'react'
 import MediaConfig from './media_config'
 import { GridList, GridListTile, GridListTileBar, CardMedia } from '@material-ui/core'
+import { Pagination } from '@material-ui/lab'
 import { observer } from 'mobx-react'
 import { mediaLib } from '../medialib'
 import { useStyles } from '../theme'
@@ -8,7 +9,7 @@ import { produce } from 'immer'
 
 const VideoCard = (url: string, classes: any, 
         seekTimes: Map<string, number>, setSeekTimes: (newTimes: Map<string, number>)=>void) => {
-    const name = decodeURI(url.replace(/.*video\//, ''));
+    const name = decodeURI(url.replace(/.*video\//, '')).split(/[\\/]/).reverse()[0];
     //const [t, setT] = React.useState(0); //can't use hook here.
     const setTime = (t: number) => {
         const newTimes = produce(seekTimes, draftState=> {
@@ -36,15 +37,26 @@ const VideoCard = (url: string, classes: any,
 
 
 export default observer(function MediaBrowser() {
-    const availableVideos = mediaLib.availableVideos;
     const classes = useStyles();
+    const maxItems = 4*3;
+    const availableVideos = mediaLib.availableVideos;
+    const pageCount = Math.floor(availableVideos.length / maxItems);
+    const [page, setPage] = React.useState(0);
+    
+    const startIndex = page*maxItems;
+    const endIndex = Math.min(startIndex+maxItems, availableVideos.length);
+    const displayedVideos = availableVideos.slice(startIndex, endIndex);
+    
+    //lifted from VideoCard because of hooks
     const [seekTimes, setSeekTimes] = React.useState(new Map<string, number>());
+
     return (
         <>
             <MediaConfig />
             <GridList cellHeight={200} cols={4} >
-                {availableVideos.map((v) =>VideoCard(v, classes, seekTimes, setSeekTimes))}
+                {displayedVideos.map((v) => VideoCard(v, classes, seekTimes, setSeekTimes))}
             </GridList>
+            <Pagination count={pageCount} page={page} onChange={(e, p) => setPage(p)} />
         </>
     )
 });
