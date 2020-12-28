@@ -104,7 +104,7 @@ export function addRestAPI(expApp: express.Application) {
             res.status(403).send();
         }
         
-        console.log(`[media_server] (trying to) serve video ${id}`);
+        // console.log(`[media_server] (trying to) serve video ${id}`);
         const c = await config.getConfig();
         if (!c.mainAssetPath) {
             res.status(404).send(`asset path hasn't been configured`);

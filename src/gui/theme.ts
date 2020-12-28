@@ -60,7 +60,7 @@ export const useStyles = makeStyles((theme: Theme) =>
     },
     videoPreview: {
       width: '100%',
-      padding: theme.spacing(3)
+      padding: 0
     }
   }),
 );

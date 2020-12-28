@@ -4,7 +4,7 @@ import {
 } from '@material-ui/core';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import clsx from 'clsx';
+import { enableMapSet } from 'immer'
 import { ThemeProvider } from '@material-ui/core/styles';
 import theme, { useStyles } from './theme'
 import DebugPanel from './components/debug/debug_panel';
@@ -17,6 +17,8 @@ import { Threact } from '../common/threact/threact';
 import { DefaultCube } from '../common/threact/threexample';
 import RendererControl from './components/renderer_control'
 import MediaConfig from './components/media_config';
+
+enableMapSet();
 
 enum AppTabs {
   Media, Renderer, Debug
