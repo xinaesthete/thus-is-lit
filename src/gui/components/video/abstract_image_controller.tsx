@@ -2,7 +2,7 @@ import { Typography } from '@material-ui/core'
 import React from 'react'
 import { AbstractImageDecriptor, VideoDescriptor } from '../../../common/media_model'
 
-import VideoController, { VProps } from './video_controller'
+import VideoController from './video_controller'
 
 interface AbsImgProps {
     image: AbstractImageDecriptor;

@@ -53,8 +53,13 @@ async function watch(name, node=false) {
     });
     chokidar.watch([`src/${name}/**/*`, `src/common/**/*`], {ignoreInitial: true}).on('all', () => {
         console.log(`[${new Date()}] rebuilding ${name}`);
-        //whay am I not seeing compile errors in console output?
-        builder.rebuild();
+        try {
+            builder.rebuild();
+        } catch (error) {
+            //note: we get UnhandledPromiseRejectionWarning from node when there's an error,
+            //and trying to catch here does nothing AFAICT.
+            console.log(`caught error '${error}' while rebuilding ${name}`);
+        }
     });
 }
 (async () => {

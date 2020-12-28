@@ -3,7 +3,7 @@ import MediaConfig from './media_config'
 import { GridList, GridListTile, GridListTileBar, CardMedia } from '@material-ui/core'
 import { Pagination } from '@material-ui/lab'
 import { observer } from 'mobx-react'
-import { mediaLib } from '../medialib'
+import mediaLib from '../medialib'
 import { useStyles } from '../theme'
 import { produce } from 'immer'
 

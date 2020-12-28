@@ -35,6 +35,7 @@ async function probeRawMetadata(filename: string) {
     }
 }
 
+//something very much like this should exist for AbstractImageDescriptor
 export default async function probeVideoMetadata(url: string) : Promise<VideoDescriptor> {
     const id = decodeURI(url.substring(url.indexOf('/video/') + 7));
     // console.log(url );

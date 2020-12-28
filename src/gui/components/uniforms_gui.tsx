@@ -98,12 +98,18 @@ function TweakableSliderPair(u: SliderProp<vec2>) {
 // }
 
 
-//maybe more like KaleidModel rather than Uniforms here.
 interface KProps {
     kaleid: KaleidModel,
 }
+/** this is actually a fairly generic GUI for making a bunch of sliders for tweakable values.
+ * Hopefully soon we'll reason about what different types of models we want,
+ * and both how to make more explicitly designed GUIs for something like Kaleid, also what more
+ * flexible dynamic models might look like.
+ */
 export function KaleidGUI(props: KProps) {
     const classes = useStyles();
+    //we could / should be a context provider
+    //all the more relevant for mutator (which I should implement...)
     const [model, setModel] = React.useState(props.kaleid);
 
     const handleSetImage = (newImg: AbstractImageDecriptor) => {

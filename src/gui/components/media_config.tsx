@@ -8,7 +8,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import { mediaLib } from '../medialib'
+import mediaLib from '../medialib'
 import { observer } from 'mobx-react'
 
 const MediaConfig = observer( function MediaConfig() {

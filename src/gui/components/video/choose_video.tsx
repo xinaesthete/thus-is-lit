@@ -2,7 +2,7 @@ import React from 'react'
 import { observer } from 'mobx-react'
 import Select from '@material-ui/core/Select'
 import MenuItem from '@material-ui/core/MenuItem'
-import { mediaLib } from '../../medialib'
+import mediaLib from '../../medialib'
 import { httpURL } from '../../../common/constants'
 import { useStyles } from '../../theme'
 
@@ -23,6 +23,7 @@ export default observer( function ChooseVideo(props: {
   const availableVideos = mediaLib.availableVideos;
   //TODO options for advance to next video in sequence / random after it finishes.
   const [video, setVideo] = React.useState(props.currentVideo);
+  
   const handleChoose = (n: string) => {
     setVideo(n); //consider resetting time as well...
     props.setURL(n);

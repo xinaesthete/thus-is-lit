@@ -21,6 +21,8 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 export default function RendererControl() {
     const classes = useStyles();
+    // this should be brought into a wider mobx state, which would help us do things like 'assign to renderer'
+    // from within media_browser.
     const [renderModels, setRenderModels] = React.useState([] as KaleidModel[]);
     //we can pull from server, similarly to how we do other things...
     //this is not nice, but may be ok for now.

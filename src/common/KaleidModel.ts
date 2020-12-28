@@ -6,7 +6,7 @@
 // reflection of that (serving also a guide to what generated).
 
 
-import { VideoDescriptor, AbstractImageDecriptor } from "./media_model";
+import { AbstractImageDecriptor } from "./media_model";
 import { Numeric, Tweakable } from "./tweakables";
 
 export default interface KaleidModel {
@@ -26,6 +26,7 @@ export default interface KaleidModel {
 }
 
 //passing entire KaleidModel as JSON is heavy.
+//we don't use anything like this as of this writing, but...
 export interface KaleidControlMessage {
     id: number;
 
