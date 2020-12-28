@@ -117,8 +117,7 @@ async function animate(time: number) { //nb this SHOULD ABSOLUTELY NOT be async 
   
   
   
-  const vt = vid.vidEl.currentTime; //->
-  reportTime(vt);
+  reportTime();
 
   const dt = time - t0;
   t0 = time;

@@ -103,7 +103,7 @@ export const onMessage = (key: string, callback: (msg: any) => void) => {
     onMsgs.set(key, callback);
 }
 
-export const reportTime = (t: number) => {
+export const reportTime = () => {
     if (socket.readyState !== WebSocket.OPEN) return;
     const msg = {address: OscCommandType.ReportTime, time: vidEl.currentTime, id: id};
     socket.send(JSON.stringify(msg));
