@@ -39,7 +39,7 @@ function validExtensions(type: MediaType) {
     return Object.keys(mediaMimeTypes[type]).map(e => '.'+e);
 }
 function hasValidExtention(name: string, type: MediaType) {
-    return validExtensions(type).includes(path.extname(name));
+    return validExtensions(type).includes(path.extname(name).toLowerCase());
 }
 
 async function getMediaList(type: MediaType) {
@@ -53,7 +53,7 @@ async function getMediaList(type: MediaType) {
     const hidden = (n: string) => n[0] === ".";
     //we want more filetypes supported...
     const isValid = (d: Dirent) =>
-        !hidden(d.name) && validExt.includes(path.extname(d.name));
+        !hidden(d.name) && hasValidExtention(d.name, type);
     const dFilter = (d: Dirent) => {
         if (d.isDirectory()) return true;
         if (d.isFile()) return isValid(d);
