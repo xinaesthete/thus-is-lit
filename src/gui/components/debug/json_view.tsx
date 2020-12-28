@@ -43,10 +43,17 @@ export default function JsonView() {
     const hasChildren = (node: any) => { 
         return (node !== undefined && node !== null) && typeof node == 'object';
     }
+    //"Cannot read property 'align' of undefined in Typography2??"
+    //boolean => string seems to fix it.
+    //not a fan of React stacktraces, must get devtools sorted out.
+    const str = (node: any) => {
+        if (typeof node == 'boolean') return node ? 'true' : 'false';
+        else return node;
+    }
     const renderLeaf = (node: any, k: string) => (
             <div className={classes.labelRoot}>
             <Typography className={classes.labelText}>{k}</Typography>
-            <Typography variant='caption'>{node}</Typography>
+            <Typography variant='caption'>{str(node)}</Typography>
             </div>
     );
     const renderTree = (node: any, k: string) => {
@@ -54,21 +61,12 @@ export default function JsonView() {
             <TreeItem key={i} nodeId={"_" + i++} label={hasChildren(node) ? k : renderLeaf(node, k)}>
             {
                 //note Object.keys of string returns indices / stackoverflow
+                //also, this traverses the whole tree, maybe when things get complex we should be a bit more lazy.
                 hasChildren(node) ? Object.keys(node).map((key) => renderTree(node[key], key)) : ''
             }
             </TreeItem>
         )
     };
-    function render(node: any, key: string) {
-        //open TreeItem label="key" key={i++}
-        const el = (<TreeItem nodeId={"_" + i++} label={key}></TreeItem>)
-        Object.keys(node).map(k => {
-            const child = node[k];
-            //is leaf? then the recursion will be quick and stack-overflowy.
-            render(child, k);
-        });
-        //close TreeItem
-    }
         
     return (
         <>
