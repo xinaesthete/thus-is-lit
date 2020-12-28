@@ -117,7 +117,7 @@ export function addRestAPI(expApp: express.Application) {
             return;
         }
         const typeKey = path.extname(vidPath).substring(1) as 'mp4' | 'mov' | 'webm'; //sorry
-        const contentType = vidMimeTypes[typeKey];
+        // const contentType = vidMimeTypes[typeKey];
         try {
             const stat = await fs.promises.stat(vidPath);
             
@@ -126,39 +126,19 @@ export function addRestAPI(expApp: express.Application) {
                 return;
             }
             
-            const fileSize = stat.size
-            ///XXX: I think this range stuff might just be noise.
-            //one of the answers here https://stackoverflow.com/questions/46625044/how-to-stream-a-m4v-video-with-nodejs
-            //mentions 'strimming' with a simple res.status(200).sendFile()
-            //maybe test that once seek support is added.
-            const range = req.headers.range
-            if (range) {
-                const parts = range.replace(/bytes=/, "").split("-")
-                const start = parseInt(parts[0], 10)
-                const end = parts[1]
-                ? parseInt(parts[1], 10)
-                : fileSize - 1
-                const chunksize = (end - start) + 1
-                const file = fs.createReadStream(vidPath, { start, end })
-                const head = {
-                    'Content-Range': `bytes ${start}-${end}/${fileSize}`,
-                    'Accept-Ranges': 'bytes',
-                    'Content-Length': chunksize,
-                    'Content-Type': contentType,
-                }
-                res.writeHead(206, head);
-                file.pipe(res);
-            } else {
-                const head = {
-                    'Content-Length': fileSize,
-                    'Content-Type': contentType,
-                }
-                res.writeHead(200, head)
-                fs.createReadStream(vidPath).pipe(res);
-            }
+            //seems like we don't need to handle logic of handling ranges etc, node will do it for us.
+            //// what about insv though? Seems fine without bothering to ovveride Content-Type
+            res.sendFile(vidPath);
+            return;
         } catch (error) {
             res.status(500).send(`error '${error}' reading ${vidPath}`);
         }
+    });
+
+    expApp.get('/videoDescriptor/*', async (req, res) => {
+        const id = decodeURI(req.url.substring('/videoDescriptor/'.length))
+        const info = await probeMp4(id);
+        res.send(info);
     });
         
     /** respond with a flat array of mp4s contained under mainAssetPath */
