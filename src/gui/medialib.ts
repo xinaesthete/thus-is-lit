@@ -5,29 +5,28 @@ import { VideoDescriptor, AbstractImageDecriptor, IVideoDescriptor } from "../co
 import * as API from "./gui_comms";
 
 class MediaLibrary {
-    @observable mainAssetPath: string = "";
-    @observable availableVideos: string[] = ['red.mp4'];
-    @observable imageDescriptors = new Map<string, AbstractImageDecriptor>();
+    mainAssetPath: string = "";
+    availableVideos: string[] = ['red.mp4'];
+    imageDescriptors = new Map<string, AbstractImageDecriptor>();
 
     constructor() {
-        makeObservable(this);
-        // {
-        //     //somewhat prefer @decorator style, but it's warned against currently
-        //     //TODO: revert to non-decorator syntax.
-        //     mainAssetPath: observable,
-        //     //really, this should be 'computed' as an async result of changing mainAssetPath
-        //     //but this is not a simple case for mobx... 'computed-async-mobx' requires older mobx...
-        //     //hmmm. maybe I'm making life hard for myself.
-        //     availableVideos: observable,
-        //     videoDescriptors: observable,
-        //     setMainAssetPath: action,
-        //     setAvailableVideos: action
-        // });
+        makeObservable(this, {
+            //somewhat prefer @decorator style, but it's warned against currently
+            mainAssetPath: observable,
+            //really, this should be 'computed' as an async result of changing mainAssetPath
+            //but this is not a simple case for mobx... 'computed-async-mobx' requires older mobx...
+            //hmmm. maybe I'm making life hard for myself.
+            availableVideos: observable,
+            imageDescriptors: observable,
+            setMainAssetPath: action,
+            setAvailableVideos: action,
+            setDescriptorForAsset: action
+        });
         API.requestFileConfigPrefs().then(c => {
             this.setMainAssetPath(c.mainAssetPath!);
         })
     }
-    @action setMainAssetPath(newPath: string) {
+    setMainAssetPath(newPath: string) {
         const oldPath = this.mainAssetPath;
         this.mainAssetPath = newPath;
         API.requestSetMainAssetPath(newPath).then(async ok => {
@@ -54,10 +53,10 @@ class MediaLibrary {
         // return info as AbstractImageDecriptor;  //TODO validation.
         return desc;
     }
-    @action setDescriptorForAsset(url: string, info: AbstractImageDecriptor) {
+    setDescriptorForAsset(url: string, info: AbstractImageDecriptor) {
         this.imageDescriptors.set(url, info);
     }
-    @action setAvailableVideos(newVids: string[]) {
+    setAvailableVideos(newVids: string[]) {
         this.availableVideos = newVids;
         //nb what about imageDescriptors? should we clear the old ones? liable to leak, 
         //also incorrect to keep old keys around that could end up colliding with the new ones
