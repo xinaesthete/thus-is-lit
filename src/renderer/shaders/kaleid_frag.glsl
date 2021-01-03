@@ -113,7 +113,7 @@ void main() {
   vec2 uv2 = mix(normalAspectUV, pol2car(polar) + ImageCentre, KaleidMix);
   uv2 = mozaic(uv2, Mozaic, MozMix, MozPow, MozGain);
 
-  vec2 _uvLim = mix(UVLimit, UVLimit.yx, min(floor(ImageAspect), 1.));
+  vec2 _uvLim = UVLimit;//mix(UVLimit, UVLimit.yx, min(floor(ImageAspect), 1.));
   uv2 = mirrorRepeat(uv2, _uvLim); //WRONG why oh why yx?
   // uv2 = mirrorRepeat(uv2, UVLimit+vec2(0.0, 0.01));
   vec4 col = texture2D(texture1, uv2);

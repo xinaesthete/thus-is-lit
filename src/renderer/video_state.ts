@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import { AbstractImageDecriptor, ImageFileDescriptor, ImageType, VideoDescriptor } from '../common/media_model';
+import { AbstractImageDecriptor, ImageFileDescriptor, ImageType, ImRot, VideoDescriptor } from '../common/media_model';
 
 //could ping-ponging video elements help to avoid crash?
 //(or just pause rendering to test...)
@@ -39,7 +39,7 @@ function setVideoState(state: VideoDescriptor) {
     vidEl.oncanplay = () => {
         console.log(`can play`);
         pendingVideoSwitch = false;
-        vidEl.currentTime = 0;
+        //vidEl.currentTime = 0;
         activeTexture = vidTex;
         vidEl.oncanplay = null;
         vidEl.play();
@@ -60,9 +60,6 @@ function setVideoState(state: VideoDescriptor) {
     setVideoURL(state.url); //(debugging:::) url is not a string, but another copy of the whole VideoState...
     vidEl.muted = state.muted;
     vidEl.volume = state.volume;
-    // ?? there is a metadata field for portrait that at least some browsers understand, but can we interpret it here?
-    //    or perhaps we need to try to do something in the server?  Will that be more reliable anyway?
-    // vidEl.rotation
 }
 let imgUrl = '';
 export function setImageState(state: AbstractImageDecriptor) {
@@ -102,12 +99,18 @@ setTextureParams(vidTex);
 * @param {number} imageAspect - aspect ratio (width / height) of the texture.
 * @param {number} screenAspect - the aspect ratio (width / height) of the model that contains the texture
 * @param {"fit"|"fill"|"stretch"} mode - three modes of manipulating the texture offset and scale
+* @param {ImRot} [rotation] - optional rotation by increment of 90°
 * @param {number} [alignH] - optional multiplier to align the texture horizontally - 0: left, 0.5: center, 1: right
 * @param {number} [alignV] - optional multiplier to align the texture vertically - 0: bottom, 0.5: middle, 1: top
 **/
 export function fitTexture(texture: THREE.Texture, 
-    screenAspect: number, imageAspect: number, mode: "fit"|"fill"|"stretch", alignH = 0.5, alignV = 0.5) {
+    screenAspect: number, imageAspect: number, mode: "fit"|"fill"|"stretch", rotation: ImRot = 0, alignH = 0.5, alignV = 0.5) {
     //const imageAspect = texture.image.width / texture.image.height;
+    if (rotation == -90 || rotation == 90) {
+        imageAspect = 1 / imageAspect;
+        texture.flipY = true; //looks as though this is necessary, but doesn't seem to do anything.
+    }
+    texture.rotation = Math.PI * rotation/180;
 
     const scale = imageAspect / screenAspect;
     const offsetX = (imageAspect - screenAspect) / imageAspect;

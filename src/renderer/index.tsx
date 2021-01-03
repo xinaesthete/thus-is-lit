@@ -106,7 +106,7 @@ function animate(time: number) { //nb this SHOULD ABSOLUTELY NOT be async but it
   // uniforms.UVLimit.value = {x: vw/longSide, y: vh/longSide};
   
   //TODO expose a property for "fit"
-  vid.fitTexture(vid.activeTexture, w/h, vw/vh, "fit");
+  vid.fitTexture(vid.activeTexture, w/h, vw/vh, "fit", im.rotation);
   //I have a problem with debugger in electron... 
   //I could try to fix that, or just implement that part of server and use browser.
   //how about switching these values based on whether screen or image aspect are portrait?
