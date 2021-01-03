@@ -96,7 +96,9 @@ function animate(time: number) { //nb this SHOULD ABSOLUTELY NOT be async but it
   //const img = uniforms.texture1.value;
   const vw = im.width;
   const vh = im.height;
-  uniforms.ImageAspect.value = vw/vh;
+  
+  const imageAspect = (im.rotation == -90 || im.rotation == 90) ? vh/vw : vw/vh;
+  uniforms.ImageAspect.value = imageAspect;
   const longSide = Math.max(vw, vh);
   // UVLimit is a vec2 because it traces its origins to portion of POT texture
   // { x/NPOT(x), y/NPOT(y) }
@@ -106,7 +108,8 @@ function animate(time: number) { //nb this SHOULD ABSOLUTELY NOT be async but it
   // uniforms.UVLimit.value = {x: vw/longSide, y: vh/longSide};
   
   //TODO expose a property for "fit"
-  vid.fitTexture(vid.activeTexture, w/h, vw/vh, "fit", im.rotation);
+  
+  vid.fitTexture(vid.activeTexture, w/h, imageAspect, "fit", im.rotation);
   //I have a problem with debugger in electron... 
   //I could try to fix that, or just implement that part of server and use browser.
   //how about switching these values based on whether screen or image aspect are portrait?

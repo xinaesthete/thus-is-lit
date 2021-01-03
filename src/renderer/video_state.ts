@@ -107,8 +107,8 @@ export function fitTexture(texture: THREE.Texture,
     screenAspect: number, imageAspect: number, mode: "fit"|"fill"|"stretch", rotation: ImRot = 0, alignH = 0.5, alignV = 0.5) {
     //const imageAspect = texture.image.width / texture.image.height;
     if (rotation == -90 || rotation == 90) {
-        imageAspect = 1 / imageAspect;
-        texture.flipY = true; //looks as though this is necessary, but doesn't seem to do anything.
+        //imageAspect = 1 / imageAspect;
+        //texture.flipY = true; //looks as though this is necessary, but doesn't seem to do anything.
     }
     texture.rotation = Math.PI * rotation/180;
 

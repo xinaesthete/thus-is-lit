@@ -102,6 +102,8 @@ void main() {
   //c.x *= ScreenAspect;
   ////c.y /= ScreenAspect;
   
+  //not correcting for aspect in the right way here
+  //polar coordinates should relate to ScreenAspect, but have nothing to do with ImageAspect.
   vec2 polar = car2pol(uv - c);
   polar.y += OutAngle * segAng;
   float fr = fract(polar.y / segAng);
@@ -113,9 +115,11 @@ void main() {
   vec2 uv2 = mix(normalAspectUV, pol2car(polar) + ImageCentre, KaleidMix);
   uv2 = mozaic(uv2, Mozaic, MozMix, MozPow, MozGain);
 
-  vec2 _uvLim = UVLimit;//mix(UVLimit, UVLimit.yx, min(floor(ImageAspect), 1.));
-  uv2 = mirrorRepeat(uv2, _uvLim); //WRONG why oh why yx?
+  //FFS... all the mathematical rigour of a chimp brandishing a compass...
+  vec2 _uvLim = vec2(1., mix(UVLimit.y, UVLimit.x, min(floor(ImageAspect), 1.)));
+  uv2 = mirrorRepeat(uv2, _uvLim);
   // uv2 = mirrorRepeat(uv2, UVLimit+vec2(0.0, 0.01));
+  
   vec4 col = texture2D(texture1, uv2);
   vec3 colHSV = rgb2hsv(col.rgb);
   colHSV.y = bias(gain(colHSV.y, SaturationGain), SaturationBias);
