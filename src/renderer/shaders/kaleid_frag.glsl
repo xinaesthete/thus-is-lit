@@ -96,14 +96,16 @@ void main() {
   //uv = (textureMatrix1* vec3(uv, 1.)).xy; // / UVLimit;
   vec2 normalAspectUV = correctAspect(vertTexCoord.xy);
   uv -= 0.5;
-  uv = correctAspect(uv);
+  //not correcting for aspect in the right way here
+  //polar coordinates should relate to ScreenAspect, but have nothing to do with ImageAspect.
+  //'correctAspect' applies texture matrix.
+  // uv = correctAspect(uv);
+  uv.x *= ScreenAspect;
   
   vec2 c = Centre; //maybe change this so 0 is in the middle.
   //c.x *= ScreenAspect;
   ////c.y /= ScreenAspect;
   
-  //not correcting for aspect in the right way here
-  //polar coordinates should relate to ScreenAspect, but have nothing to do with ImageAspect.
   vec2 polar = car2pol(uv - c);
   polar.y += OutAngle * segAng;
   float fr = fract(polar.y / segAng);
@@ -112,7 +114,10 @@ void main() {
   ///consider something more interesting here...
   polar.x *= Zoom;
 
-  vec2 uv2 = mix(normalAspectUV, pol2car(polar) + ImageCentre, KaleidMix);
+  vec2 uv_a = correctAspect(pol2car(polar) + ImageCentre);
+  
+  // vec2 uv2 = mix(normalAspectUV, pol2car(polar) + ImageCentre, KaleidMix);
+  vec2 uv2 = mix(normalAspectUV, uv_a, KaleidMix);
   uv2 = mozaic(uv2, Mozaic, MozMix, MozPow, MozGain);
 
   //FFS... all the mathematical rigour of a chimp brandishing a compass...
