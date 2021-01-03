@@ -25,7 +25,7 @@ export enum MovementType {
 //add an optional neutral value to reset to? (eg gain = 0.5)
 export interface Tweakable<T extends Numeric> {
     name?: string,
-    value: T,
+    value: T, //in concrete uses this may be @observable (and set with an @action)
     min?: number,
     max?: number,
     step?: number,

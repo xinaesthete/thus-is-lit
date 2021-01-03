@@ -3,45 +3,42 @@ import produce from 'immer'
 import { VideoDescriptor } from '../../../common/media_model'
 import ChooseVideo from './choose_video'
 import ToggleButton from '@material-ui/lab/ToggleButton/ToggleButton'
-import VolumeMute from '@material-ui/icons/VolumeMute'
 import VolumeOff from '@material-ui/icons/VolumeOff'
 import VolumeUp from '@material-ui/icons/VolumeUp'
 import { useStyles } from '../../theme'
+import { observer } from 'mobx-react'
+import mediaLib from '../../medialib'
+import { action } from 'mobx'
 
 export interface VProps {
   video: VideoDescriptor;
   setVideo: (newVid: VideoDescriptor)=>void
 }
 
-function MuteToggle(props: VProps) {
-  const classes = useStyles();
-  const setMuted=(muted: boolean) => {
-    const newVideo = produce(props.video, (draft) => {draft.muted = muted; return draft});
-    props.setVideo(newVideo); //should be fine way of changing state?
-  };
+const MuteToggle = observer(function MuteToggle(props: VProps) {
   return (
     <>
-      <ToggleButton className="mute" value={props.video.muted} onChange={()=>setMuted(!props.video.muted)}>
+      <ToggleButton className="mute" value={props.video.muted} 
+        onChange={action(()=>props.video.muted = !props.video.muted)}>
         { props.video.muted ? <VolumeOff /> : <VolumeUp /> }
       </ToggleButton>
     </>
   )
-}
+});
 
-export default function VideoController(props: VProps) {
-  //useContext? MobX?
+export default observer(function VideoController(props: VProps) {
   const {video, setVideo} = {...props};
-  const setName = (name: string) => {
-    console.log(`setName`);
-    setVideo(produce(video, draft => {
-      draft.url = name;
-    }));
+  const setName = async (name: string) => {
+    console.log(`[video_controller] setName ${name}`);
+    
+    const desc = await mediaLib.getDescriptorAsync(name) as VideoDescriptor;
+    setVideo(desc);
   }
 
   return (
     <>
-      <ChooseVideo currentVideo={video.url} setURL={setName} />
+      <ChooseVideo video={video} setURL={setName} />
       <MuteToggle video={video} setVideo={setVideo} />
     </>
   )
-}
+});

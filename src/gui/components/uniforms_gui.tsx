@@ -5,16 +5,17 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import React from 'react'
 import produce from 'immer'
 import {produceWithPatches} from 'immer'
-import KaleidModel from '../../common/KaleidModel';
+import KaleidModel, { ObservableKaleidModel } from '../../common/KaleidModel';
 //maybe want to use material, or just plain-old vanilla dat.gui...
 //maybe revisit react-dat-gui with benefit of understanding React a bit better.
 //import DatGui, {DatNumber, DatString} from 'react-dat-gui'
 import {Uniforms, Numeric, Tweakable, isNum, vec2} from '../../common/tweakables'
 import { sendModel } from '../gui_comms';
-import VideoController from './video/video_controller'
-import {AbstractImageDecriptor, VideoDescriptor} from '../../common/media_model'
+import { AbstractImageDecriptor } from '../../common/media_model'
 import { useStyles } from '../theme'
 import AbstractImageController from './video/abstract_image_controller'
+import { observer } from 'mobx-react'
+import { action } from 'mobx'
 
 interface SliderProp<T extends Numeric> extends Tweakable<T> {
     // onChangeX: React.ChangeEventHandler<number>
@@ -67,7 +68,6 @@ function TweakableSliderPair(u: SliderProp<vec2>) {
         const newVal = {...val};
         newVal[k] = newComponentValue;
         setVal(newVal);
-        ///this doesn't seem to work... is passing event through like this wrong?
         u.onChange(event, newVal);
     }
     return (
@@ -87,70 +87,26 @@ function TweakableSliderPair(u: SliderProp<vec2>) {
     )
 }
 
-// function FilterBox({filterText: string}) {
-//     // I'm sure there's a good way I can abstract the label / child thing so I can style coherently
-//     return (
-//         <>
-//             {/* <RowLabel {..."filter"} /> */}
-
-//         </>
-//     )
-// }
-
 
 interface KProps {
-    kaleid: KaleidModel,
+    kaleid: ObservableKaleidModel,
 }
 /** this is actually a fairly generic GUI for making a bunch of sliders for tweakable values.
  * Hopefully soon we'll reason about what different types of models we want,
  * and both how to make more explicitly designed GUIs for something like Kaleid, also what more
  * flexible dynamic models might look like.
  */
-export function KaleidGUI(props: KProps) {
+const KaleidGUI = observer((props: KProps) => {    ///function KaleidGUI(props: KProps) {
     const classes = useStyles();
     //we could / should be a context provider
     //all the more relevant for mutator (which I should implement...)
-    const [model, setModel] = React.useState(props.kaleid);
+    //--> how am I getting away with hooks in here when there can be different numbers of these over time?
+    // const [model, setModel] = React.useState(props.kaleid);
+    const model = props.kaleid; //will probably be the way with mobx / no setModel
 
-    const handleSetImage = (newImg: AbstractImageDecriptor) => {
-        //setFilename(newName);
-        const newModel = produce(model, draftState => {
-            draftState.imageSource = newImg; //turtles all the way down (there is a better way)
-        });
-        setModel(newModel);
-        //sending model to renderer might be an idea (via host ws)
-        sendModel(newModel);
-    };
-    // const [filterText, setFilterText] = React.useState(/.*/g);
-
-    function makeSliderHandler(key: string, i: number) {
-        return (event: any, newValue: Numeric) => {
-            //need to be careful about deep vs shallow copy when making new state.
-            //Also, we could easily generate a lot of garbage here *which sucks*
-            //because we want to do cool realtime stuff.
-            //Would it make sense to use a pool? Would that confuse React?
-            //https://stackoverflow.com/questions/122102/what-is-the-most-efficient-way-to-deep-clone-an-object-in-javascript?rq=1
-            
-            //https://medium.com/@housecor/handling-state-in-react-four-immutable-approaches-to-consider-d1f5c00249d5
-            //adding immer
-            //ALSO NOTE setState calls are batched, callback form of setState will run after completion
-            const newModel = produce(model, draftState=> {
-                //draftState.tweakables[key].value = newValue; //duh, tweakables is an array
-                const arr = draftState.tweakables;
-                //XXX::: this is not technically correct / safe: there is no guarantee that tweakable names are unique.
-                //in general we're really expecting the tweakables array not to change order / size etc and
-                //MOST CERTAINLY HAVE NOT TESTED anything that involves anything like that, and don't intend to any time soon.
-                if (i >= arr.length || arr[i].name !== key) i = draftState.tweakables.findIndex(t=>t.name === key);
-                if (i === -1) return draftState;
-                const t = draftState.tweakables[i];
-                //console.log(`changing ${key} from ${JSON.stringify(t.value)} to ${JSON.stringify(newValue)}`);
-                t.value = newValue;
-            });
-            setModel(newModel);
-            //sending model to renderer might be an idea (via host ws)
-            sendModel(newModel);
-        }
-    }
+    const handleSetImage = action((newImg: AbstractImageDecriptor) => {
+        model.imageSource = newImg;
+    });
 
     return (
         <div className={classes.uniformsGui}>
@@ -169,7 +125,7 @@ export function KaleidGUI(props: KProps) {
                 {model.tweakables.map((u, i) => {
                     return (
                         <TweakableSlider key={i} {...u}
-                        onChange={makeSliderHandler(u.name!, i)}
+                        onChange={action((e, v) => { u.value = v; })}
                         />
                     )
                 })}
@@ -179,4 +135,6 @@ export function KaleidGUI(props: KProps) {
         </Accordion>
         </div>
     )
-}
+});
+
+export default KaleidGUI;

@@ -13,7 +13,7 @@ import main_state from '../main_state'
 //"C:\code\thus-is-lit\public\build\node_modules\@ffprobe-installer\win32-x64\ffprobe.exe"
 //need to adapt watch.js... make @ffprobe-installer external
 import { path as ffprobePath } from '@ffprobe-installer/ffprobe'
-import { VideoDescriptor } from '../../common/media_model'
+import { parseFFProbeVideoDescriptor, VideoDescriptor } from '../../common/media_model'
 import * as path from 'path'
 import { getConfig } from './file_config'
 
@@ -41,7 +41,8 @@ export default async function probeVideoMetadata(url: string) : Promise<VideoDes
     // console.log(url );
     const filename = path.join((await getConfig()).mainAssetPath || "", id);
     const data = await probeRawMetadata(filename);
-    const info = new VideoDescriptor(url, data); //nb, fairly like to throw an error.
+    const parsed = parseFFProbeVideoDescriptor(url, data);
+    const info = new VideoDescriptor(url, parsed);
     //for quick debugging... if we really keep state like this about, we'd also want to use it as a cache
     if (!main_state.videoMetadataParsed.find(i=>i.url==url)) main_state.videoMetadataParsed.push(info);
     // console.log(`done probing ${url}`);

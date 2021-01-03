@@ -8,7 +8,7 @@
 import { Uniforms } from '../common/tweakables';
 
 import { httpURL, newRenderer, websocketURL } from '../common/constants'
-import KaleidModel from '../common/KaleidModel';
+import KaleidModel, { ObservableKaleidModel } from '../common/KaleidModel';
 import { makeRegisterControllerMessage, OscCommandType } from '../common/socket_cmds';
 import { FileConfigPrefs } from '../common/media_model';
 // let's make a button that creates a renderer...
@@ -26,7 +26,7 @@ export async function requestNewRenderer() {
     });
     const info = await response.json() as KaleidModel;
     console.log(`newRenderer response received`);
-    return info;
+    return new ObservableKaleidModel(info);
 }
 
 export async function requestFileConfigPrefs() {
@@ -66,7 +66,8 @@ export async function requestImageList() {
 
 export async function requestModelList() {
     const result = await fetch(`${httpURL}/modelList`);
-    return await result.json() as KaleidModel[];
+    const info = await result.json() as KaleidModel[];
+    return info.map(m => new ObservableKaleidModel(m));
 }
 
 //Establish a WebSocket connection to server 
@@ -96,5 +97,6 @@ ws.onmessage = ev => {
 }
 
 export function sendModel(model: KaleidModel) {
-    ws.send(JSON.stringify({model: model, address: OscCommandType.Set}));
+    const msg = JSON.stringify({model: model, address: OscCommandType.Set});
+    ws.send(msg);
 }

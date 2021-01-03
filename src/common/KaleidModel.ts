@@ -5,9 +5,10 @@
 // With the current very-static form of Kaleid renderer, could be good to make this a straightforward
 // reflection of that (serving also a guide to what generated).
 
-
-import { AbstractImageDecriptor } from "./media_model";
-import { Numeric, Tweakable } from "./tweakables";
+import { observable, makeObservable, action, autorun } from 'mobx'
+import { sendModel } from '../gui/gui_comms';
+import { AbstractImageDecriptor, ImageType } from "./media_model";
+import { MovementType, Numeric, Tweakable } from "./tweakables";
 
 export default interface KaleidModel {
     /// auxiliary / housekeeping stuff:::
@@ -23,6 +24,45 @@ export default interface KaleidModel {
     //later--- textureSource: VideoState | FeedbackTexture | ... ///observable
     imageSource: AbstractImageDecriptor;
     tweakables: Tweakable<any>[];
+}
+
+class MobxTweakable<T extends Numeric> implements Tweakable<T> {
+    constructor(init: Tweakable<T>) {
+        Object.assign(this, init);
+        this.value = init.value;
+        makeObservable(this, {value: observable});
+    }
+    name?: string | undefined;
+    value: T;
+    min?: number | undefined;
+    max?: number | undefined;
+    step?: number | undefined;
+    delta?: number | undefined;
+    movement?: MovementType | undefined;
+    //"You can write a action setter for each prop of the above, but it misses the point (and optimizations), 
+    //the idea is rather that you mark all the operations your application has as actions."
+    // that doesn't mean we need to use setters everywhere (with the irritation that "observable get" & "action set"
+    // don't mix)
+    // we just need to wrap events as action e.g. (pseudocode) "onChange=action((v) => u.value = v)"
+    // no need for "onChange=(v) => u.setValue(v)"
+    // @action setValue(v: T) {
+    //     this.value = v;
+    // }
+}
+
+
+//reaction / action : send model updates...
+export class ObservableKaleidModel implements KaleidModel {
+    id: number = -1;
+    imageSource: AbstractImageDecriptor;
+    tweakables: MobxTweakable<any>[];
+    constructor(init: KaleidModel) {
+        this.imageSource = {width: -1, height: -1, imgType: ImageType.Null}
+        Object.assign(this, init);
+        this.tweakables = init.tweakables.map(t => new MobxTweakable(t));
+        makeObservable(this, {imageSource: observable, tweakables: observable});
+        autorun(() => sendModel(this));
+    }
 }
 
 //passing entire KaleidModel as JSON is heavy.

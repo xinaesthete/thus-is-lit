@@ -1,3 +1,4 @@
+import { action, makeObservable, observable } from "mobx";
 
 /** this will have different implementations in GUI and Server for controlling persistence etc */
 export interface FileConfigPrefs {
@@ -31,41 +32,55 @@ export interface ImageFileDescriptor extends AbstractImageDecriptor {
 }
 
 export interface IVideoDescriptor extends ImageFileDescriptor {
-    muted: boolean; //I renamed 'state' to 'descriptor'
-    volume: number; //- but maybe things like this belong to a 'state'
-    duration: number; //(not this, though)
+    duration: number;
     //seek time, cue points...
     //VideoPlaybackQuality...
 }
-export class VideoDescriptor implements IVideoDescriptor {
-    muted: boolean;
-    volume: number;
-    duration: number;
+//not totally clear on this being what I want, particularly with 'extends' below.
+export class VideoPlayState {
+    @observable muted = true;
+    @observable volume = 1;
+    constructor(){
+        makeObservable(this);
+    }
+}
+
+export function parseFFProbeVideoDescriptor(url: string, data: any) : IVideoDescriptor {
+    if (!data.streams) throw new Error(`no streams`);
+    const streams = data.streams as object[];
+    const vidStream = streams.find(
+        (s: any) => s["codec_type"] === "video"
+    ) as any;
+    if (!vidStream) throw new Error(`no video stream`);
+    const width = vidStream.width;
+    const height = vidStream.height;
+    const duration = Number.parseFloat(vidStream.duration);
+    // this.muted = true;
+    // this.volume = 1;
+    const result: IVideoDescriptor = {width, height, duration, url, imgType: ImageType.VideoFile} 
+
+    if (vidStream.side_data_list) {
+        const rotation = vidStream.side_data_list[0].rotation;
+        if (rotation) result.rotation = rotation;
+        //now that I understand this, I think I want to change the order of how things are set...
+        //generally more of this Descriptor pushed to the renderer...
+    }
+    return result;
+}
+
+export class VideoDescriptor extends VideoPlayState implements IVideoDescriptor {
+    // muted: boolean;
+    // volume: number;
+    duration: number = 0;
     url: string;
-    width: number;
-    height: number;
-    imgType: ImageType;
+    width: number = -1;
+    height: number = -1;
+    imgType: ImageType = ImageType.VideoFile;
     rotation?: ImRot;
-    constructor(url: string, data: any) {
-        this.url = url; //nb, we may want to pass info differently...
-        this.imgType = ImageType.VideoFile;
-        if (!data.streams) throw new Error(`no streams`);
-        const streams = data.streams as object[];
-        const vidStream = streams.find(
-            (s: any) => s["codec_type"] === "video"
-        ) as any;
-        if (!vidStream) throw new Error(`no video stream`);
-        this.width = vidStream.width;
-        this.height = vidStream.height;
-        this.duration = Number.parseFloat(vidStream.duration);
-        this.muted = true;
-        this.volume = 1;
-        if (vidStream.side_data_list) {
-            const rotation = vidStream.side_data_list[0].rotation;
-            if (rotation) this.rotation = rotation;
-            //now that I understand this, I think I want to change the order of how things are set...
-            //generally more of this Descriptor pushed to the renderer...
-        }
+    constructor(url: string, data?: IVideoDescriptor) {
+        super();
+        this.url = url;
+        Object.assign(this, data);
     }
 }
 
