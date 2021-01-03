@@ -1,6 +1,9 @@
 import * as THREE from 'three'
 import { AbstractImageDecriptor, ImageFileDescriptor, ImageType, VideoDescriptor } from '../common/media_model';
 
+//could ping-ponging video elements help to avoid crash?
+//(or just pause rendering to test...)
+export let pendingVideoSwitch = false;
 export const vidEl = document.getElementById("vid1") as HTMLVideoElement;
 let vidUrl = "red.mp4";
 console.log(vidUrl);
@@ -20,46 +23,46 @@ export function getVideoURL() {
 export function setVideoURL(url: string) {
     if (url === vidUrl) return;
     if (url === 'red.mp4' && vidEl.currentSrc.endsWith('red.mp4')) return;
+    pendingVideoSwitch = true;
+    vidEl.pause();
     vidEl.src = url;
     vidUrl = url;
-    vidEl.play();
+    //vidEl.play();
 }
 
-//XXX noooo...
-let imageState: AbstractImageDecriptor = {imgType: ImageType.VideoFile, 
-    width: 1920, height: 1080, duration: 999, muted: true, volume: 1,
-    url: vidUrl} as VideoDescriptor; //not the way we do it...
+export let imageState: AbstractImageDecriptor = new VideoDescriptor(vidUrl);
+imageState.width = 1920;
+imageState.height = 1080;
 function setVideoState(state: VideoDescriptor) {
     console.log(`setVideoState: ${JSON.stringify(state, null, 2)}`);
-    vidEl.onchange = () => {
+    imageState = state;
+    vidEl.oncanplay = () => {
+        console.log(`can play`);
+        pendingVideoSwitch = false;
+        vidEl.currentTime = 0;
         activeTexture = vidTex;
-        imageState = {
-            imgType: ImageType.VideoFile,
-            url: vidUrl,
-            duration: vidEl.duration,
-            muted: vidEl.muted,
-            volume: vidEl.volume,
-            width: vidEl.videoWidth,
-            height: vidEl.videoHeight,
-        } as VideoDescriptor; //using object literal and "as" is bad.
+        vidEl.oncanplay = null;
+        vidEl.play();
+        /// the reason I delayed this originally was to try to make sure videoWidth & videoHeight were ok
+        /// I believe I was doing this in the wrong event, as well as then doing something not great.
+        /// I am now seeing quite a few single-frame glitches that I think are unrelated
+        // imageState = {
+        //     imgType: ImageType.VideoFile,
+        //     url: vidUrl,
+        //     duration: vidEl.duration,
+        //     muted: vidEl.muted,
+        //     volume: vidEl.volume,
+        //     width: vidEl.videoWidth,
+        //     height: vidEl.videoHeight,
+        // } as VideoDescriptor; //using object literal and "as" is bad (especially for somthing like this which expects a constructor).
+        
     }
-    setVideoURL(state.url);
+    setVideoURL(state.url); //(debugging:::) url is not a string, but another copy of the whole VideoState...
     vidEl.muted = state.muted;
     vidEl.volume = state.volume;
     // ?? there is a metadata field for portrait that at least some browsers understand, but can we interpret it here?
     //    or perhaps we need to try to do something in the server?  Will that be more reliable anyway?
     // vidEl.rotation
-}
-function getVideoState() : VideoDescriptor {
-    return {
-        imgType: ImageType.VideoFile,
-        url: vidUrl,
-        duration: vidEl.duration,
-        muted: vidEl.muted,
-        volume: vidEl.volume,
-        width: vidEl.videoWidth,
-        height: vidEl.videoHeight
-    }
 }
 let imgUrl = '';
 export function setImageState(state: AbstractImageDecriptor) {
@@ -84,30 +87,6 @@ export function setImageState(state: AbstractImageDecriptor) {
     }
 }
 
-
-export async function getImageState() : Promise<AbstractImageDecriptor> {
-    if (imageState.imgType == ImageType.Null) {
-        //we're not ready yet. I'm sure we should be observing, definitely not doing this...
-        //procrastination...
-        //I do see dimensions, but imgType = 0.
-        async function sleep(ms: number) {
-            return new Promise((resolve) => {
-                setTimeout(resolve, ms);
-            });
-        }
-        const promise: Promise<AbstractImageDecriptor> = new Promise(async (resolve, reject) => {
-            while (imageState.imgType == ImageType.Null) {
-                await sleep(100);
-            }
-            imageState.height = vidEl.videoHeight;
-            imageState.width = vidEl.videoWidth;
-            return imageState;
-        });
-        return promise;
-    } else {
-        return imageState;
-    }
-}
 
 /** make sure texture settings are not going to force it to be scaled down to POT size before it gets used. */
 function setTextureParams(t: THREE.Texture) {

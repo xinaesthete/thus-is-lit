@@ -83,14 +83,15 @@ mesh.position.y = 0.5;
 //mesh.updateMatrix();
 scene.add(mesh);
 let t0 = Date.now();
-async function animate(time: number) { //nb this SHOULD ABSOLUTELY NOT be async but it's convenient for a quick hack.
+function animate(time: number) { //nb this SHOULD ABSOLUTELY NOT be async but it's convenient for a quick hack.
   requestAnimationFrame(animate);
   //uniforms.iTime.value = Date.now() / 1000;
   
   /// How necessary are ScreenAspect & UVLimit?
+  if (vid.pendingVideoSwitch) return;
   let w = window.innerWidth, h = window.innerHeight;
   uniforms.ScreenAspect.value = w/h;
-  const im = await vid.getImageState(); //I shouldn't be updating this stuff every frame anyway, don't need to await here.
+  const im = vid.imageState;
   //but it will only take time when things are still being set up.
   //const img = uniforms.texture1.value;
   const vw = im.width;

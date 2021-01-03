@@ -22,7 +22,7 @@ import { makeRegisterRendererMessage, OscCommandType } from "../common/socket_cm
 import { Numeric, Tweakable } from "../common/tweakables";
 
 import { paramState } from './params'
-import { getImageState, getVideoURL, setImageState, vidEl } from "./video_state";
+import { imageState, getVideoURL, setImageState, vidEl } from "./video_state";
 
 let socket = new WebSocket(websocketURL);
 
@@ -51,7 +51,7 @@ export async function init(specs: Tweakable<Numeric>[]) {
         //const id = Number.parseInt(params.get("id"));
         const model: KaleidModel = {
             id: id,
-            imageSource: await getImageState(),
+            imageSource: imageState,
             tweakables: specs,
         }
     
@@ -88,6 +88,7 @@ socket.onmessage = (ev) => {
             //vidEl.currentTime// server should understand "Accept-Ranges": "bytes"
             //but if I want to add jumping to cue points then I don't want to set that with every update
             //need to be more careful about what I'm setting.
+            //(also would want to be able to pre-cache if I know I might want to seek)
             //// adding a 'time' that will only be there when restoring state
             if (json.time) vidEl.currentTime = json.time;
         }
