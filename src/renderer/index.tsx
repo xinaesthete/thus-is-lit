@@ -32,7 +32,7 @@ const uniforms: Uniforms = {
     'ImageAspect': {value: 1920/1080},
     'Leaves': {value: 3},
     'Angle': {value: 1.05},
-    'OutAngle': {value: 0},
+    'Angle2': {value: 0},
     'Zoom': {value: 1.3},
     'MozMix': {value: 1.},
     'Centre': {value: new Vector2(0.5, 0.5)},
@@ -49,7 +49,7 @@ const parms = params.makeGUI([
     {name: "Leaves", value: 3, min: 1, max: 8, step: 1},
     {name: "Angle", value: 1.05, min: -Math.PI, max: Math.PI},
     {name: "AngleGain", value: 0.5, min: 0, max: 1},
-    {name: "OutAngle", value: 0, min: -1, max: 1},
+    {name: "Angle2", value: 0, min: -1, max: 1},
     {name: "Zoom", value: 1.3, min: 0, max: 10},
     {name: "KaleidMix", value: 0.999, min: 0, max: 1, step: 1},
     {name: "Mozaic", value: 4, min: 1, max: 40}, //log scale...

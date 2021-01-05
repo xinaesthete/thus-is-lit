@@ -5,10 +5,11 @@ uniform float ScreenAspect;
 uniform float ImageAspect;
 uniform vec2 UVLimit;
 uniform float Zoom;
+uniform float Leaves;
 uniform float Angle;
 uniform float AngleGain;
 uniform float KaleidMix;
-uniform float OutAngle;
+uniform float Angle2;
 uniform float Mozaic;
 uniform float MozMix;
 uniform float MozPow;
@@ -24,6 +25,8 @@ uniform vec2 Vignette;
 
 varying vec4 vertColor;
 varying vec2 vertTexCoord;
+
+#define PI 3.14159265359
 
 // 2d cartesian to polar coordinates
 vec2 car2pol(vec2 IN) { return vec2(length(IN), atan(IN.y, IN.x)); }
@@ -107,16 +110,31 @@ void main() {
   ////c.y /= ScreenAspect;
   
   vec2 polar = car2pol(uv - c);
-  polar.y += OutAngle * segAng;
-  float fr = fract(polar.y / segAng);
+  polar.y += Angle2 * segAng;
+  float leaf = polar.y / segAng;
+  float fr = fract(leaf);
   fr = gain(fr, AngleGain);
-  polar.y = Angle + (fr > 0.5 ? 1. - fr : fr) * segAng;
+  //if we don't have an integer number of leaves
+  //then when we're in the final partial leaf, we want to behave differently WRT 'fr'
+  /// rather than '(fr > 0.5 ? 1. - fr : fr)', we should then be comparing fr to leavesFr
+  /// but I seem to be getting this wrong... and how does it relate to Angle2?
+  /// When Angle2 is 0 it doesn't seem to matter.
+  // float leafI = ceil(leaf);
+  // float leavesI = floor(Leaves);
+  // float leavesFr = fract(Leaves);
+  // if (leaf > leavesI) { //never happens.
+  //  polar.y = 0.;// Angle + (fr > 0.5*leavesFr ? leavesFr - fr : fr) * segAng;
+  // } else {
+     polar.y = Angle + (fr > 0.5 ? 1. - fr : fr) * segAng;
+  // }
+
+  polar.y -= Angle2 * segAng;
+
   ///consider something more interesting here...
   polar.x *= Zoom;
 
   vec2 uv_a = correctAspect(pol2car(polar) + ImageCentre);
   
-  // vec2 uv2 = mix(normalAspectUV, pol2car(polar) + ImageCentre, KaleidMix);
   vec2 uv2 = mix(normalAspectUV, uv_a, KaleidMix);
   uv2 = mozaic(uv2, Mozaic, MozMix, MozPow, MozGain);
 
