@@ -10,9 +10,8 @@ uniform float Angle;
 uniform float AngleGain;
 uniform float KaleidMix;
 uniform float Angle2;
+uniform float OutAngle;
 uniform float Mozaic;
-uniform float MozMix;
-uniform float MozPow;
 uniform float MozGain;
 uniform float ContrastPostBias;
 uniform float ContrastPreBias;
@@ -68,14 +67,14 @@ vec3 rgb2hsv(in vec3 c) {
   float e = 1.0e-10;
   return vec3(abs(q.z + (q.w - q.y) / (6.0 * d + e)), d / (q.x + e), q.x);
 }
-vec2 mozaic(vec2 uv, float num, float strength, float p, float g) {
+vec2 mozaic(vec2 uv, float num, float g) {
   vec2 uv2 = (uv - 0.5) * num;
   vec2 _frac = gain(fract(uv2), g);
   vec2 _floor = floor(uv2);
   uv2 = _floor / num;
   uv2 += _frac / num;
   uv2 += 0.5;
-  return mix(uv, uv2, strength);
+  return uv2;
 }
 
 vec2 correctAspect(vec2 uv) {
@@ -85,6 +84,36 @@ vec2 correctAspect(vec2 uv) {
   return (vec3(uv, 1.) * textureMatrix1).xy;
   //return (textureMatrix1*vec3(uv, 1.)).yx * vec2(1., -1.);
   // return vec2(-1., 1.) * (1. - (textureMatrix1*vec3(uv, 1.)).yx);
+}
+
+float quant(float v, float steps) {
+  return floor(steps * v) / steps;
+}
+float quant(float v, float steps, float soft) {
+  float r = steps * v;
+  float h2 = 0.5*soft;
+  // float f = smoothstep(1.-soft, 1., (fract(r)/soft)+(1.-soft));
+  // float f = 1.-smoothstep(1.-soft, 1., (fract(r)/soft)+(1.-soft));
+  // return (floor(r)-f) / steps;
+  r = steps * (v);
+  // float f = smoothstep(0., 1.-soft, fract(r));
+  float f = gain(fract(r), (0.5*soft));
+  return (floor(r)+f) / steps;
+}
+float quantSmoothS(float v, float steps, float soft) {
+  float r = steps * v;
+  r += 0.5;
+  float f = smoothstep(-soft, soft, fract(r)-0.5);
+  return (floor(r)+f-0.5) / steps;
+}
+float quantSmoothG(float v, float steps, float soft) {
+  float r = steps * v;
+  r -= 0.5;
+  float g = 1. - (0.5*soft);
+  float f = gain(fract(r), g);
+  //adding back 0.5 offset: wrong when soft=0., correct otherwise?
+  //conformance with continuous value vs pure quantization
+  return (floor(r)+f+0.5) / steps;
 }
 
 void xmain() {
@@ -110,22 +139,28 @@ void main() {
   ////c.y /= ScreenAspect;
   
   vec2 polar = car2pol(uv - c);
+  polar.y += PI;
+  vec2 polarDry = polar;
+  polar.y += OutAngle * segAng;
   polar.y += Angle2 * segAng;
-  float leaf = polar.y / segAng;
+  float leaf = polar.y / segAng; ///....
   float fr = fract(leaf);
   fr = gain(fr, AngleGain);
-  //if we don't have an integer number of leaves
-  //then when we're in the final partial leaf, we want to behave differently WRT 'fr'
-  /// rather than '(fr > 0.5 ? 1. - fr : fr)', we should then be comparing fr to leavesFr
-  /// but I seem to be getting this wrong... and how does it relate to Angle2?
-  /// When Angle2 is 0 it doesn't seem to matter.
-  // float leafI = ceil(leaf);
-  // float leavesI = floor(Leaves);
-  // float leavesFr = fract(Leaves);
+  float rfr = fr > 0.5 ? 1. - fr : fr;
+  // if we don't have an integer number of leaves
+  // then when we're in the final partial leaf, we want to behave
+  // differently WRT 'fr'
+  /// rather than '(fr > 0.5 ? 1. - fr : fr)', we should then be comparing
+  /// fr to leavesFr but I seem to be getting this wrong... and how does it
+  /// relate to Angle2? When Angle2 is 0 it doesn't seem to matter.
+  float leafI = ceil(leaf);
+  float leavesI = floor(Leaves);
+  float leavesFr = fract(Leaves);
   // if (leaf > leavesI) { //never happens.
-  //  polar.y = 0.;// Angle + (fr > 0.5*leavesFr ? leavesFr - fr : fr) * segAng;
+  //  polar.y = 0.;// Angle + (fr > 0.5*leavesFr ? leavesFr - fr : fr) *
+  //  segAng;
   // } else {
-     polar.y = Angle + (fr > 0.5 ? 1. - fr : fr) * segAng;
+      polar.y = Angle + rfr * segAng;
   // }
 
   polar.y -= Angle2 * segAng;
@@ -136,7 +171,7 @@ void main() {
   vec2 uv_a = correctAspect(pol2car(polar) + ImageCentre);
   
   vec2 uv2 = mix(normalAspectUV, uv_a, KaleidMix);
-  uv2 = mozaic(uv2, Mozaic, MozMix, MozPow, MozGain);
+  uv2 = mozaic(uv2, sqrt(Mozaic), MozGain);
 
   //FFS... all the mathematical rigour of a chimp brandishing a compass...
   vec2 _uvLim = vec2(1., mix(UVLimit.y, UVLimit.x, min(floor(ImageAspect), 1.)));
@@ -148,7 +183,24 @@ void main() {
   colHSV.y = bias(gain(colHSV.y, SaturationGain), SaturationBias);
   colHSV.z = bias(colHSV.z, ContrastPreBias);
   colHSV.z = bias(gain(colHSV.z, ContrastGain), ContrastPostBias);
+  
+  #ifdef DEBUG
+  float v = polarDry.y/(2.*PI);
+  float steps = Leaves;
+  float smoothing = AngleGain;
+  float s = quantSmoothS(v, steps, smoothing * 0.5);
+  float g = quantSmoothG(v, steps, pow(smoothing, 4.));
+  float f = quant(v, steps);
+  colHSV.x = 0.;
+  colHSV.y = 0.;
+  colHSV.z = mix(g, s, KaleidMix);
+  #endif
+  
   col.rgb = hsv2rgb(colHSV);
+  // col.g = quant(polarDry.y/(2.*PI),10.);
+  // col.g = segAng * polar.y / (2.*PI);
+  // col.g = 0.;
+  // col.b = 0.;//leafI / Leaves;
 
   float feather = smoothstep(0., Vignette.x, 0.5 - abs(0.5 - vertTexCoord.x));
   feather *= smoothstep(0., Vignette.y, 0.5 - abs(0.5 - vertTexCoord.y));
