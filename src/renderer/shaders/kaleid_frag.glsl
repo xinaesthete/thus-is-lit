@@ -87,33 +87,34 @@ vec2 correctAspect(vec2 uv) {
 }
 
 float quant(float v, float steps) {
-  return floor(steps * v) / steps;
+  return floor(steps * v) / (steps-1.);
 }
-float quant(float v, float steps, float soft) {
-  float r = steps * v;
-  float h2 = 0.5*soft;
-  // float f = smoothstep(1.-soft, 1., (fract(r)/soft)+(1.-soft));
-  // float f = 1.-smoothstep(1.-soft, 1., (fract(r)/soft)+(1.-soft));
-  // return (floor(r)-f) / steps;
-  r = steps * (v);
-  // float f = smoothstep(0., 1.-soft, fract(r));
-  float f = gain(fract(r), (0.5*soft));
-  return (floor(r)+f) / steps;
-}
+/*** 
+different implementations of quantization with variable softness of step.
+probably would've been worth looking up how others've done it.
+quantSmoothS uses smoothstep: 
+  probably quite a bit faster & has good behaviour with low values of soft
+  high values of soft have wave-y artefacts.
+  */
 float quantSmoothS(float v, float steps, float soft) {
   float r = steps * v;
   r += 0.5;
   float f = smoothstep(-soft, soft, fract(r)-0.5);
-  return (floor(r)+f-0.5) / steps;
+  return (floor(r)+f-1.) / (steps-1.);
 }
+/**
+quantSmoothG uses gain:
+  identical to no quantization when soft = 1. but slower & bad abrupt onset of smoothing.
+*/
 float quantSmoothG(float v, float steps, float soft) {
   float r = steps * v;
   r -= 0.5;
   float g = 1. - (0.5*soft);
   float f = gain(fract(r), g);
-  //adding back 0.5 offset: wrong when soft=0., correct otherwise?
-  //conformance with continuous value vs pure quantization
-  return (floor(r)+f+0.5) / steps;
+  return (floor(r)+f) / (steps-1.);
+}
+float quant(float v, float steps, float soft) {
+  return quantSmoothS(v, steps, soft);
 }
 
 void xmain() {
@@ -184,6 +185,7 @@ void main() {
   colHSV.z = bias(colHSV.z, ContrastPreBias);
   colHSV.z = bias(gain(colHSV.z, ContrastGain), ContrastPostBias);
   
+  #define _DEBUG
   #ifdef DEBUG
   float v = polarDry.y/(2.*PI);
   float steps = Leaves;
@@ -192,15 +194,11 @@ void main() {
   float g = quantSmoothG(v, steps, pow(smoothing, 4.));
   float f = quant(v, steps);
   colHSV.x = 0.;
-  colHSV.y = 0.;
-  colHSV.z = mix(g, s, KaleidMix);
+  colHSV.y = 0.;//abs(f-g)*10.;
+  colHSV.z = s;//mix(g, s, KaleidMix);
   #endif
   
   col.rgb = hsv2rgb(colHSV);
-  // col.g = quant(polarDry.y/(2.*PI),10.);
-  // col.g = segAng * polar.y / (2.*PI);
-  // col.g = 0.;
-  // col.b = 0.;//leafI / Leaves;
 
   float feather = smoothstep(0., Vignette.x, 0.5 - abs(0.5 - vertTexCoord.x));
   feather *= smoothstep(0., Vignette.y, 0.5 - abs(0.5 - vertTexCoord.y));
