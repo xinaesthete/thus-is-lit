@@ -116,6 +116,18 @@ float quantSmoothG(float v, float steps, float soft) {
 float quant(float v, float steps, float soft) {
   return quantSmoothS(v, steps, soft);
 }
+float debugZero(float test, float thresh) {
+  // return 1. - (1./thresh) * min(thresh, abs(test));
+  return 1.-smoothstep(0., thresh, abs(test));
+}
+float debugNear(float test, float targ, float thresh) {
+  return debugZero(targ-test, thresh);
+}
+float debugMod(float test, float m, float thresh) {
+  float m2 = mod(test, m);
+  float v = min(abs(m-m2), m2);
+  return debugZero(v, thresh);
+}
 
 void xmain() {
   vec2 uv = correctAspect(vertTexCoord);
@@ -142,21 +154,29 @@ void main() {
   vec2 polar = car2pol(uv - c);
   vec2 polarDry = polar;
   float pSign = sign(polar.y);
-  polar.y *= pSign; //out, damn seam. (but want simple OutAngle etc back)
+  // polar.y *= pSign; //out, damn seam. (but want simple OutAngle etc back)
   // polar.y += PI;
   polar.y += OutAngle * segAng;
   polar.y += Angle2 * segAng;
   float leavesI = floor(Leaves);
   float leavesFr = fract(Leaves);
-  // polar.y -= 0.5*leavesFr*segAng; //I'd like to be able to scribble with a pencil on my debug gfx...
+  
+  // polar.y -= leavesFr*OutAngle*segAng; //I'd like to be able to scribble with a pencil on my debug gfx...
+  polar.y = mod(polar.y+PI, 2.*PI);
+  polar.y -= PI;
+  
+  // what I'd really like is to seamlessly transition to visually stepping through each transformation.
+  // or for a teacher to be able to inject debug vis into a students code to point out their problem...
   float leaf = polar.y / segAng; ///....
   // leaf -= leavesFr/(PI);
   float leafI = ceil(leaf);
   float fr = fract(leaf);
   fr = gain(fr, AngleGain);
   float rfr = fr > 0.5 ? 1. - fr : fr;
+  // polar.y = Angle + (rfr+OutAngle) * segAng; //makes OutAngle behave like Angle
   polar.y = Angle + rfr * segAng;
   polar.y -= Angle2 * segAng;
+  //polar.y *= pSign; //ineffective?
 
   ///consider something more interesting here...
   polar.x *= Zoom;
@@ -179,9 +199,15 @@ void main() {
   
   #define _DEBUG
   #ifdef DEBUG
-  colHSV.x = 0.;
-  colHSV.y = 0.;//abs(f-g)*10.;
-  colHSV.z = rfr;//polar.y / (2.*PI);
+  vec3 dbg = vec3(0.);
+  dbg.x = colHSV.x = 0.;
+  float thresh = 0.002/polarDry.x;
+  // float a = MozGain*debugNear(polarDry.y, PI, thresh);
+  // float a = MozGain*debugNear(mod(0.1*thresh*sin(400.*polarDry.x)+polarDry.y+(OutAngle*segAng), segAng/2.), 0., thresh);
+  float a = MozGain*debugMod(polarDry.y+(OutAngle*segAng), segAng/2., thresh);
+  dbg.y = a;  //abs(f-g)*10.;
+  dbg.z = max(a, leafI/Leaves);// max(a, rfr);//polar.y / (2.*PI);
+  colHSV = mix(dbg, colHSV, SaturationGain);
   #endif
   
   col.rgb = hsv2rgb(colHSV);
