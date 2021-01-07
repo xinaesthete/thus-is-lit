@@ -46,29 +46,6 @@ export class VideoPlayState {
     }
 }
 
-export function parseFFProbeVideoDescriptor(url: string, data: any) : IVideoDescriptor {
-    if (!data.streams) throw new Error(`no streams`);
-    const streams = data.streams as object[];
-    const vidStream = streams.find(
-        (s: any) => s["codec_type"] === "video"
-    ) as any;
-    if (!vidStream) throw new Error(`no video stream`);
-    const width = vidStream.width;
-    const height = vidStream.height;
-    const duration = Number.parseFloat(vidStream.duration);
-    // this.muted = true;
-    // this.volume = 1;
-    const result: IVideoDescriptor = {width, height, duration, url, imgType: ImageType.VideoFile} 
-
-    if (vidStream.side_data_list) {
-        const rotation = vidStream.side_data_list[0].rotation;
-        if (rotation) result.rotation = rotation;
-        //now that I understand this, I think I want to change the order of how things are set...
-        //generally more of this Descriptor pushed to the renderer...
-    }
-    return result;
-}
-
 export class VideoDescriptor extends VideoPlayState implements IVideoDescriptor {
     // muted: boolean;
     // volume: number;

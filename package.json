@@ -1,6 +1,6 @@
 {
   "name": "thus-is-lit",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "experimental multimedia environment",
   "main": "public/build/server.js",
   "dependencies": {
@@ -17,6 +17,7 @@
     "express": "^4.17.1",
     "ffprobe-client": "^1.1.6",
     "immer": "^8.0.0",
+    "mediainfo.js": "^0.1.4",
     "mobx": "^6.0.4",
     "mobx-react": "^7.0.5",
     "react": "^17.0.1",
@@ -29,7 +30,6 @@
     "ws": "^7.4.1"
   },
   "devDependencies": {
-    "electron": "^11.1.1",
     "@electron-forge/cli": "^6.0.0-beta.54",
     "@electron-forge/maker-deb": "^6.0.0-beta.54",
     "@electron-forge/maker-rpm": "^6.0.0-beta.54",
@@ -40,6 +40,7 @@
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
     "@types/ws": "^7.4.0",
+    "electron": "^11.1.1",
     "electron-devtools-installer": "^3.1.1",
     "electron-rebuild": "^2.3.4",
     "esbuild": "^0.8.23",
