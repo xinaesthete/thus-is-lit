@@ -39,6 +39,7 @@ function TweakableSlider(u: SliderProp<Numeric>) {
     const classes = useStyles();
     //--- state should be owned further up the hierarchy ---
     const { name ='', min, max, value, step = defaultStep(u), onChange } = u as SliderProp<number>;
+    //step = defaultStep(u); //TODO: ability to override step quantization - modifier key? switch?
     
     return (
         <>

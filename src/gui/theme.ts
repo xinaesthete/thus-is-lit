@@ -66,8 +66,8 @@ export const useStyles = makeStyles((theme: Theme) =>
       margin: theme.spacing(2),
       marginRight: theme.spacing(4)
     },
-    mute: {
-      align: 'right', opacity: 0
+    vidCtrlButton: {
+      margin: theme.spacing(1)
     },
     videoGridList: {
     },

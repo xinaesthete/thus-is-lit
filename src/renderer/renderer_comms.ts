@@ -109,3 +109,8 @@ export const reportTime = () => {
     const msg = {address: OscCommandType.ReportTime, time: vidEl.currentTime, id: id};
     socket.send(JSON.stringify(msg));
 };
+
+export const reportError = (error: string) => {
+    const msg = {address: OscCommandType.Error, error: error};
+    socket.send(JSON.stringify(msg));
+}

@@ -39,6 +39,7 @@ export interface IVideoDescriptor extends ImageFileDescriptor {
 //not totally clear on this being what I want, particularly with 'extends' below.
 export class VideoPlayState {
     @observable muted = true;
+    @observable paused = false;
     @observable volume = 1;
     constructor(){
         makeObservable(this);

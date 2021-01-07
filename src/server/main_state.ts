@@ -43,6 +43,7 @@ class LitState {
     
     videoMetadataRaw: any[] = []; //for quick debug...
     videoMetadataParsed: IVideoDescriptor[] = [];
+    lastError: string = "";
     /// all of above can be Map<id, Model> where Model is responsible for state of an entity
     controllers: WebSocket[] = [];
     constructor() {

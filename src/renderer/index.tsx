@@ -9,7 +9,7 @@ import * as THREE from 'three'
 import * as params from './params'
 import * as vid from './video_state'
 import {Uniforms} from '../common/tweakables'
-import { onMessage, reportTime } from './renderer_comms'
+import { onMessage, reportError, reportTime } from './renderer_comms'
 
 const scene = new THREE.Scene();
 const camera = new THREE.OrthographicCamera(0, 1, 1, 0, 0, 10);
@@ -65,6 +65,7 @@ const mat = new THREE.ShaderMaterial({vertexShader: vs, fragmentShader: fs, unif
 // I want to set up a listener for when fragmentShader source changes. 
 onMessage('fragCode', (json) => {
   console.log(`shader code changed...`);
+  mat.userData.oldFrag = mat.fragmentShader;
   mat.fragmentShader = json.code;
   mat.needsUpdate = true;
 });
@@ -121,6 +122,43 @@ function animate(time: number) { //nb this SHOULD ABSOLUTELY NOT be async but it
   t0 = time;
   parms.update(dt);
   renderer.render(scene, camera);
+  if (mat.userData.oldFrag) {
+    console.log(`checking that new shader code was ok...`);
+    // renderer.debug.checkShaderErrors -- is true unless explicitly opted out.
+    // but how do we detect shader error in code?
+    // WebGLProgram.diagnostics is set such that it includes the error, 
+    // but how do we get to that from our ShaderMaterial?
+    // or is there an event we can listen to?
+    // https://github.com/mrdoob/three.js/pull/6963
+    // we can get at programs like this, but it looks like the .d.ts for WebGLProgram
+    // is missing diagnostics.
+    renderer.info.programs?.forEach(p => {
+      const diagnostics = (p as any).diagnostics;
+      console.log(`found the program... runnable? ${diagnostics.runnable}`);
+      /* //from WebGLProgram.js:
+      this.diagnostics = {
+        runnable: runnable,
+        programLog: programLog,
+        vertexShader: {
+          log: vertexLog,
+          prefix: prefixVertex
+        },
+        fragmentShader: {
+          log: fragmentLog,
+          prefix: prefixFragment
+        }
+      };
+      */
+      if (!diagnostics.runnable) {
+        mat.fragmentShader = mat.userData.oldFrag;
+        mat.needsUpdate = true;
+        //report back to server, so that it can be viewed e.g. in 'debug' tab
+        reportError(diagnostics.fragmentShader.log as string);
+      }
+    });
+    
+    mat.userData.oldFrag = undefined;
+  }
 }
 animate(t0);
 window.onresize = () => {

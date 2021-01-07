@@ -26,7 +26,8 @@ export default function startWsServer(server: Server) {
         socket.onclose = (closedEvent) => {
             const { code, reason, target } = closedEvent;
             // code 1000 - normal closure, 1001 going away, 1012 service restart...
-            // always 1001 when window reloading or 
+            // always 1001 when window reloading or closed.
+            // 1006 'abnormal closure' on sleep (at least on Windows)
             console.log(`[ws] socket close ${code} ${reason ? reason : ''}`);
             ///remove from collections...
             if (controllers.includes(target)) controllers.splice(controllers.indexOf(target),1);
@@ -70,6 +71,8 @@ export default function startWsServer(server: Server) {
                         // console.log(`[ws] forwarding set message \n  ${vals}`);
                         renderers.get(model.id)!.send(message);
                     }
+                } else if (json.address === OscCommandType.Error) {
+                    main_state.lastError = json.error;
                 } else {
                     if (msgCmds.has(json.address)) msgCmds.get(json.address)!(socket, json); //maybe I could associate OscCommandType with message type.
                     else console.log(`[ws] message not handled: ${message}`);

@@ -42,7 +42,7 @@ function setVideoState(state: VideoDescriptor) {
         //vidEl.currentTime = 0;
         activeTexture = vidTex;
         vidEl.oncanplay = null;
-        vidEl.play();
+        state.paused ? vidEl.pause() : vidEl.play();
         /// the reason I delayed this originally was to try to make sure videoWidth & videoHeight were ok
         /// I believe I was doing this in the wrong event, as well as then doing something not great.
         /// I am now seeing quite a few single-frame glitches that I think are unrelated
@@ -59,6 +59,7 @@ function setVideoState(state: VideoDescriptor) {
     }
     setVideoURL(state.url); //(debugging:::) url is not a string, but another copy of the whole VideoState...
     vidEl.muted = state.muted;
+    state.paused ? vidEl.pause() : vidEl.play();
     vidEl.volume = state.volume;
 }
 let imgUrl = '';
