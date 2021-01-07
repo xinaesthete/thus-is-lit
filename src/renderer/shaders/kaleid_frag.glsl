@@ -140,30 +140,22 @@ void main() {
   ////c.y /= ScreenAspect;
   
   vec2 polar = car2pol(uv - c);
-  polar.y += PI;
   vec2 polarDry = polar;
+  float pSign = sign(polar.y);
+  polar.y *= pSign; //out, damn seam. (but want simple OutAngle etc back)
+  // polar.y += PI;
   polar.y += OutAngle * segAng;
   polar.y += Angle2 * segAng;
+  float leavesI = floor(Leaves);
+  float leavesFr = fract(Leaves);
+  // polar.y -= 0.5*leavesFr*segAng; //I'd like to be able to scribble with a pencil on my debug gfx...
   float leaf = polar.y / segAng; ///....
+  // leaf -= leavesFr/(PI);
+  float leafI = ceil(leaf);
   float fr = fract(leaf);
   fr = gain(fr, AngleGain);
   float rfr = fr > 0.5 ? 1. - fr : fr;
-  // if we don't have an integer number of leaves
-  // then when we're in the final partial leaf, we want to behave
-  // differently WRT 'fr'
-  /// rather than '(fr > 0.5 ? 1. - fr : fr)', we should then be comparing
-  /// fr to leavesFr but I seem to be getting this wrong... and how does it
-  /// relate to Angle2? When Angle2 is 0 it doesn't seem to matter.
-  float leafI = ceil(leaf);
-  float leavesI = floor(Leaves);
-  float leavesFr = fract(Leaves);
-  // if (leaf > leavesI) { //never happens.
-  //  polar.y = 0.;// Angle + (fr > 0.5*leavesFr ? leavesFr - fr : fr) *
-  //  segAng;
-  // } else {
-      polar.y = Angle + rfr * segAng;
-  // }
-
+  polar.y = Angle + rfr * segAng;
   polar.y -= Angle2 * segAng;
 
   ///consider something more interesting here...
@@ -187,15 +179,9 @@ void main() {
   
   #define _DEBUG
   #ifdef DEBUG
-  float v = polarDry.y/(2.*PI);
-  float steps = Leaves;
-  float smoothing = AngleGain;
-  float s = quantSmoothS(v, steps, smoothing * 0.5);
-  float g = quantSmoothG(v, steps, pow(smoothing, 4.));
-  float f = quant(v, steps);
   colHSV.x = 0.;
   colHSV.y = 0.;//abs(f-g)*10.;
-  colHSV.z = s;//mix(g, s, KaleidMix);
+  colHSV.z = rfr;//polar.y / (2.*PI);
   #endif
   
   col.rgb = hsv2rgb(colHSV);
