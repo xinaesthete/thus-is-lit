@@ -3,6 +3,7 @@ import { app, BrowserWindow } from 'electron'
 import * as path from 'path'
 import {startServer} from './server_comms'
 import { getNextScreen } from './screen_config';
+import main_state from './main_state';
 // import installReactDevtool from './devtool'
 
 startServer();
@@ -28,6 +29,8 @@ function createGUIWindow() {
         }
     });
     window.loadURL(`file://${buildDir}/gui.html`);
+    main_state.mainWindow = window;
+
     //really slow to quit when devtools is up?
     //fairly slow anyway. hiding the window makes it feel responsive...
     //hopefully not hiding some other problem from ourselves.

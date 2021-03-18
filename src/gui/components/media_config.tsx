@@ -1,5 +1,6 @@
 import React from 'react';
 import IconButton from '@material-ui/core/IconButton';
+import FolderIcon from '@material-ui/icons/Folder';
 import SettingsIcon from '@material-ui/icons/Settings';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
@@ -10,6 +11,7 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import mediaLib from '../medialib'
 import { observer } from 'mobx-react'
+import { requestFileDialog } from '../gui_comms';
 
 const MediaConfig = observer( function MediaConfig() {
   const [open, setOpen] = React.useState(false);
@@ -29,6 +31,13 @@ const MediaConfig = observer( function MediaConfig() {
     handleClose();
   }
 
+  const handleOpenFileChooser = async () => {
+    const result = await requestFileDialog();
+    if (result === undefined) return;
+    setPath(result);
+    handleSubmit();
+  }
+
   return (
     <div>
       <IconButton aria-label="media-config" onClick={handleClickOpen} ><SettingsIcon /></IconButton>
@@ -37,10 +46,8 @@ const MediaConfig = observer( function MediaConfig() {
         <DialogContent>
           <DialogContentText>
             Please enter the root directory of a tree where you want the app to search for videos.
-            Probably don't point it anywhere with any very sensitive private data as
-            there's a remote chance it ends up being accessible from the wider Internet (at some point
-            more thought should be put into security).
           </DialogContentText>
+          <IconButton aria-label="open-file-dialog" onClick={handleOpenFileChooser} ><FolderIcon /></IconButton>
           <TextField
             autoFocus
             margin="dense"

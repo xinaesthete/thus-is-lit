@@ -5,7 +5,9 @@ import * as path from 'path'
 import * as fs from 'fs'
 import { FileConfigPrefs } from '../../common/media_model';
 import express from 'express';
+import { dialog } from 'electron'
 import main_state from '../main_state';
+import { expApp } from '../server_comms';
 
 const currentVersion = require('../../../package.json').version;
 console.log(`currentVersion: ` + currentVersion);
@@ -108,6 +110,19 @@ export function addRestAPI(expApp: express.Application) {
             const msg = `[file_config] error getting config: ${error};`
             console.error(msg);
             res.sendStatus(500);
+        }
+    });
+    expApp.get("/openFileDialog", async (req, res) => {
+        const result = await dialog.showOpenDialog(main_state.mainWindow!, {
+            title: "Choose the folder where you keep videos",
+            properties: ["openDirectory"]
+        });
+        if (result.canceled) {
+            console.log("file dialog canceled");
+            res.sendStatus(500);
+        } else {
+            console.log(`file dialog result: ${result.filePaths[0]}`);
+            res.status(200).send(result.filePaths[0]);
         }
     });
 }

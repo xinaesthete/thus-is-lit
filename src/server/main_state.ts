@@ -8,7 +8,7 @@ import * as fs from 'fs'
 import * as os from 'os'
 import * as path from 'path'
 import WebSocket from 'ws' //https://github.com/websockets/ws/issues/1583
-import {app} from 'electron'
+import {app, BrowserWindow} from 'electron'
 import { IVideoDescriptor } from "../common/media_model";
 // Without being too tied to a particular dependency, this may be a MobX state tree?
 // I think MobX is a good idea, not going to dive right in with state-tree, though.
@@ -46,9 +46,8 @@ class LitState {
     lastError: string = "";
     /// all of above can be Map<id, Model> where Model is responsible for state of an entity
     controllers: WebSocket[] = [];
-    constructor() {
-
-    }
+    mainWindow?: BrowserWindow;
+    constructor() {}
 }
 
 const main_state = new LitState();

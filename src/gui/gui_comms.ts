@@ -37,6 +37,17 @@ export async function requestFileConfigPrefs() {
     return config as FileConfigPrefs;
 }
 
+export async function requestFileDialog() {
+    console.log('requesting file dialog');
+    const response = await fetch(`${httpURL}/openFileDialog`);
+    if (response.ok) {
+        const path = await response.text();
+        return path;
+    } else {
+        return;
+    }
+}
+
 export async function requestSetMainAssetPath(path: string) {
     console.log(`requesting to set main asset path to '${path}'`);
     const result = await fetch(`${httpURL}/setMainAssetPath`, {
