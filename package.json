@@ -44,7 +44,8 @@
     "electron-devtools-installer": "^3.1.1",
     "electron-rebuild": "^2.3.4",
     "esbuild": "^0.8.23",
-    "live-server": "^1.2.1"
+    "live-server": "^1.2.1",
+    "snowpack": "^3.0.13"
   },
   "scripts": {
     "launch": "electron .",
