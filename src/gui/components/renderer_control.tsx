@@ -2,9 +2,9 @@ import React, { useEffect } from 'react'
 import produce from 'immer'
 import Button from '@material-ui/core/Button';
 import MuiAlert from '@material-ui/lab/Alert';
-import { requestModelList, requestNewRenderer } from '../gui_comms';
+import { requestModelList, requestNewRenderer } from '@gui/gui_comms';
 import { makeStyles, Theme } from '@material-ui/core';
-import KaleidModel, { ObservableKaleidModel } from '../../common/KaleidModel'
+import KaleidModel, { ObservableKaleidModel } from '@common/KaleidModel'
 import KaleidGUI from './uniforms_gui';
 
 function Alert(props: any) {

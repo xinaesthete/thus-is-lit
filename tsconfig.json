@@ -11,5 +11,10 @@
         "target": "ES2017",
         "noImplicitAny": true,
         "sourceMap": true,
-    }
+        "baseUrl": "./src",
+        "paths": {
+            "@gui/*": ["gui/*"],
+            "@common/*": ["common/*"]
+        }
+    },
 }
