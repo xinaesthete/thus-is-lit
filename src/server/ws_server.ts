@@ -1,8 +1,8 @@
 import { Server } from 'http'
 import ws from "ws";
 import WebSocket from 'ws' //https://github.com/websockets/ws/issues/1583
-import KaleidModel from "../common/KaleidModel";
-import { OscCommandType } from "../common/socket_cmds";
+import KaleidModel from "@common/KaleidModel";
+import { OscCommandType } from "@common/socket_cmds";
 import { watchFragmentShader } from "./code_watch";
 import main_state from "./main_state";
 

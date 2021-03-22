@@ -1,9 +1,9 @@
 import * as dat from "dat.gui"
 import * as THREE from 'three'
 import { action, autorun, computed, makeAutoObservable, makeObservable, observable, reaction } from 'mobx';
-import {isNum, MovementType, Numeric, vec2, Tweakable, Uniforms} from '../common/tweakables'
-import {rendererStarted, host_port} from '../common/constants'
-import KaleidModel from '../common/KaleidModel'
+import {isNum, MovementType, Numeric, vec2, Tweakable, Uniforms} from '@common/tweakables'
+import {rendererStarted, host_port} from '@common/constants'
+import KaleidModel from '@common/KaleidModel'
 import { init } from "./renderer_comms"
 
 function lerp(s: number, t: number, a: number) {

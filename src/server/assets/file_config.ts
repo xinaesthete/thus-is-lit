@@ -3,7 +3,7 @@ import { app } from 'electron'
 import * as os from 'os'
 import * as path from 'path'
 import * as fs from 'fs'
-import { FileConfigPrefs } from '../../common/media_model';
+import { FileConfigPrefs } from '@common/media_model';
 import express from 'express';
 import { dialog } from 'electron'
 import main_state from '../main_state';

@@ -15,7 +15,7 @@ import main_state from '../main_state'
 //"C:\code\thus-is-lit\public\build\node_modules\@ffprobe-installer\win32-x64\ffprobe.exe"
 //need to adapt watch.js... make @ffprobe-installer external
 import { path as ffprobePath } from '@ffprobe-installer/ffprobe'
-import { ImageType, IVideoDescriptor, VideoDescriptor } from '../../common/media_model'
+import { ImageType, IVideoDescriptor, VideoDescriptor } from '@common/media_model'
 import * as path from 'path'
 import { getConfig } from './file_config'
 

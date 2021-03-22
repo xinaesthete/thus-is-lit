@@ -1,6 +1,6 @@
 import React from 'react'
 import produce from 'immer'
-import { VideoDescriptor } from '../../../common/media_model'
+import { VideoDescriptor } from '@common/media_model'
 import ChooseVideo from './choose_video'
 import ToggleButton from '@material-ui/lab/ToggleButton/ToggleButton'
 import VolumeOff from '@material-ui/icons/VolumeOff'

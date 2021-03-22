@@ -5,13 +5,13 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import React from 'react'
 import produce from 'immer'
 import {produceWithPatches} from 'immer'
-import KaleidModel, { ObservableKaleidModel } from '../../common/KaleidModel';
+import KaleidModel, { ObservableKaleidModel } from '@common/KaleidModel';
 //maybe want to use material, or just plain-old vanilla dat.gui...
 //maybe revisit react-dat-gui with benefit of understanding React a bit better.
 //import DatGui, {DatNumber, DatString} from 'react-dat-gui'
-import {Uniforms, Numeric, Tweakable, isNum, vec2} from '../../common/tweakables'
+import {Uniforms, Numeric, Tweakable, isNum, vec2} from '@common/tweakables'
 import { sendModel } from '../gui_comms';
-import { AbstractImageDecriptor } from '../../common/media_model'
+import { AbstractImageDecriptor } from '@common/media_model'
 import { useStyles } from '../theme'
 import AbstractImageController from './video/abstract_image_controller'
 import { observer } from 'mobx-react'

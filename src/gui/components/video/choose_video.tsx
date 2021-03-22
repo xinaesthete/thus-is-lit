@@ -3,10 +3,10 @@ import { observer } from 'mobx-react'
 import Select from '@material-ui/core/Select'
 import MenuItem from '@material-ui/core/MenuItem'
 import mediaLib from '../../medialib'
-import { httpURL } from '../../../common/constants'
+import { httpURL } from '@common/constants'
 import { useStyles } from '../../theme'
 import { action } from 'mobx'
-import { VideoDescriptor } from '../../../common/media_model'
+import { VideoDescriptor } from '@common/media_model'
 
 
 export default observer( function ChooseVideo(props: { 

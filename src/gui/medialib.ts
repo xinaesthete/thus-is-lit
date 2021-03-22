@@ -1,7 +1,7 @@
 import { computed, makeObservable } from "mobx";
 import { observable, action } from "mobx";
-import { httpURL } from "../common/constants";
-import { VideoDescriptor, AbstractImageDecriptor, IVideoDescriptor } from "../common/media_model";
+import { httpURL } from "@common/constants";
+import { VideoDescriptor, AbstractImageDecriptor, IVideoDescriptor } from "@common/media_model";
 import * as API from "./gui_comms";
 
 class MediaLibrary {

@@ -13,10 +13,10 @@ import BugReportIcon from '@material-ui/icons/BugReport';
 import SettingsIcon from '@material-ui/icons/Settings';
 import { IconButton } from '@material-ui/core';
 
-import { Threact } from '../common/threact/threact';
-import { DefaultCube } from '../common/threact/threexample';
-import RendererControl from './components/renderer_control'
-import MediaConfig from './components/media_config';
+import { Threact } from '@common/threact/threact';
+import { DefaultCube } from '@common/threact/threexample';
+import RendererControl from '@gui/components/renderer_control'
+import MediaConfig from '@gui/components/media_config';
 
 enableMapSet();
 

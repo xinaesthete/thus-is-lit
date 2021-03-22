@@ -2,14 +2,14 @@
 // not everything relevant to output necessarily (like animating / lagging parameters, video playback position etc)
 // but everything to eg recreate state of controllers after a refresh etc.
 
-import KaleidModel from "../common/KaleidModel";
+import KaleidModel from "@common/KaleidModel";
 import * as file_config from './assets/file_config'
 import * as fs from 'fs'
 import * as os from 'os'
 import * as path from 'path'
 import WebSocket from 'ws' //https://github.com/websockets/ws/issues/1583
 import {app, BrowserWindow} from 'electron'
-import { IVideoDescriptor } from "../common/media_model";
+import { IVideoDescriptor } from "@common/media_model";
 // Without being too tied to a particular dependency, this may be a MobX state tree?
 // I think MobX is a good idea, not going to dive right in with state-tree, though.
 

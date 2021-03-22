@@ -2,8 +2,8 @@ import {app, screen, BrowserWindow} from 'electron'
 import express from 'express'
 import * as os from 'os'
 import { buildDir } from '.';
-import KaleidModel from '../common/KaleidModel';
-import * as consts from '../common/constants'
+import KaleidModel from '@common/KaleidModel';
+import * as consts from '@common/constants'
 import main_state from './main_state';
 
 let displays: Electron.Display[];

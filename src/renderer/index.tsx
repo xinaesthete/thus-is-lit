@@ -8,7 +8,7 @@ import fs from './shaders/kaleid_frag.glsl'
 import * as THREE from 'three'
 import * as params from './params'
 import * as vid from './video_state'
-import {Uniforms} from '../common/tweakables'
+import {Uniforms} from '@common/tweakables'
 import { onMessage, reportError, reportTime } from './renderer_comms'
 
 const scene = new THREE.Scene();

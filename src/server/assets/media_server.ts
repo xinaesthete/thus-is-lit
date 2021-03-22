@@ -4,7 +4,7 @@ import * as fs from 'fs'
 import * as path from 'path'
 import { Dirent } from 'original-fs';
 import express from 'express';
-import { httpURL } from '../../common/constants';
+import { httpURL } from '@common/constants';
 
 const mimeTypes = {
     html: 'text/html; charset=utf-8',

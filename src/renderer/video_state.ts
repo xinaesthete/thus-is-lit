@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import { AbstractImageDecriptor, ImageFileDescriptor, ImageType, ImRot, VideoDescriptor } from '../common/media_model';
+import { AbstractImageDecriptor, ImageFileDescriptor, ImageType, ImRot, VideoDescriptor } from '@common/media_model';
 
 //could ping-ponging video elements help to avoid crash?
 //(or just pause rendering to test...)

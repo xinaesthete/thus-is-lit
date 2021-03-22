@@ -5,12 +5,12 @@
 // but a well designed API could guide me in a good direction...
 // (also @supercolliderjs/osc looks really slow)
 //import * as osc from 'osc-min'
-import { Uniforms } from '../common/tweakables';
+import { Uniforms } from '@common/tweakables';
 
-import { httpURL, newRenderer, websocketURL } from '../common/constants'
-import KaleidModel, { ObservableKaleidModel } from '../common/KaleidModel';
-import { makeRegisterControllerMessage, OscCommandType } from '../common/socket_cmds';
-import { FileConfigPrefs } from '../common/media_model';
+import { httpURL, newRenderer, websocketURL } from '@common/constants'
+import KaleidModel, { ObservableKaleidModel } from '@common/KaleidModel';
+import { makeRegisterControllerMessage, OscCommandType } from '@common/socket_cmds';
+import { FileConfigPrefs } from '@common/media_model';
 // let's make a button that creates a renderer...
 // and then very soon refactor this code somewhere sensible.
 

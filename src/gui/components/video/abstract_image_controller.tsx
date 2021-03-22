@@ -2,7 +2,7 @@ import { Typography } from '@material-ui/core'
 import { action } from 'mobx';
 import { observer } from 'mobx-react';
 import React from 'react'
-import { AbstractImageDecriptor, VideoDescriptor } from '../../../common/media_model'
+import { AbstractImageDecriptor, VideoDescriptor } from '@common/media_model'
 
 import VideoController from './video_controller'
 

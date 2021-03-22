@@ -16,10 +16,10 @@
  * 
  */
 
-import { rendererStarted, host_port, websocketURL, httpURL } from "../common/constants";
-import KaleidModel from "../common/KaleidModel";
-import { makeRegisterRendererMessage, OscCommandType } from "../common/socket_cmds";
-import { Numeric, Tweakable } from "../common/tweakables";
+import { rendererStarted, host_port, websocketURL, httpURL } from "@common/constants";
+import KaleidModel from "@common/KaleidModel";
+import { makeRegisterRendererMessage, OscCommandType } from "@common/socket_cmds";
+import { Numeric, Tweakable } from "@common/tweakables";
 
 import { paramState } from './params'
 import { imageState, getVideoURL, setImageState, vidEl } from "./video_state";
