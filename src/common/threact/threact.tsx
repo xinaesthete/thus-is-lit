@@ -31,6 +31,7 @@ export const globalUniforms = {
 }
 
 export const clearColor = new THREE.Color(0x000000);
+const startTime = Date.now();
 
 function init() {
     //NB:: I should consider the implications of having these values determined in a global GL context, 
@@ -51,7 +52,7 @@ function init() {
     document.body.appendChild(el);
     el.id = "threact_backing_canvas";
 
-    animate();
+    animate(startTime);
 }
 
 function resize() {
@@ -62,14 +63,13 @@ function resize() {
     compositeCamera.updateProjectionMatrix();
     renderer.setSize(w, h);
 }
-const startTime = Date.now();
-function animate() {
+function animate(time: number) {
     requestAnimationFrame(animate);
     renderer.domElement.style.transform = `translateY(${window.scrollY}px)`;
     //renderer.domElement.style.transform = `translate(${window.scrollX}px, ${window.scrollY}px)`;
-    globalUniforms.iTime.value = (Date.now()-startTime) / 1000;
+    globalUniforms.iTime.value = (Date.now()-startTime) / 1000; //XXX::: use time passed as arg
     //TODO: don't always assume we need to render every frame, or every view every time we render.
-    views.forEach(v => v.updateLayout());
+    views.forEach(v => v.updateLayout(time));
     renderer.setClearColor(clearColor, 0);
     renderer.autoClear = false;
     renderer.setRenderTarget(null);
@@ -83,7 +83,7 @@ export interface IThree {
     //scene: THREE.Scene;
     //camera: THREE.Camera;
     initThree(dom: HTMLElement): void;
-    update(): void;
+    update(time: number): void;
     render(renderer: THREE.WebGLRenderer): void;
     resize(rect: DOMRect): void;
     disposeThree(): void;
@@ -139,7 +139,7 @@ export class Threact extends React.Component<IThreact, any> {
         compositeScene.remove(this.composite);
         views.delete(this);
     }
-    updateLayout() {
+    updateLayout(time: number) {
         if (!this.mount) return;
         //nb: it could be possible to use something other than bounding rect, in cases with odd CSS transform.
         //but that's a bit of a tangent. Not sure if there's a simple way to e.g. get a matrix representing arbitrary transform
@@ -157,7 +157,7 @@ export class Threact extends React.Component<IThreact, any> {
         
         //this.composite.updateMatrix();
         if (rect.bottom < 0 || rect.top > ch || rect.right < 0 || rect.left > cw) return;
-        this.renderGL();
+        this.renderGL(time);
     }
     resize(rect: DOMRect) {
         const r = window.devicePixelRatio;
@@ -172,7 +172,7 @@ export class Threact extends React.Component<IThreact, any> {
         this.lastH = h;
         this.props.gfx.resize(rect);
     }
-    renderGL() {
+    renderGL(time: number) {
         //this can be a significant performance bottleneck here, understandably:
         //this.setState({frameCount: this.state.frameCount+1})
         //::: this also demonstrates that using 'state' for things unrelated to React rendering is ill-advised.
@@ -183,7 +183,7 @@ export class Threact extends React.Component<IThreact, any> {
         //renderer.setViewport //alternative to renderTarget...
         renderer.setClearColor(this.color, 1);
         renderer.clear();
-        this.props.gfx.update();
+        this.props.gfx.update(time);
         //we may want to do things like handle multi-pass configurations, as well as debug overlays etc etc (that's what I want right now).
         //rather than assume gfx has a single 'scene' and 'camera' and that rendering the scene with the camera will get the right result,
         //it should have a render method where it can do what it likes, including changing render target etc safe in the knowledge that the
