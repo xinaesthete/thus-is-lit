@@ -14,7 +14,7 @@ export interface FileConfigPrefs {
 }
 
 export enum ImageType {
-    Null, VideoFile, // ImageFile //, Feedback, CameraStream, RtcStream
+    Null, VideoFile, FeedBack, ImageFile //, CameraStream, RtcStream
 }
 export type ImRot = 0 | 90 | -90 | 180;
 export interface AbstractImageDecriptor {
@@ -30,6 +30,7 @@ export interface AbstractImageDecriptor {
 export interface ImageFileDescriptor extends AbstractImageDecriptor {
     url: string;
 }
+export interface FeedbackDescriptor extends AbstractImageDecriptor {}
 
 export interface IVideoDescriptor extends ImageFileDescriptor {
     duration: number;

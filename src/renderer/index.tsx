@@ -1,5 +1,4 @@
-//// change this so that it is able to respond to messages
-//also want to make it able to have (multiple) views embedded in gui... soon.
+//Make this able to have (multiple) views embedded in gui... soon.
 
 
 import vs from './shaders/kaleid_vert.glsl'
@@ -10,11 +9,10 @@ import * as params from './params'
 import * as vid from './video_state'
 import {Uniforms} from '@common/tweakables'
 import { onMessage, reportError, reportTime } from './renderer_comms'
+import { ImageType } from '@common/media_model'
 
 const scene = new THREE.Scene();
 const camera = new THREE.OrthographicCamera(0, 1, 1, 0, 0, 10);
-camera.position.set(0.5, 0.5, -1);
-camera.lookAt(0.5,0.5,0);
 
 const renderer = new THREE.WebGLRenderer({
   antialias: true,
@@ -60,8 +58,9 @@ const parms = params.makeGUI([
 
 vid.setup(renderer, uniforms);
 
-const geo = new THREE.PlaneGeometry(2, 2);
-const mat = new THREE.ShaderMaterial({vertexShader: vs, fragmentShader: fs, uniforms: uniforms, transparent: true});
+const geo = new THREE.PlaneGeometry(1, 1);
+const mat = new THREE.ShaderMaterial({vertexShader: vs, fragmentShader: fs, uniforms: uniforms, 
+  transparent: true, depthTest: false, depthWrite: false});
 // I want to set up a listener for when fragmentShader source changes. 
 onMessage('fragCode', (json) => {
   console.log(`shader code changed...`);
@@ -71,67 +70,51 @@ onMessage('fragCode', (json) => {
 });
 
 const mesh = new THREE.Mesh(geo, mat);
-mesh.position.x = 0.5;
-mesh.position.y = 0.5;
-
-//mesh.position.z = 0.5;
-//mesh.updateMatrix();
 scene.add(mesh);
+
+//for final presentation of feedback...
+const plainMat = new THREE.MeshBasicMaterial();
+const plainMesh = new THREE.Mesh(geo, plainMat);
+const plainScene = new THREE.Scene();
+plainMesh.position.x = 0.5;
+plainMesh.position.y = 0.5;
+plainScene.add(plainMesh);
+
 let t0 = Date.now();
-function animate(time: number) { //nb this SHOULD ABSOLUTELY NOT be async but it's convenient for a quick hack.
+function animate(time: number) {
   requestAnimationFrame(animate);
-  //uniforms.iTime.value = Date.now() / 1000;
-  
   /// How necessary are ScreenAspect & UVLimit?
   if (vid.pendingVideoSwitch) return;
   let w = window.innerWidth, h = window.innerHeight;
   uniforms.ScreenAspect.value = w/h;
   const im = vid.imageState;
-  //but it will only take time when things are still being set up.
-  //const img = uniforms.texture1.value;
   const vw = im.width;
   const vh = im.height;
   
   const imageAspect = (im.rotation == -90 || im.rotation == 90) ? vh/vw : vw/vh;
   uniforms.ImageAspect.value = imageAspect;
-  const longSide = Math.max(vw, vh);
-  // UVLimit is a vec2 because it traces its origins to portion of POT texture
-  // { x/NPOT(x), y/NPOT(y) }
-  // -- the way we're using longSide is probably responsible for a lot that's wrong just now --
-  // -- but actually the UVs should be normalised to the whole image anyway,
-  // so (I hypothesise) that where it's used for mirrorRepeat could be replaced with a simpler version
-  // uniforms.UVLimit.value = {x: vw/longSide, y: vh/longSide};
-  
   //TODO expose a property for "fit"
-  
   vid.fitTexture(vid.activeTexture, w/h, imageAspect, "fit", im.rotation);
-  //I have a problem with debugger in electron... 
-  //I could try to fix that, or just implement that part of server and use browser.
-  //how about switching these values based on whether screen or image aspect are portrait?
-  //also it seems to me that we still need to rotate(?) portrait images sometimes(?!) (see fitTexture)
-  
   vid.activeTexture.updateMatrix();
-  uniforms.UVLimit.value = vid.activeTexture.repeat; //this is similar to how it was set before (maybe not the assignment), 
-  //but I realised repeat was always {1, 1}, (maybe it was ok with stills).
-  
-  
+  uniforms.UVLimit.value = vid.activeTexture.repeat;
   
   reportTime();
 
   const dt = time - t0;
   t0 = time;
   parms.update(dt);
-  renderer.render(scene, camera);
+  if (im.imgType === ImageType.FeedBack) {
+    const rt = renderer.getRenderTarget();
+    vid.swapFeedbackBuffers(renderer);
+    plainMat.map = vid.activeTexture; //stupid, but grabbing this ref before swap for presenting later
+    renderer.render(scene, camera);
+    renderer.setRenderTarget(rt);
+    renderer.render(plainScene, camera);
+  } else {
+    renderer.render(scene, camera);
+  }
   if (mat.userData.oldFrag) {
     console.log(`checking that new shader code was ok...`);
-    // renderer.debug.checkShaderErrors -- is true unless explicitly opted out.
-    // but how do we detect shader error in code?
-    // WebGLProgram.diagnostics is set such that it includes the error, 
-    // but how do we get to that from our ShaderMaterial?
-    // or is there an event we can listen to?
-    // https://github.com/mrdoob/three.js/pull/6963
-    // we can get at programs like this, but it looks like the .d.ts for WebGLProgram
-    // is missing diagnostics.
     renderer.info.programs?.forEach(p => {
       const diagnostics = (p as any).diagnostics;
       console.log(`found the program... runnable? ${diagnostics.runnable}`);

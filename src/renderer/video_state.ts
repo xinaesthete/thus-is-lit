@@ -1,5 +1,7 @@
 import * as THREE from 'three'
-import { AbstractImageDecriptor, ImageFileDescriptor, ImageType, ImRot, VideoDescriptor } from '@common/media_model';
+import { AbstractImageDecriptor, FeedbackDescriptor, ImageFileDescriptor, 
+    ImageType, ImRot, VideoDescriptor 
+} from '@common/media_model';
 
 //could ping-ponging video elements help to avoid crash?
 //(or just pause rendering to test...)
@@ -63,26 +65,50 @@ function setVideoState(state: VideoDescriptor) {
     vidEl.volume = state.volume;
 }
 let imgUrl = '';
-export function setImageState(state: AbstractImageDecriptor) {
-    if (state.imgType === ImageType.VideoFile) {
-        setVideoState(state as VideoDescriptor);
-        imgUrl = '';
-    } else {
-        //assume it's a still for now...
-        const img = state as ImageFileDescriptor;
-        imageState = state;
-        if (imgUrl !== img.url) imgUrl = img.url;
-        console.log(`loading ${img.url}`);
+function setImageFileState(img: ImageFileDescriptor) {
+    imageState = img;
+    if (imgUrl !== img.url) imgUrl = img.url;
+    console.log(`loading ${img.url}`);
 
-        new THREE.TextureLoader().load(img.url, (t)=>{
-            console.log(`loaded ${img.url}`);
-            setTextureParams(t);
-            __uniforms.texture1.value = t;
-            activeTexture = t;
-            imageState.width = img.width;
-            imageState.height = img.height;
-        });
-    }
+    //todo allow caching?
+    new THREE.TextureLoader().load(img.url, (t)=>{
+        console.log(`loaded ${img.url}`);
+        setTextureParams(t);
+        __uniforms.texture1.value = t;
+        activeTexture = t;
+        imageState.width = img.width;
+        imageState.height = img.height;
+    });
+}
+
+const feedbackBuffers: THREE.WebGLRenderTarget[] = [new THREE.WebGLRenderTarget(1920, 1080), new THREE.WebGLRenderTarget(1920, 1080)];
+feedbackBuffers[0].texture.name = "feedback0"
+feedbackBuffers[1].texture.name = "feedback1"
+let fbSwitch = 0;
+function setFeedback(state: FeedbackDescriptor) {
+    imageState = state;
+    state.imgType = ImageType.FeedBack; ///WRONG just hacking...
+    activeTexture = feedbackBuffers[0].texture;
+}
+export function swapFeedbackBuffers(renderer: THREE.WebGLRenderer) {
+    activeTexture = feedbackBuffers[fbSwitch].texture;
+    fbSwitch = 1 - fbSwitch;
+    renderer.setRenderTarget(feedbackBuffers[fbSwitch]);
+}
+
+export function setImageState(state: AbstractImageDecriptor) {
+    switch (state.imgType) {
+        case ImageType.VideoFile:
+            setVideoState(state as VideoDescriptor);
+            imgUrl = ''; //<<< XXX: bad smell
+            break;
+        case ImageType.ImageFile:
+            setImageFileState(state as ImageFileDescriptor);
+            break;
+        case ImageType.FeedBack:
+            setFeedback(state as FeedbackDescriptor);
+            break;
+    }    
 }
 
 

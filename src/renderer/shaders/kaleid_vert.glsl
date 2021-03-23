@@ -6,5 +6,6 @@ varying vec2 vertTexCoord;
 void main() {
   vertTexCoord = uv;
   segAng = 2. * PI / Leaves;
-  gl_Position = vec4(position, 1.0);
+  //XXX: not entirely sure why 2.*position, but don't want to faff too much just now.
+  gl_Position = modelViewMatrix * vec4(2.*position, 1.0);
 }
