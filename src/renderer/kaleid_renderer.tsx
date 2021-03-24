@@ -12,13 +12,15 @@ import React from "react";
 
 const Vector2 = THREE.Vector2;
 
+//Note to self: adding 'threact?' comments where I need to consider design.
+
 export default class KaleidRenderer implements IThree {
   scene = new THREE.Scene();
   camera = new THREE.OrthographicCamera(0, 1, 1, 0, 0, 10);
   parms: params.ParamGroup;
   uniforms: Uniforms;
   constructor() {
-    let w = window.innerWidth, h = window.innerHeight;//TODO review
+    let w = window.innerWidth, h = window.innerHeight; //threact?
 
     this.uniforms = {
       'ScreenAspect': {value: w/h},
@@ -27,7 +29,7 @@ export default class KaleidRenderer implements IThree {
       'texture1': {value: vid.vidTex},
       'textureMatrix1': {value: vid.vidTex.matrix},
     };
-    this.parms = params.makeGUI([
+    this.parms = params.makeGUI([ //threact?
       {name: "LagTime", value: -10, min: -180, max: 20}, //"midi pitch" log scale.
       {name: "Leaves", value: 3, min: 1, max: 8, step: 1},
       {name: "Angle", value: 1.05, min: -Math.PI, max: Math.PI},
@@ -55,7 +57,7 @@ export default class KaleidRenderer implements IThree {
     const mat = new THREE.ShaderMaterial({vertexShader: vs, fragmentShader: fs, uniforms: this.uniforms, 
       transparent: true, depthTest: false, depthWrite: false});
     // I want to set up a listener for when fragmentShader source changes. 
-    onMessage('fragCode', (json) => {
+    onMessage('fragCode', (json) => { //threact
       console.log(`shader code changed...`);
       mat.userData.oldFrag = mat.fragmentShader;
       mat.fragmentShader = json.code;
@@ -74,7 +76,7 @@ export default class KaleidRenderer implements IThree {
     if (vid.pendingVideoSwitch) return;
     let w = window.innerWidth, h = window.innerHeight;
     this.uniforms.ScreenAspect.value = w/h;
-    const im = vid.imageState;
+    const im = vid.imageState; //threact...
     const vw = im.width;
     const vh = im.height;
     
@@ -85,7 +87,7 @@ export default class KaleidRenderer implements IThree {
     vid.activeTexture.updateMatrix();
     this.uniforms.UVLimit.value = vid.activeTexture.repeat;
     
-    reportTime();
+    reportTime(); //threact...
   
     const dt = time - this.t0;
     this.t0 = time;

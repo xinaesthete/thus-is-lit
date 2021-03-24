@@ -1,6 +1,7 @@
 import { 
     Accordion, AccordionSummary, AccordionDetails, Slider, Typography, Grid
 } from '@material-ui/core'
+import ToggleButton from '@material-ui/lab/ToggleButton/ToggleButton'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import React from 'react'
 import produce from 'immer'
@@ -16,6 +17,8 @@ import { useStyles } from '../theme'
 import AbstractImageController from './video/abstract_image_controller'
 import { observer } from 'mobx-react'
 import { action } from 'mobx'
+import MutatorGrid from './mutator/MutatorGrid'
+import { KaleidContext } from '@gui/kaleid_context'
 
 interface SliderProp<T extends Numeric> extends Tweakable<T> {
     // onChangeX: React.ChangeEventHandler<number>
@@ -97,18 +100,29 @@ interface KProps {
  * and both how to make more explicitly designed GUIs for something like Kaleid, also what more
  * flexible dynamic models might look like.
  */
-const KaleidGUI = observer((props: KProps) => {    ///function KaleidGUI(props: KProps) {
+const KaleidGUI = observer((props: KProps) => {
     const classes = useStyles();
     //we could / should be a context provider
     //all the more relevant for mutator (which I should implement...)
-    //--> how am I getting away with hooks in here when there can be different numbers of these over time?
-    // const [model, setModel] = React.useState(props.kaleid);
     const model = props.kaleid; //will probably be the way with mobx / no setModel
 
     const handleSetImage = action((newImg: AbstractImageDecriptor) => {
         model.imageSource = newImg;
     });
 
+    const [mutateMode, setMutator] = React.useState(false);
+    const tweaker = mutateMode ? <MutatorGrid /> :
+    (       
+    <Grid container spacing={1}>
+        {model.tweakables.map((u, i) => {
+            return (
+                <TweakableSlider key={i} {...u}
+                onChange={action((e, v) => { u.value = v; })}
+                />
+            )
+        })}
+    </Grid>
+    )
     return (
         <div className={classes.uniformsGui}>
         <Accordion TransitionProps={{unmountOnExit: true, timeout: 50}}>
@@ -122,15 +136,12 @@ const KaleidGUI = observer((props: KProps) => {    ///function KaleidGUI(props: 
             <AccordionDetails>
             <div>
                 <AbstractImageController image={model.imageSource} setImage={handleSetImage} />
-                <Grid container spacing={1}>
-                {model.tweakables.map((u, i) => {
-                    return (
-                        <TweakableSlider key={i} {...u}
-                        onChange={action((e, v) => { u.value = v; })}
-                        />
-                    )
-                })}
-                </Grid>
+                <ToggleButton value={mutateMode} onChange={()=>setMutator(!mutateMode)}>
+                    {mutateMode ? "mutator" : "sliders"}
+                </ToggleButton>
+                <KaleidContext.Provider value={model}>
+                    {tweaker}
+                </KaleidContext.Provider>
             </div>
             </AccordionDetails>
         </Accordion>

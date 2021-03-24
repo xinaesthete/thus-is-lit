@@ -61,7 +61,7 @@ export class ObservableKaleidModel implements KaleidModel {
         Object.assign(this, init);
         this.tweakables = init.tweakables.map(t => new MobxTweakable(t));
         makeObservable(this, {imageSource: observable, tweakables: observable});
-        autorun(() => sendModel(this));
+        autorun(() => sendModel(this)); //threact
     }
 }
 
