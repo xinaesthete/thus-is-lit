@@ -55,7 +55,7 @@ class MobxTweakable<T extends Numeric> implements Tweakable<T> {
 export class ObservableKaleidModel implements KaleidModel {
     id: number = -1;
     imageSource: AbstractImageDecriptor;
-    tweakables: MobxTweakable<any>[];
+    tweakables: MobxTweakable<Numeric>[];
     constructor(init: KaleidModel) {
         this.imageSource = {width: -1, height: -1, imgType: ImageType.Null}
         Object.assign(this, init);
