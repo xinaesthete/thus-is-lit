@@ -113,10 +113,3 @@ export default class KaleidRenderer implements IThree {
   }
   disposeThree() {}
 }
-
-export function KaleidComponent() {
-  //TODO: work on video_state etc such that this stands a fighting chance of working.
-  //should be possible to render multiple things from same source, as well as different sources.
-  const [kRender, setKRender] = React.useState(new KaleidRenderer())
-  return <Threact gfx={kRender} />
-}
