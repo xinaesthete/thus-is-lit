@@ -53,7 +53,7 @@ export default class KaleidRenderer implements IThree {
       {name: "ImageCentre", value: new Vector2(0.5, 0), min: -1, max: 1},
       {name: "Centre", value: new Vector2(0., 0.), min: -1, max: 1},
       {name: "Vignette", value: new Vector2(0.1, 0.1), min: 0, max: 0.2},
-    ], this.uniforms);
+    ], this.uniforms, vid);
 
     //NOTE: more than one renderer should be able to use the same vid source.
     //don't need to fix that for initial translation of code.
