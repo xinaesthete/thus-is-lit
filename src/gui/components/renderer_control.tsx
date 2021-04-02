@@ -6,6 +6,7 @@ import { requestModelList, requestNewRenderer } from '@gui/gui_comms';
 import { makeStyles, Theme } from '@material-ui/core';
 import KaleidModel, { ObservableKaleidModel } from '@common/KaleidModel'
 import KaleidGUI from './uniforms_gui';
+import { KaleidContext } from '@gui/kaleid_context';
 
 function Alert(props: any) {
     return <MuiAlert elevation={6} variant="filled" {...props} />
@@ -47,7 +48,11 @@ export default function RendererControl() {
                 setRenderModels(newModels);
             }
         }>Make new renderer</Button>
-        {renderModels.map((m,i)=> <KaleidGUI key={i} kaleid={m} />)}
+        {renderModels.map((m,i)=> (
+            <KaleidContext.Provider key={i} value={m}>
+                <KaleidGUI />
+            </KaleidContext.Provider>
+        ))}
         </>
     )
 }

@@ -100,12 +100,12 @@ interface KProps {
  * and both how to make more explicitly designed GUIs for something like Kaleid, also what more
  * flexible dynamic models might look like.
  */
-const KaleidGUI = observer((props: KProps) => {
+const KaleidGUI = observer(() => {
     const classes = useStyles();
-    //we could / should be a context provider
-    //all the more relevant for mutator (which I should implement...)
-    const model = props.kaleid; //will probably be the way with mobx / no setModel
+    const model = React.useContext(KaleidContext);
 
+    //--> ImageContext? What if there are multiple layers later?
+    // then the context interface can change. KaleidContext can be used in place, anyway.
     const handleSetImage = action((newImg: AbstractImageDecriptor) => {
         model.imageSource = newImg;
     });
