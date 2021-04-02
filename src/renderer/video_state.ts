@@ -3,9 +3,32 @@ import { AbstractImageDecriptor, FeedbackDescriptor, ImageFileDescriptor,
     ImageType, ImRot, VideoDescriptor 
 } from '@common/media_model';
 
+export default class VideoState {
+    imageState: AbstractImageDecriptor;
+    vidEl: HTMLVideoElement;
+    vidUrl = "red.mp4";
+    vidTex: THREE.Texture;
+    activeTexture: THREE.Texture;
+    pendingVideoSwitch = false;
+    feedbackBuffers: THREE.WebGLRenderTarget[] = [];
+    constructor() {
+        //TODO: manage / createElement
+        this.vidEl = document.getElementById('vid1') as HTMLVideoElement;
+        this.vidEl.src = this.vidUrl;
+        this.vidTex = new THREE.VideoTexture(this.vidEl);
+        this.activeTexture = this.vidTex;
+        const s = this.imageState = new VideoDescriptor(vidUrl);
+        s.width = 1920;
+        s.height = 1080;
+    }
+    fitTexture = fitTexture;
+}
+
+
+
 //could ping-ponging video elements help to avoid crash?
 //(or just pause rendering to test...)
-export let pendingVideoSwitch = false;
+let pendingVideoSwitch = false;
 export const vidEl = document.getElementById("vid1") as HTMLVideoElement;
 let vidUrl = "red.mp4";
 console.log(vidUrl);
@@ -13,16 +36,10 @@ vidEl.src = vidUrl;
 // vidEl.onchange //this is the type of thing I should be using...
 let __uniforms: any;
 // setTimeout(() => vidEl.play(), 3000);
-export const vidTex: THREE.Texture = new THREE.VideoTexture(vidEl);
-export let activeTexture: THREE.Texture = vidTex;
+const vidTex: THREE.Texture = new THREE.VideoTexture(vidEl);
+let activeTexture: THREE.Texture = vidTex;
 
-//nb this isn't what we want the interface to look like anyway...
-//(we want to be able to ideally have several copies on a page, other differences...)
-//This is a stop-gap interface, I'm setting vidEl.src in renderer_comms...
-export function getVideoURL() {
-    return vidUrl;
-}
-export function setVideoURL(url: string) {
+function setVideoURL(url: string) {
     if (url === vidUrl) return;
     if (url === 'red.mp4' && vidEl.currentSrc.endsWith('red.mp4')) return;
     pendingVideoSwitch = true;
@@ -90,7 +107,7 @@ function setFeedback(state: FeedbackDescriptor) {
     state.imgType = ImageType.FeedBack; ///WRONG just hacking...
     activeTexture = feedbackBuffers[0].texture;
 }
-export function swapFeedbackBuffers(renderer: THREE.WebGLRenderer) {
+function swapFeedbackBuffers(renderer: THREE.WebGLRenderer) {
     activeTexture = feedbackBuffers[fbSwitch].texture;
     fbSwitch = 1 - fbSwitch;
     renderer.setRenderTarget(feedbackBuffers[fbSwitch]);

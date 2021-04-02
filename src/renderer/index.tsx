@@ -1,7 +1,9 @@
 import * as THREE from 'three'
 import KaleidRenderer from './kaleid_renderer'
+import VideoState from './video_state'
 
-const KRenderer = new KaleidRenderer();
+const vid = new VideoState();
+const KRenderer = new KaleidRenderer(vid);
 const renderer = new THREE.WebGLRenderer({antialias: true, alpha: false});
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.prepend(renderer.domElement);

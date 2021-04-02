@@ -22,7 +22,7 @@ import { makeRegisterRendererMessage, OscCommandType } from "@common/socket_cmds
 import { Numeric, Tweakable } from "@common/tweakables";
 
 import { paramState } from './params'
-import { imageState, getVideoURL, setImageState, vidEl } from "./video_state";
+import { imageState, setImageState, vidEl } from "./video_state";
 
 let socket = new WebSocket(websocketURL);
 

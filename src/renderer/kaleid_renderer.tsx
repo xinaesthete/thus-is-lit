@@ -1,16 +1,19 @@
-import { IThreact, IThree, Threact } from "@common/threact/threact";
+import { IThree } from "@common/threact/threact";
 import vs from './shaders/kaleid_vert.glsl'
 import fs from './shaders/kaleid_frag.glsl'
 
 import * as THREE from 'three'
 import * as params from './params'
-import * as vid from './video_state'
+// import * as vid from './video_state'
+import VideoState from './video_state'
 import {Uniforms} from '@common/tweakables'
+///--> events rather than implicit side-effects
 import { onMessage, reportError, reportTime } from './renderer_comms'
 import { ImageType } from '@common/media_model'
-import React from "react";
 
 const Vector2 = THREE.Vector2;
+
+//const vid = new VideoState();
 
 //Note to self: adding 'threact?' comments where I need to consider design.
 
@@ -19,8 +22,10 @@ export default class KaleidRenderer implements IThree {
   camera = new THREE.OrthographicCamera(0, 1, 1, 0, 0, 10);
   parms: params.ParamGroup;
   uniforms: Uniforms;
-  constructor() {
-    let w = window.innerWidth, h = window.innerHeight; //threact?
+  vid: VideoState;
+  constructor(vid: VideoState) {
+    this.vid = vid;// || new VideoState();
+    let w = window.innerWidth, h = window.innerHeight; //threact? should know about container element
 
     this.uniforms = {
       'ScreenAspect': {value: w/h},
@@ -57,7 +62,7 @@ export default class KaleidRenderer implements IThree {
     const mat = new THREE.ShaderMaterial({vertexShader: vs, fragmentShader: fs, uniforms: this.uniforms, 
       transparent: true, depthTest: false, depthWrite: false});
     // I want to set up a listener for when fragmentShader source changes. 
-    onMessage('fragCode', (json) => { //threact
+    onMessage('fragCode', (json) => { //threact?
       console.log(`shader code changed...`);
       mat.userData.oldFrag = mat.fragmentShader;
       mat.fragmentShader = json.code;
@@ -67,16 +72,19 @@ export default class KaleidRenderer implements IThree {
     const mesh = new THREE.Mesh(geo, mat);
     this.scene.add(mesh);
   }
-  
+  setParmsFromArray(vals: number[]) {
+
+  }
   initThree(dom: HTMLElement) {
     //doing this stuff in constructor, pending review of Threact design.
   }
   t0 = Date.now();
   update(time: number) {
-    if (vid.pendingVideoSwitch) return;
+    if (this.vid.pendingVideoSwitch) return;
     let w = window.innerWidth, h = window.innerHeight;
     this.uniforms.ScreenAspect.value = w/h;
-    const im = vid.imageState; //threact...
+    const vid = this.vid;
+    const im = vid.imageState; //threact?...
     const vw = im.width;
     const vh = im.height;
     
@@ -87,14 +95,14 @@ export default class KaleidRenderer implements IThree {
     vid.activeTexture.updateMatrix();
     this.uniforms.UVLimit.value = vid.activeTexture.repeat;
     
-    reportTime(); //threact...
+    reportTime(); //threact?...
   
     const dt = time - this.t0;
     this.t0 = time;
     this.parms.update(dt);
   }
   render(renderer: THREE.WebGLRenderer) {
-    const im = vid.imageState;
+    const im = this.vid.imageState;
     if (im.imgType === ImageType.FeedBack) {
       // const rt = renderer.getRenderTarget();
       // vid.swapFeedbackBuffers(renderer);
