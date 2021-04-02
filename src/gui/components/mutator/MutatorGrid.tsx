@@ -1,9 +1,8 @@
 import { mutate } from "@common/mutator";
-import { Tweakable } from "@common/tweakables";
+import { Numeric, Tweakable } from "@common/tweakables";
 import { KaleidContext } from "@gui/kaleid_context";
 import { GridList, GridListTile, GridListTileBar, CardMedia } from '@material-ui/core'
 import React from "react";
-import { Numeric } from "../../../../out/thus-is-lit-darwin-x64/thus-is-lit.app/Contents/Resources/app/src/common/tweakables";
 import MutatorCell from "./MutatorCell";
 
 
