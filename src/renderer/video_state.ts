@@ -9,7 +9,7 @@ export default class VideoState {
     vidUrl = "red.mp4";
     vidTex: THREE.Texture;
     activeTexture: THREE.Texture;
-    pendingVideoSwitch = false;
+    pendingVideoSwitch = false; //did this ever help? Make new element instead?
     feedbackBuffers: THREE.WebGLRenderTarget[] = [];
     constructor() {
         //TODO: manage / createElement
@@ -20,6 +20,28 @@ export default class VideoState {
         const s = this.imageState = new VideoDescriptor(vidUrl);
         s.width = 1920;
         s.height = 1080;
+    }
+    setImageState(state: AbstractImageDecriptor) {
+        switch (state.imgType) {
+            case ImageType.VideoFile:
+                this.setVideoState(state as VideoDescriptor);
+                break;
+            default:
+                throw new Error('only video is implemented for now :/');
+        }
+    }
+    setVideoState(state: VideoDescriptor) {
+        this.imageState = state;
+        // this.pendingVideoSwitch = true;
+        this.activeTexture = vidTex;
+        const vidEl = this.vidEl;
+        vidEl.muted = state.muted;
+        vidEl.volume = state.volume;
+        state.paused ? vidEl.pause() : vidEl.play();
+        vidEl.oncanplay = () => {
+            // this.pendingVideoSwitch = false;
+            vidEl.oncanplay = null;
+        }
     }
     fitTexture = fitTexture;
 }
@@ -113,7 +135,7 @@ function swapFeedbackBuffers(renderer: THREE.WebGLRenderer) {
     renderer.setRenderTarget(feedbackBuffers[fbSwitch]);
 }
 
-export function setImageState(state: AbstractImageDecriptor) {
+function setImageState(state: AbstractImageDecriptor) {
     switch (state.imgType) {
         case ImageType.VideoFile:
             setVideoState(state as VideoDescriptor);
@@ -197,42 +219,5 @@ export function fitTexture(texture: THREE.Texture,
         }
     }
 }
-export function setup(renderer: THREE.Renderer, uniforms: any) {
-    __uniforms = uniforms;
-    renderer.domElement.ondragover = e => {
-        e.preventDefault();
-        if (e.dataTransfer) e.dataTransfer.dropEffect = 'copy';
-    };
-    renderer.domElement.ondrop = e => {
-        e.preventDefault();
-        if (e.dataTransfer && e.dataTransfer.items) {
-            const item = e.dataTransfer.items[0];
-            if (item.kind === 'file') {
-                const t = Date.now();
-                const file = item.getAsFile()!;
-                const reader = new FileReader();
-                //seems like this will attempt to read entire file, blocking, before continuing...
-                //---> could we politely ask the server to serve this file?
-                //     I think I'm maybe not going to do that in case it complicates how I think about
-                //     security model, serialization...? but maybe it's not a problem and I should just do it.
-                reader.readAsDataURL(file);
-                console.log(`readAsDataURL took ${Date.now() - t}`);
-                reader.onload = readEvent => {
-                    console.log(`onload took ${Date.now() - t}`);
-                    if (!readEvent.target) return;
-                    const result = readEvent.target.result as string;
-                    if (file.type.startsWith('video/')) {
-                        vidEl.src = result;
-                        vidEl.onloadeddata = () => {
-                            console.log(`onloadeddata took ${Date.now() - t}`);
-                            vidEl.play();
-                        }
-                    } else if (file.type.startsWith('image/')) {
-                        const t = uniforms.texture1.value = new THREE.TextureLoader().load(readEvent.target.result as string);
-                        setTextureParams(t);
-                    }
-                };
-            }
-        }
-    };
-}
+
+//nb, old setup() function was for drag/drop of files onto browser window

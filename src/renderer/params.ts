@@ -5,6 +5,7 @@ import {isNum, MovementType, Numeric, vec2, Tweakable, Uniforms} from '@common/t
 import {rendererStarted, host_port} from '@common/constants'
 import KaleidModel from '@common/KaleidModel'
 import { init } from "./renderer_comms"
+import VideoState from "./video_state";
 
 function lerp(s: number, t: number, a: number) {
     if (a<0) return s;
@@ -103,12 +104,12 @@ export let paramState: ParamGroup;
  * parameters, register with server/gui etc... indeed if it wasn't called, the emerging protocol
  * for what a Renderer needs to do as a bare minimum would not be met.
  */
-export const makeGUI = (specs: Tweakable<Numeric>[], uniforms:Uniforms = {}) => {
+export const makeGUI = (specs: Tweakable<Numeric>[], uniforms:Uniforms = {}, vid: VideoState) => {
     Object.keys(uniforms).forEach(k => uniforms[k].movement = MovementType.Fixed);
     //I don't (yet) use movement parameter, but if I do then I don't want to overwrite specs = Modulatable
     specs.forEach(s => s.movement = MovementType.Modulatable);
     const parms = new ParamGroup(specs, uniforms);
-    init(specs).then(()=>{});
+    init(specs, vid).then(()=>{});
     paramState = parms;
     return parms;
 }

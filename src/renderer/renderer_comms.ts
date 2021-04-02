@@ -22,7 +22,7 @@ import { makeRegisterRendererMessage, OscCommandType } from "@common/socket_cmds
 import { Numeric, Tweakable } from "@common/tweakables";
 
 import { paramState } from './params'
-import { imageState, setImageState, vidEl } from "./video_state";
+import VideoState from "./video_state";
 
 let socket = new WebSocket(websocketURL);
 
@@ -40,8 +40,9 @@ const params = new URLSearchParams(location.search);
 //nb, remembering that if we have more than one model in a JS context, we need to revise this scope.
 const id = params.has("id") ? Number.parseInt(params.get("id")!) : -1;
 document.title = "this is renderer " + id;
-export async function init(specs: Tweakable<Numeric>[]) {
-
+let vidState: VideoState;
+export async function init(specs: Tweakable<Numeric>[], vid: VideoState) {
+    vidState = vid; //XXX threact?
     //send a message to the server so that it knows what GUI to show...
     //only if we have an id to use from query string.
     //If not, we should still be able to operate as a standalone webpage,
@@ -51,15 +52,16 @@ export async function init(specs: Tweakable<Numeric>[]) {
         //const id = Number.parseInt(params.get("id"));
         const model: KaleidModel = {
             id: id,
-            imageSource: imageState,
+            imageSource: vid.imageState,
             tweakables: specs,
-        }
-    
+        };
+
         const body = JSON.stringify(model);
         console.log(`sending ${rendererStarted} ${body}`);
         fetch(`${httpURL}${rendererStarted}`, {
-            method: "POST", body: body,
-            headers: {"Content-Type": "application/json"}
+            method: "POST",
+            body: body,
+            headers: { "Content-Type": "application/json" },
         });
         //also we need to be able to listen to tweakables tweaking
         //as well as filename and whatever else.
@@ -84,13 +86,13 @@ socket.onmessage = (ev) => {
             const model = json.model as KaleidModel;
             paramState.setValues(model.tweakables);
             //just because we've decided which config we want, doesn't mean it'll be ready straight away
-            setImageState(model.imageSource);
+            vidState.setImageState(model.imageSource);
             //vidEl.currentTime// server should understand "Accept-Ranges": "bytes"
             //but if I want to add jumping to cue points then I don't want to set that with every update
             //need to be more careful about what I'm setting.
             //(also would want to be able to pre-cache if I know I might want to seek)
             //// adding a 'time' that will only be there when restoring state
-            if (json.time) vidEl.currentTime = json.time;
+            if (json.time) vidState.vidEl.currentTime = json.time;
         }
         if (onMsgs.has(json.address)) {
             onMsgs.get(json.address)!(json);
@@ -104,9 +106,9 @@ export const onMessage = (key: string, callback: (msg: any) => void) => {
     onMsgs.set(key, callback);
 }
 
-export const reportTime = () => {
-    if (socket.readyState !== WebSocket.OPEN) return;
-    const msg = {address: OscCommandType.ReportTime, time: vidEl.currentTime, id: id};
+export const reportTime = () => {//threact?
+    if (socket.readyState !== WebSocket.OPEN || !vidState) return;
+    const msg = {address: OscCommandType.ReportTime, time: vidState.vidEl.currentTime, id: id};
     socket.send(JSON.stringify(msg));
 };
 
