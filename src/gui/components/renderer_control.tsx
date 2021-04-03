@@ -1,10 +1,9 @@
 import React, { useEffect } from 'react'
-import produce from 'immer'
 import Button from '@material-ui/core/Button';
 import MuiAlert from '@material-ui/lab/Alert';
 import { requestModelList, requestNewRenderer } from '@gui/gui_comms';
 import { makeStyles, Theme } from '@material-ui/core';
-import KaleidModel, { ObservableKaleidModel } from '@common/KaleidModel'
+import { ObservableKaleidModel } from '@common/KaleidModel'
 import KaleidGUI from './uniforms_gui';
 import { KaleidContext } from '@gui/kaleid_context';
 
@@ -41,10 +40,9 @@ export default function RendererControl() {
                 const m = await requestNewRenderer(); //the only way we know a renderer is there at the moment
                 //is that we request one via REST and get a response here.
 
-                const newModels = produce(renderModels, (draftState) => {
-                    draftState.push(m);
-                    return draftState;
-                })
+                //XXX: there were TS errors related to immer produce here, not sure when they appeared.
+                //(or why vscode gets errors that esbuild doesn't)
+                const newModels = [...renderModels, m];
                 setRenderModels(newModels);
             }
         }>Make new renderer</Button>
