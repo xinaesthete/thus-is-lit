@@ -40,22 +40,18 @@ export class ObservableKaleidModel implements KaleidModel {
     id: number = -1;
     imageSource: AbstractImageDecriptor;
     tweakables: MobxTweakable<Numeric>[];
-    _vidState: VideoState;
-    public get vidState() {
-        return this._vidState;
-    }
+    vidState: VideoState;
     constructor(init: KaleidModel) {
         this.imageSource = {width: -1, height: -1, imgType: ImageType.Null}
-        this._vidState = new VideoState();
+        const v = this.vidState = new VideoState();
         Object.assign(this, init);
         this.tweakables = init.tweakables.map(t => new MobxTweakable(t));
-        makeObservable(this, {imageSource: observable, tweakables: observable, vidState: computed});
+        makeObservable(this, {imageSource: observable, tweakables: observable});
         autorun(() => {
             sendModel(this);
-            //sometimes getting an exception here, no setImageState to call...
-            //I think this could've been related to immer errors in renderer_control setRenderModels
-            //not sure how necessary
-            this.vidState.setImageState(this.imageSource);
+            //XXX: mobx weirdness with undefined setImageState seems to be resolved with 'v'
+            //not at all confident I understand the problem & it seems likely something is still wrong.
+            v.setImageState(this.imageSource);
         });
     }
 }
