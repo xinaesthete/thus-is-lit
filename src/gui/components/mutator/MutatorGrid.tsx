@@ -12,7 +12,7 @@ export default function MutatorGrid() {
   
   React.useEffect(()=> {
     const newVariants: Numeric[][] = [kaleid.tweakables.map(t => t.value)];
-    for (let i=0; i<11; i++) {
+    for (let i=0; i<5; i++) {
       //mutate a new variant and add it to the list of variants
       //actually, they want to have other data associated, like 'picked' flag
       //just vaguelly sketching out now & moving on to other things.
