@@ -51,7 +51,9 @@ async function watch(name, node=false) {
         incremental: true,
         loader: { '.glsl': 'text' }
     });
-    chokidar.watch([`src/${name}/**/*`, `src/common/**/*`], {ignoreInitial: true}).on('all', () => {
+    //nb, now using renderer code in gui, so just watching all src
+    //in a way it'd make sense to make those files 'common'
+    chokidar.watch([`src/**/*`], {ignoreInitial: true}).on('all', () => {
         console.log(`[${new Date()}] rebuilding ${name}`);
         try {
             builder.rebuild();
