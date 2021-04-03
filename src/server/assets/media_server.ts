@@ -163,16 +163,12 @@ export function addRestAPI(expApp: express.Application) {
             res.status(404).send(`asset path hasn't been configured`);
         }
         const imgPath = path.join(c.mainAssetPath || "", id);
-        const ext = path.extname(imgPath);
         if (!hasValidExtention(imgPath, "image")) {
             res.send(404).send(`can't server ${id} as image`);
             return;
         }
-        const typeKey = path.extname(imgPath).substring(1) as
-            | "jpeg"
-            | "jpg"
-            | "png"; //sorry
-        const contentType = imageMimeTypes[typeKey]; //sendFile does this automatically.
+        //const contentType = imageMimeTypes[typeKey]; //sendFile does this automatically.
+        //maybe if we wanted something like insp or other it'd be relevant.
         try {
             res.sendFile(imgPath);
             return;
