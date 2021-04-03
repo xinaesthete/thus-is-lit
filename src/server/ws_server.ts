@@ -11,8 +11,9 @@ export default function startWsServer(server: Server) {
     const {renderers, currentModels, playbackTimes, controllers} = {...main_state};
 
     watchFragmentShader((newCode) => {
-        const msg = JSON.stringify({address: 'fragCode', code: newCode});
+        const msg = JSON.stringify({address: '/fragCode', code: newCode});
         for (let r of renderers.values()) r.send(msg);
+        for (let c of controllers.values()) c.send(msg);
     });
     
     const msgCmds = new Map<OscCommandType, (socket: WebSocket, msg: any)=>Promise<void>>();

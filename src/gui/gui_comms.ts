@@ -11,6 +11,7 @@ import { httpURL, newRenderer, websocketURL } from '@common/constants'
 import KaleidModel, { ObservableKaleidModel } from '@common/KaleidModel';
 import { makeRegisterControllerMessage, OscCommandType } from '@common/socket_cmds';
 import { FileConfigPrefs } from '@common/media_model';
+import KaleidRenderer from 'renderer/kaleid_renderer';
 // let's make a button that creates a renderer...
 // and then very soon refactor this code somewhere sensible.
 
@@ -101,6 +102,10 @@ ws.onmessage = ev => {
             //I'm still not quite sure where I push my model here :/
             //almost seems easiest to pull with GET request for now.
             //but I really need a more coherent model before I create a monster.
+            break;
+        case OscCommandType.FragCode:
+            console.log(`shader code changed...`);
+            KaleidRenderer.fs = msg.code;
             break;
         default:
             break;

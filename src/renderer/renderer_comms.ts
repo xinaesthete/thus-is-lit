@@ -70,12 +70,10 @@ export async function init(r: KaleidRenderer) {
         //that's up to the server once the connection is registered.
 
         const mat = r.mat;
-        onMessage("fragCode", json => {
+        onMessage("/fragCode", json => {
             //threact?
             console.log(`shader code changed...`);
-            mat.userData.oldFrag = mat.fragmentShader;
-            mat.fragmentShader = json.code;
-            mat.needsUpdate = true;
+            KaleidRenderer.fs = json.code;
         });
         r.onUpdate = reportTime;
     }
@@ -107,7 +105,7 @@ socket.onmessage = (ev) => {
         if (onMsgs.has(json.address)) {
             onMsgs.get(json.address)!(json);
         }
-    } catch (error) {
+    } catch (error) { //??hitting error here in debugger on fragCode???
         console.error(error);
     }
 }

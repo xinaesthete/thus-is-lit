@@ -22,6 +22,7 @@ export default class KaleidRenderer implements IThree {
   uniforms: Uniforms;
   vid: VideoState;
   mat: THREE.ShaderMaterial;
+  static fs: string = fs;
   constructor(vid: VideoState) {
     this.vid = vid;// || new VideoState();
     ////---
@@ -99,6 +100,15 @@ export default class KaleidRenderer implements IThree {
     const dt = time - this.t0;
     this.t0 = time;
     this.parms.update(dt);
+    if (this.mat.fragmentShader !== KaleidRenderer.fs) this.updateFragCode();
+  }
+  private updateFragCode() {
+    console.log(`updating shader code`);
+    const mat = this.mat;
+    mat.userData.oldFrag = mat.fragmentShader;
+    mat.fragmentShader = KaleidRenderer.fs;
+    mat.needsUpdate = true;
+    //TODO: error checking / reporting, diff?
   }
   render(renderer: THREE.WebGLRenderer) {
     const im = this.vid.imageState;
