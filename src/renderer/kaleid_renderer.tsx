@@ -7,8 +7,6 @@ import * as params from './params'
 // import * as vid from './video_state'
 import VideoState from './video_state'
 import {Numeric, Uniforms} from '@common/tweakables'
-///--> events rather than implicit side-effects
-import { onMessage, reportError, reportTime } from './renderer_comms'
 import { ImageType } from '@common/media_model'
 
 const Vector2 = THREE.Vector2;
@@ -80,6 +78,7 @@ export default class KaleidRenderer implements IThree {
     this.resize(dom.getBoundingClientRect());
   }
   t0 = Date.now();
+  onUpdate: ()=>void = ()=>{};
   update(time: number) {
     if (this.vid.pendingVideoSwitch) return;
     const vid = this.vid;
@@ -94,7 +93,8 @@ export default class KaleidRenderer implements IThree {
     vid.activeTexture.updateMatrix();
     this.uniforms.UVLimit.value = vid.activeTexture.repeat;
     
-    reportTime(); //threact?...
+    //reportTime(); //threact?...
+    this.onUpdate();
   
     const dt = time - this.t0;
     this.t0 = time;

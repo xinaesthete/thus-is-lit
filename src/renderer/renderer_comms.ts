@@ -77,7 +77,7 @@ export async function init(r: KaleidRenderer) {
             mat.fragmentShader = json.code;
             mat.needsUpdate = true;
         });
-
+        r.onUpdate = reportTime;
     }
 }
 //window.onbeforeunload = () => alert('unload');
@@ -112,17 +112,17 @@ socket.onmessage = (ev) => {
     }
 }
 
-export function onMessage(key: string, callback: (msg: any) => void) {
+function onMessage(key: string, callback: (msg: any) => void) {
     onMsgs.set(key, callback);
 }
 
-export function reportTime() {//threact?
+function reportTime() {//threact?
     if (socket.readyState !== WebSocket.OPEN || !vidState) return;
     const msg = {address: OscCommandType.ReportTime, time: vidState.vidEl.currentTime, id: id};
     socket.send(JSON.stringify(msg));
 };
 
-export function reportError (error: string) {
+function reportError (error: string) {
     const msg = {address: OscCommandType.Error, error: error};
     socket.send(JSON.stringify(msg));
 }
