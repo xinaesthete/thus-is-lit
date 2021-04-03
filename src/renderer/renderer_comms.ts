@@ -16,10 +16,10 @@
  * 
  */
 
-import { rendererStarted, host_port, websocketURL, httpURL } from "@common/constants";
+import { rendererStarted, websocketURL, httpURL } from "@common/constants";
 import KaleidModel from "@common/KaleidModel";
 import { makeRegisterRendererMessage, OscCommandType } from "@common/socket_cmds";
-import { Numeric, Tweakable } from "@common/tweakables";
+import KaleidRenderer from "./kaleid_renderer";
 
 import { paramState } from './params'
 import VideoState from "./video_state";
@@ -41,8 +41,8 @@ const params = new URLSearchParams(location.search);
 const id = params.has("id") ? Number.parseInt(params.get("id")!) : -1;
 document.title = "this is renderer " + id;
 let vidState: VideoState;
-export async function init(specs: Tweakable<Numeric>[], vid: VideoState) {
-    vidState = vid; //XXX threact?
+export async function init(r: KaleidRenderer) {
+    vidState = r.vid; //XXX threact?
     //send a message to the server so that it knows what GUI to show...
     //only if we have an id to use from query string.
     //If not, we should still be able to operate as a standalone webpage,
@@ -52,8 +52,8 @@ export async function init(specs: Tweakable<Numeric>[], vid: VideoState) {
         //const id = Number.parseInt(params.get("id"));
         const model: KaleidModel = {
             id: id,
-            imageSource: vid.imageState,
-            tweakables: specs,
+            imageSource: r.vid.imageState,
+            tweakables: r.parms.specs,
         };
 
         const body = JSON.stringify(model);
@@ -68,10 +68,20 @@ export async function init(specs: Tweakable<Numeric>[], vid: VideoState) {
         await setupWebSocket(model);
         //if we're (re)loading a particular model ID, it would be nice to get the old state back ASAP.
         //that's up to the server once the connection is registered.
+
+        const mat = r.mat;
+        onMessage("fragCode", json => {
+            //threact?
+            console.log(`shader code changed...`);
+            mat.userData.oldFrag = mat.fragmentShader;
+            mat.fragmentShader = json.code;
+            mat.needsUpdate = true;
+        });
+
     }
 }
-window.onbeforeunload = () => alert('unload');
-window.onclose = () => alert('close')
+//window.onbeforeunload = () => alert('unload');
+//window.onclose = () => alert('close')
 socket.onclose = (ev) => {
     console.log(`socket closed`);
 }
@@ -102,17 +112,17 @@ socket.onmessage = (ev) => {
     }
 }
 
-export const onMessage = (key: string, callback: (msg: any) => void) => {
+export function onMessage(key: string, callback: (msg: any) => void) {
     onMsgs.set(key, callback);
 }
 
-export const reportTime = () => {//threact?
+export function reportTime() {//threact?
     if (socket.readyState !== WebSocket.OPEN || !vidState) return;
     const msg = {address: OscCommandType.ReportTime, time: vidState.vidEl.currentTime, id: id};
     socket.send(JSON.stringify(msg));
 };
 
-export const reportError = (error: string) => {
+export function reportError (error: string) {
     const msg = {address: OscCommandType.Error, error: error};
     socket.send(JSON.stringify(msg));
 }

@@ -1,11 +1,6 @@
 import * as dat from "dat.gui"
 import * as THREE from 'three'
-import { action, autorun, computed, makeAutoObservable, makeObservable, observable, reaction } from 'mobx';
 import {isNum, MovementType, Numeric, vec2, Tweakable, Uniforms} from '@common/tweakables'
-import {rendererStarted, host_port} from '@common/constants'
-import KaleidModel from '@common/KaleidModel'
-import { init } from "./renderer_comms"
-import VideoState from "./video_state";
 
 function lerp(s: number, t: number, a: number) {
     if (a<0) return s;
@@ -104,12 +99,11 @@ export let paramState: ParamGroup;
  * parameters, register with server/gui etc... indeed if it wasn't called, the emerging protocol
  * for what a Renderer needs to do as a bare minimum would not be met.
  */
-export const makeGUI = (specs: Tweakable<Numeric>[], uniforms:Uniforms = {}, vid: VideoState) => {
+export const makeGUI = (specs: Tweakable<Numeric>[], uniforms:Uniforms = {}) => {
     Object.keys(uniforms).forEach(k => uniforms[k].movement = MovementType.Fixed);
     //I don't (yet) use movement parameter, but if I do then I don't want to overwrite specs = Modulatable
     specs.forEach(s => s.movement = MovementType.Modulatable);
     const parms = new ParamGroup(specs, uniforms);
-    init(specs, vid).then(()=>{});
     paramState = parms;
     return parms;
 }
@@ -117,11 +111,13 @@ export const makeGUI = (specs: Tweakable<Numeric>[], uniforms:Uniforms = {}, vid
 
 export class ParamGroup {
     parms: ShaderParam[] = [];
+    specs: Tweakable<Numeric>[]; //while refactoring comms...
     lagTime: number = 1000;
     lagParam?: ShaderParam;
     constructor(specs: Tweakable<Numeric>[], uniforms:Uniforms = {}) {
         const parms = this.parms;
         // gui.add(this, 'lagTime', 0, 20000);
+        this.specs = specs;
         specs.forEach(s => {
             //uniforms[s.name] = {value: s.value}
             const v = s.value;

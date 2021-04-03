@@ -23,6 +23,7 @@ export default class KaleidRenderer implements IThree {
   parms: params.ParamGroup;
   uniforms: Uniforms;
   vid: VideoState;
+  mat: THREE.ShaderMaterial;
   constructor(vid: VideoState) {
     this.vid = vid;// || new VideoState();
     ////---
@@ -54,7 +55,7 @@ export default class KaleidRenderer implements IThree {
       {name: "ImageCentre", value: new Vector2(0.5, 0), min: -1, max: 1},
       {name: "Centre", value: new Vector2(0., 0.), min: -1, max: 1},
       {name: "Vignette", value: new Vector2(0.1, 0.1), min: 0, max: 0.2},
-    ], this.uniforms, vid);
+    ], this.uniforms);
 
     //NOTE: more than one renderer should be able to use the same vid source.
     //don't need to fix that for initial translation of code.
@@ -62,13 +63,7 @@ export default class KaleidRenderer implements IThree {
     const geo = new THREE.PlaneGeometry(1, 1);
     const mat = new THREE.ShaderMaterial({vertexShader: vs, fragmentShader: fs, uniforms: this.uniforms, 
       transparent: true, depthTest: false, depthWrite: false});
-    // I want to set up a listener for when fragmentShader source changes. 
-    onMessage('fragCode', (json) => { //threact?
-      console.log(`shader code changed...`);
-      mat.userData.oldFrag = mat.fragmentShader;
-      mat.fragmentShader = json.code;
-      mat.needsUpdate = true;
-    });
+    this.mat = mat;
     
     const mesh = new THREE.Mesh(geo, mat);
     this.scene.add(mesh);
@@ -81,22 +76,21 @@ export default class KaleidRenderer implements IThree {
     });
   }
   initThree(dom: HTMLElement) {
-    //doing this stuff in constructor, pending review of Threact design.
+    //doing most stuff in constructor, pending review of Threact design.
+    this.resize(dom.getBoundingClientRect());
   }
   t0 = Date.now();
   update(time: number) {
     if (this.vid.pendingVideoSwitch) return;
-    let w = window.innerWidth, h = window.innerHeight;
-    this.uniforms.ScreenAspect.value = w/h;
     const vid = this.vid;
-    const im = vid.imageState; //threact?...
+    const im = vid.imageState;
     const vw = im.width;
     const vh = im.height;
     
     const imageAspect = (im.rotation == -90 || im.rotation == 90) ? vh/vw : vw/vh;
     this.uniforms.ImageAspect.value = imageAspect;
-    //TODO expose a property for "fit"
-    vid.fitTexture(vid.activeTexture, w/h, imageAspect, "fit", im.rotation);
+    const screenAspect = this.uniforms.ScreenAspect.value as number;
+    vid.fitTexture(vid.activeTexture, screenAspect, imageAspect, "fit", im.rotation);
     vid.activeTexture.updateMatrix();
     this.uniforms.UVLimit.value = vid.activeTexture.repeat;
     
@@ -120,7 +114,8 @@ export default class KaleidRenderer implements IThree {
     }
   }
   resize(rect: DOMRect) {
-    let w = window.innerWidth, h = window.innerHeight;
+    let w = rect.width, h = rect.height;
+    // console.table([w, h]);
     this.uniforms.ScreenAspect.value = w/h;
     //XXX: camera...
   }
