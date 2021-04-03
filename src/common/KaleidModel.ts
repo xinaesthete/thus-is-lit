@@ -5,7 +5,8 @@
 // With the current very-static form of Kaleid renderer, could be good to make this a straightforward
 // reflection of that (serving also a guide to what generated).
 
-import { observable, makeObservable, action, autorun } from 'mobx'
+import { observable, makeObservable, computed, autorun } from 'mobx'
+import VideoState from 'renderer/video_state';
 import { sendModel } from '../gui/gui_comms';
 import { AbstractImageDecriptor, ImageType } from "./media_model";
 import { MovementType, Numeric, Tweakable } from "./tweakables";
@@ -14,14 +15,6 @@ export default interface KaleidModel {
     /// auxiliary / housekeeping stuff:::
     /** id key may be subject to change eg when we think about how to restore saved state... */
     id: number;
-    //thinking of having something like this, separate from VideoState etc, for not updating
-    //embedded gui previews.
-    // paused: boolean; //probably not this name.
-
-    /// stuff that effects the content:::
-    //filename: string; //first was this...
-    //video: VideoState; //next this...
-    //later--- textureSource: VideoState | FeedbackTexture | ... ///observable
     imageSource: AbstractImageDecriptor;
     tweakables: Tweakable<any>[];
 }
@@ -39,15 +32,6 @@ class MobxTweakable<T extends Numeric> implements Tweakable<T> {
     step?: number | undefined;
     delta?: number | undefined;
     movement?: MovementType | undefined;
-    //"You can write a action setter for each prop of the above, but it misses the point (and optimizations), 
-    //the idea is rather that you mark all the operations your application has as actions."
-    // that doesn't mean we need to use setters everywhere (with the irritation that "observable get" & "action set"
-    // don't mix)
-    // we just need to wrap events as action e.g. (pseudocode) "onChange=action((v) => u.value = v)"
-    // no need for "onChange=(v) => u.setValue(v)"
-    // @action setValue(v: T) {
-    //     this.value = v;
-    // }
 }
 
 
@@ -56,12 +40,23 @@ export class ObservableKaleidModel implements KaleidModel {
     id: number = -1;
     imageSource: AbstractImageDecriptor;
     tweakables: MobxTweakable<Numeric>[];
+    _vidState: VideoState;
+    public get vidState() {
+        return this._vidState;
+    }
     constructor(init: KaleidModel) {
         this.imageSource = {width: -1, height: -1, imgType: ImageType.Null}
+        this._vidState = new VideoState();
         Object.assign(this, init);
         this.tweakables = init.tweakables.map(t => new MobxTweakable(t));
-        makeObservable(this, {imageSource: observable, tweakables: observable});
-        autorun(() => sendModel(this)); //threact
+        makeObservable(this, {imageSource: observable, tweakables: observable, vidState: computed});
+        autorun(() => {
+            sendModel(this);
+            //sometimes getting an exception here, no setImageState to call...
+            //I think this could've been related to immer errors in renderer_control setRenderModels
+            //not sure how necessary
+            this.vidState.setImageState(this.imageSource);
+        });
     }
 }
 
@@ -69,6 +64,5 @@ export class ObservableKaleidModel implements KaleidModel {
 //we don't use anything like this as of this writing, but...
 export interface KaleidControlMessage {
     id: number;
-
     changed: Record<string, Numeric>;
 }

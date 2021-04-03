@@ -6,7 +6,7 @@ import * as THREE from 'three'
 import * as params from './params'
 // import * as vid from './video_state'
 import VideoState from './video_state'
-import {Uniforms} from '@common/tweakables'
+import {Numeric, Uniforms} from '@common/tweakables'
 ///--> events rather than implicit side-effects
 import { onMessage, reportError, reportTime } from './renderer_comms'
 import { ImageType } from '@common/media_model'
@@ -25,6 +25,7 @@ export default class KaleidRenderer implements IThree {
   vid: VideoState;
   constructor(vid: VideoState) {
     this.vid = vid;// || new VideoState();
+    ////---
     let w = window.innerWidth, h = window.innerHeight; //threact? should know about container element
 
     this.uniforms = {
@@ -72,8 +73,12 @@ export default class KaleidRenderer implements IThree {
     const mesh = new THREE.Mesh(geo, mat);
     this.scene.add(mesh);
   }
-  setParmsFromArray(vals: number[]) {
-
+  setParmsFromArray(vals: Numeric[]) {
+    vals.forEach((p, index) => {
+      const t = this.parms.parms[index].val; //oof
+      t.lagTime = 0.01;//xxx
+      t.targVal = p;
+    });
   }
   initThree(dom: HTMLElement) {
     //doing this stuff in constructor, pending review of Threact design.

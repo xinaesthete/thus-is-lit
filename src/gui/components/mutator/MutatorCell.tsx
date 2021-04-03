@@ -20,7 +20,7 @@ export default function MutatorCell(props: {parms: Numeric[]}) {
     });
     return (
         <GridListTile>
-            <KaleidComponent />
+            <KaleidComponent parms={props.parms} />
             <Button onClick={activate}>Pick Me!</Button>
         </GridListTile>
     )
