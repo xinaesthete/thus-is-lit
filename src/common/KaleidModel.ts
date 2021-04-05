@@ -5,7 +5,7 @@
 // With the current very-static form of Kaleid renderer, could be good to make this a straightforward
 // reflection of that (serving also a guide to what generated).
 
-import { observable, makeObservable, computed, autorun } from 'mobx'
+import { observable, makeObservable, autorun } from 'mobx'
 import VideoState from 'renderer/video_state';
 import { sendModel } from '../gui/gui_comms';
 import { AbstractImageDecriptor, ImageType } from "./media_model";
@@ -40,18 +40,35 @@ export class ObservableKaleidModel implements KaleidModel {
     id: number = -1;
     imageSource: AbstractImageDecriptor;
     tweakables: MobxTweakable<Numeric>[];
-    vidState: VideoState;
     constructor(init: KaleidModel) {
-        this.imageSource = {width: -1, height: -1, imgType: ImageType.Null}
-        const v = this.vidState = new VideoState();
+        this.imageSource = { width: -1, height: -1, imgType: ImageType.Null };
         Object.assign(this, init);
         this.tweakables = init.tweakables.map(t => new MobxTweakable(t));
-        makeObservable(this, {imageSource: observable, tweakables: observable});
+        //"Only plain object, array, Map, Set, function, generator function are convertible. Class instances and others are untouched."
+        makeObservable(this, {
+            imageSource: observable,
+            tweakables: observable,
+        });
         autorun(() => {
             sendModel(this);
-            //XXX: mobx weirdness with undefined setImageState seems to be resolved with 'v'
-            //not at all confident I understand the problem & it seems likely something is still wrong.
-            v.setImageState(this.imageSource);
+        });
+    }
+}
+
+/** extra level of abstraction seems it may be unneeded, 
+ * but this seems to allow vidState to react to change in GUI correctly, 
+ * without the 'model' as sent to server etc needing to change */
+export class KaleidContextType {
+    model: ObservableKaleidModel;
+    vidState: VideoState;
+    constructor(init: KaleidModel) {
+        this.model = new ObservableKaleidModel(init);
+        this.vidState = new VideoState();
+        autorun(() => {
+            this.vidState.setImageState(this.model.imageSource);
+        });
+        makeObservable(this.vidState, {
+            imageState: observable
         });
     }
 }

@@ -102,7 +102,8 @@ interface KProps {
  */
 const KaleidGUI = observer(() => {
     const classes = useStyles();
-    const model = React.useContext(KaleidContext);
+    const kaleidContext = React.useContext(KaleidContext);
+    const model = kaleidContext.model;
 
     //--> ImageContext? What if there are multiple layers later?
     // then the context interface can change. KaleidContext can be used in place, anyway.
@@ -139,7 +140,7 @@ const KaleidGUI = observer(() => {
                 <ToggleButton value={mutateMode} onChange={()=>setMutator(!mutateMode)}>
                     {mutateMode ? "mutator" : "sliders"}
                 </ToggleButton>
-                <KaleidContext.Provider value={model}>
+                <KaleidContext.Provider value={kaleidContext}>
                     {tweaker}
                 </KaleidContext.Provider>
             </div>

@@ -7,7 +7,7 @@ import MutatorCell from "./MutatorCell";
 
 
 export default function MutatorGrid() {
-  const kaleid = React.useContext(KaleidContext);
+  const kaleid = React.useContext(KaleidContext).model;
   const [variants, setVariants] = React.useState([kaleid.tweakables.map(t => t.value)]);
   
   React.useEffect(()=> {

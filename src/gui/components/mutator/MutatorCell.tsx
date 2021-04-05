@@ -12,7 +12,7 @@ import KaleidComponent from '../kaleid_component';
  * @returns 
  */
 export default function MutatorCell(props: {parms: Numeric[]}) {
-    const kaleid = React.useContext(KaleidContext);
+    const kaleid = React.useContext(KaleidContext).model;
     const activate = action(() => {
         props.parms.forEach((p, index) => {
             kaleid.tweakables[index].value = p;

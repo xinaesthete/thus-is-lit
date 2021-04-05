@@ -3,7 +3,7 @@ import Button from '@material-ui/core/Button';
 import MuiAlert from '@material-ui/lab/Alert';
 import { requestModelList, requestNewRenderer } from '@gui/gui_comms';
 import { makeStyles, Theme } from '@material-ui/core';
-import { ObservableKaleidModel } from '@common/KaleidModel'
+import { KaleidContextType, ObservableKaleidModel } from '@common/KaleidModel'
 import KaleidGUI from './uniforms_gui';
 import { KaleidContext } from '@gui/kaleid_context';
 
@@ -23,7 +23,7 @@ export default function RendererControl() {
     const classes = useStyles();
     // this should be brought into a wider mobx state, which would help us do things like 'assign to renderer'
     // from within media_browser.
-    const [renderModels, setRenderModels] = React.useState([] as ObservableKaleidModel[]);
+    const [renderModels, setRenderModels] = React.useState([] as KaleidContextType[]);
     //we can pull from server, similarly to how we do other things...
     //this is not nice, but may be ok for now.
     useEffect(() => {
