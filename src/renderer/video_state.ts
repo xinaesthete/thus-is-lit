@@ -24,20 +24,22 @@ export default class VideoState {
         this.vidTex = new THREE.VideoTexture(this.vidEl);
         setTextureParams(this.vidTex);
         this.activeTexture = this.vidTex;
-        const s = this.imageState = new VideoDescriptor(this.vidUrl);
+        const s = new VideoDescriptor(this.vidUrl);
         s.width = 1920;
         s.height = 1080;
+        this.imageState = s; //satisfy TS that field is initialised
+        this.setImageState(s);
     }
-    setImageState(state: AbstractImageDecriptor) {
+    async setImageState(state: AbstractImageDecriptor) {
         switch (state.imgType) {
             case ImageType.VideoFile:
-                this.setVideoState(state as VideoDescriptor);
+                await this.setVideoState(state as VideoDescriptor);
                 break;
             default:
                 throw new Error('only video is implemented for now :/');
         }
     }
-    setVideoState(state: VideoDescriptor) {
+    async setVideoState(state: VideoDescriptor) {
         this.imageState = state;
         // this.pendingVideoSwitch = true;
         this.activeTexture = this.vidTex;
@@ -47,7 +49,7 @@ export default class VideoState {
         //TODO fix the stupid error when switching back to red.mp4
         //if (state.url === "red.mp4" && vidEl.currentSrc.endsWith("red.mp4")) return;
         this.vidUrl = vidEl.src = state.url;
-        state.paused ? vidEl.pause() : vidEl.play();
+        await state.paused ? vidEl.pause() : vidEl.play();
     }
     fitTexture = fitTexture;
 }
