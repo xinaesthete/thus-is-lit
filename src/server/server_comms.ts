@@ -49,4 +49,5 @@ export function startServer() {
     });
     startWsServer(server);
     initFileConfig();
+    expApp.use(express.static('public'));
 }
