@@ -1,7 +1,6 @@
 import {app, screen, BrowserWindow} from 'electron'
 import express from 'express'
 import * as os from 'os'
-import { buildDir } from '.';
 import KaleidModel from '@common/KaleidModel';
 import * as consts from '@common/constants'
 import main_state from './main_state';
@@ -130,7 +129,7 @@ export async function createRendererWindow(id: number) {
     //and use that to create sets of windows each on correct screens.
     //nb may go back to old organic-art method of making one big borderless window
     //spanning entire extended desktop
-    await window.loadURL(`file://${buildDir}/renderer.html?id=${id}`);
+    await window.loadURL(`${consts.httpURL}/renderer.html?id=${id}`);
     
     
     return promise;

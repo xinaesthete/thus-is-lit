@@ -4,6 +4,7 @@ import * as path from 'path'
 import {startServer} from './server_comms'
 import { getNextScreen } from './screen_config';
 import main_state from './main_state';
+import { guiURL } from '@common/constants';
 // import installReactDevtool from './devtool'
 
 startServer();
@@ -29,7 +30,7 @@ function createGUIWindow() {
         }
     });
     //will this still work with build?
-    window.loadURL(`http://localhost:8321/gui.html`);
+    window.loadURL(guiURL);
     // window.loadURL(`file://${buildDir}/gui.html`);
     main_state.mainWindow = window;
 

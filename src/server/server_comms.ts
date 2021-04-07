@@ -13,7 +13,14 @@ import initFileConfig, * as file_config  from './assets/file_config'
 import * as media_server from './assets/media_server'
 import main_state, { getStateAsJsonString } from './main_state';
 import startWsServer from './ws_server';
+import { networkInterfaces } from 'os'
 
+//technically, this could change if network interface changes while app is running.
+export const localExternalIP = (() => ([] as any[]).concat(...Object.values(networkInterfaces()))
+  .filter(details => details.family === 'IPv4' && !details.internal)
+  .shift().address)()
+
+consts.setAddr(localExternalIP + ':' + consts.host_port); //ugh
 
 export const expApp = express();
 //https://stackoverflow.com/questions/52684372/fetch-post-request-to-express-js-generates-empty-body

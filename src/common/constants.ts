@@ -13,6 +13,18 @@ export const rendererStarted = "/rendererStarted";
 //mistakes can easily be made with these constants vs internal server functions etc.
 //export const getConfigPrefs = "/getConfigPrefs";
 //TODO SSL.
-//TODO consider server not on localhost
-export const websocketURL = "ws://localhost:" + host_port;
-export const httpURL = "http://localhost:" + host_port;
+
+//XXXX_____ this 'constants' thing has been made tricky by node vs browser stuff...
+/// some ugliness below.
+console.log(globalThis.location?.host);
+export let addr = globalThis.location?.host;
+//Protocol-relative '//' URLs?
+export let websocketURL = `ws://${addr}`;
+export let httpURL = `http://${addr}`;
+export let guiURL = `http://${addr}/gui.html`;
+export function setAddr(v: string) { 
+  addr = v;
+  websocketURL = `ws://${addr}`;
+  httpURL = `http://${addr}`;
+  guiURL = `http://${addr}/gui.html`;
+}////ungood
