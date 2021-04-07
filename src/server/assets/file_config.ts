@@ -82,7 +82,11 @@ export function addRestAPI(expApp: express.Application) {
     
         const remoteIP = req.connection.remoteAddress;
         const newPath = req.body; ////needs to be a string
-        if (!await isAcceptableAssetPath(newPath)) res.sendStatus(403);
+        if (!await isAcceptableAssetPath(newPath)) {
+            res.sendStatus(403);
+            console.error(`unacceptable asset path '${newPath}'`);
+            return;
+        }
         console.log(`[file_config] request to /setMainAssetPath to '${newPath}' from IP '${remoteIP}'`);
         // if (remoteIP === '127.0.0.1' || remoteIP === 'localhost') {
             const conf = await getConfig();
