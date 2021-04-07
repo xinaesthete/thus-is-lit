@@ -4,7 +4,6 @@
   "description": "experimental multimedia environment",
   "main": "public/build/server.js",
   "dependencies": {
-    "@ffprobe-installer/ffprobe": "^1.1.0",
     "@material-ui/core": "^4.11.2",
     "@material-ui/icons": "^4.11.2",
     "@material-ui/lab": "^4.0.0-alpha.57",
@@ -14,7 +13,6 @@
     "electron-reload": "^1.5.0",
     "electron-squirrel-startup": "^1.0.0",
     "express": "^4.17.1",
-    "ffprobe-client": "^1.1.6",
     "immer": "^8.0.0",
     "mediainfo.js": "^0.1.4",
     "mobx": "^6.0.4",
