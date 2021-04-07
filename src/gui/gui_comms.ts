@@ -39,10 +39,13 @@ export async function requestFileConfigPrefs() {
 }
 
 export async function requestFileDialog() {
-    console.log('requesting file dialog');
+    console.log('requesting file dialog'); //sometimes long delay / lost message...
     const response = await fetch(`${httpURL}/openFileDialog`);
     if (response.ok) {
         const path = await response.text();
+        console.log(`path returned from requestFileDialog(): '${path}'`);
+        //why was I subsequently passing an empty string around sometimes?
+        //had trouble reproducing. **Would be nice to have tests in place.**
         return path;
     } else {
         return;
