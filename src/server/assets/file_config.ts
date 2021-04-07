@@ -117,6 +117,7 @@ export function addRestAPI(expApp: express.Application) {
         }
     });
     expApp.get("/openFileDialog", async (req, res) => {
+        console.log(`/openFileDialog request`);
         const result = await dialog.showOpenDialog(main_state.mainWindow!, {
             title: "Choose the folder where you keep videos",
             properties: ["openDirectory"]
