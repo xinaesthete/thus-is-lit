@@ -55,7 +55,7 @@ const main_state = new LitState();
 export default main_state;
 
 export async function getStateAsJsonString() {
-    return JSON.stringify(main_state, null, 2);
+    return JSON.stringify(main_state, null, 2); //error: Converting circular structure to JSON.
 }
 
 //TODO...
