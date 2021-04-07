@@ -23,6 +23,7 @@
     "react": "^17.0.1",
     "react-dat-gui": "^4.0.3",
     "react-dom": "^17.0.1",
+    "react-qr-code": "^1.1.1",
     "serializr": "^2.0.5",
     "source-map-support": "^0.5.19",
     "three": "^0.123.0",
