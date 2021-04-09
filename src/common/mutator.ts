@@ -4,7 +4,9 @@
 import KaleidModel from './KaleidModel';
 import {MovementType, Numeric, Tweakable, vec2} from './tweakables'
 
-type Genome = Map<Tweakable<Numeric>, Numeric>;
+type GeneDef = Tweakable<Numeric>;
+type Genome = Map<GeneDef, Numeric>;
+
 export interface Specimen {
     genes: Genome;
     /** high value = good. */
@@ -12,7 +14,7 @@ export interface Specimen {
 }
 
 export function baseSpecimen(model: KaleidModel) {
-    const genes: Genome = new Map<Tweakable<Numeric>, Numeric>();
+    const genes: Genome = new Map<GeneDef, Numeric>();
     model.tweakables.forEach(t => {
         genes.set(t, t.value);
     });
@@ -22,9 +24,25 @@ export function baseSpecimen(model: KaleidModel) {
 }
 
 export function breed(parents: Specimen[], mutationAmount: number) {
-    parents.sort((a, b) => a.weight - b.weight);
+    //const p = [...parents].sort((a, b) => a.weight - b.weight);
     if (parents.length === 1) {
-        
+        const p = parents[0];
+        const genes = mutateGenome(p.genes, mutationAmount);
+        return {genes: genes, weight: 0} as Specimen;
+    } else {
+        const p1 = parents[Math.floor(Math.random() * parents.length)];
+        let p2 = parents[Math.floor(Math.random() * parents.length)];
+        while (p2 === p1) {
+            p2 = parents[Math.floor(Math.random() * parents.length)];
+        }
+        const crossover = Math.floor(p1.genes.size * Math.random());
+        let i = 0;
+        const genes: Genome = new Map<GeneDef, Numeric>();
+        p1.genes.forEach((v, k) => {
+            v = crossover > i++ ? p1.genes.get(k)! : p2.genes.get(k)!;
+            genes.set(k, mutateSingle(k, mutationAmount, v));
+        });
+        return {genes: genes, weight: 0} as Specimen;
     }
 }
 
@@ -97,9 +115,11 @@ export function mutate(genes: Tweakable<Numeric>[], amount: number) {
     return newGenes;
 }
 
-/** mutate 'in place' (ie, with mutation in the programming sense) */
+/** clone & mutate (NOT with mutation in the programming sense) */
 export function mutateGenome(genes: Genome, amount: number) {
+    const newGenes: Genome = new Map<GeneDef, Numeric>();
     genes.forEach((v, k) => {
-        genes.set(k, mutateSingle(k, amount, v));
+        newGenes.set(k, mutateSingle(k, amount, v));
     });
+    return newGenes;
 }

@@ -5,6 +5,7 @@ import { KaleidContext } from '@gui/kaleid_context';
 import { action } from 'mobx';
 import KaleidComponent from '../kaleid_component';
 import { useStyles } from '@gui/theme';
+import { Specimen } from '@common/mutator';
 
 /**
  * This should have a graphic representation of a particular parameter representation, 
@@ -12,13 +13,14 @@ import { useStyles } from '@gui/theme';
  * @param props 
  * @returns 
  */
-export default function MutatorCell(props: {parms: Numeric[]}) {
+export default function MutatorCell(props: {spec: Specimen}) {
     const classes = useStyles();
     const kaleid = React.useContext(KaleidContext).model;
     const activate = action(() => {
-        props.parms.forEach((p, index) => {
-            kaleid.tweakables[index].value = p;
-        })
+        props.spec.genes.forEach((p, t) => {
+            t.value = p;
+            //kaleid.tweakables[index].value = p;
+        });
     });
     return (
         <GridListTile cols={1}>
