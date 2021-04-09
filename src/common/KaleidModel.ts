@@ -16,7 +16,7 @@ export default interface KaleidModel {
     /** id key may be subject to change eg when we think about how to restore saved state... */
     id: number;
     imageSource: AbstractImageDecriptor;
-    tweakables: Tweakable<any>[];
+    tweakables: Tweakable<Numeric>[];
 }
 
 class MobxTweakable<T extends Numeric> implements Tweakable<T> {

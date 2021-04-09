@@ -1,7 +1,7 @@
-import { mutate } from "@common/mutator";
-import { Numeric, Tweakable } from "@common/tweakables";
+import { mutate, Specimen } from "@common/mutator";
+import { Numeric } from "@common/tweakables";
 import { KaleidContext } from "@gui/kaleid_context";
-import { GridList, GridListTile, GridListTileBar, CardMedia } from '@material-ui/core'
+import { GridList } from '@material-ui/core'
 import React from "react";
 import MutatorCell from "./MutatorCell";
 
