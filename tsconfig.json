@@ -12,6 +12,7 @@
         "noImplicitAny": true,
         "sourceMap": true,
         "baseUrl": "./src",
+        "noEmit": true,
         "paths": {
             "@gui/*": ["gui/*"],
             "@common/*": ["common/*"]
