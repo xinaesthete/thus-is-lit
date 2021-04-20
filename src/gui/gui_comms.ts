@@ -1,9 +1,12 @@
 import { io } from 'socket.io-client'
-import { httpURL, newRenderer, websocketURL } from '@common/constants'
+import { httpURL, newRenderer } from '@common/constants'
 import KaleidModel, { KaleidContextType } from '@common/KaleidModel';
 import { makeRegisterControllerMessage, OscCommandType } from '@common/socket_cmds';
 import { FileConfigPrefs } from '@common/media_model';
 import KaleidRenderer from 'renderer/kaleid_renderer';
+
+//XXX::: NB. currently using somewhat arbitrary mix of REST & socket...
+
 
 /**send a message to the server asking for a renderer to be created.
  * Server responds with a model when ready.
