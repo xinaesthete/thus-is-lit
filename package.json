@@ -22,6 +22,7 @@
     "react-dom": "^17.0.1",
     "react-qr-code": "^1.1.1",
     "serializr": "^2.0.5",
+    "socket.io": "^4.0.1",
     "source-map-support": "^0.5.19",
     "three": "^0.127.0",
     "tslib": "^2.0.3",
