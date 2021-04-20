@@ -16,24 +16,24 @@
  * 
  */
 
-import { rendererStarted, websocketURL, httpURL } from "@common/constants";
+import { rendererStarted, httpURL } from "@common/constants";
 import KaleidModel from "@common/KaleidModel";
-import { makeRegisterRendererMessage, OscCommandType } from "@common/socket_cmds";
+import { OscCommandType } from "@common/socket_cmds";
 import KaleidRenderer from "./kaleid_renderer";
 
 import { paramState } from './params'
 import VideoState from "./video_state";
+import { io } from 'socket.io-client'
 
-let socket = new WebSocket(websocketURL);
+let socket = io();// new WebSocket(websocketURL);
 
 async function setupWebSocket(model: KaleidModel) {
     //send a message so that our socket is associated with our ID on server.
     //for now we know that the socket won't be open yet, but this is wrong place.
-    socket.onopen = () => {
+    socket.on('connected', () => {
         console.log(`sending WS message to establish this renderer as receiver for id '${model.id}'`);
-        // thinking about not using OSC for now: seem to be having trouble finding a library that just works
-        socket.send(makeRegisterRendererMessage(model.id));
-    }
+        socket.send(OscCommandType.RegisterRenderer, model.id);
+    });
 }
 
 const params = new URLSearchParams(location.search);
@@ -69,7 +69,6 @@ export async function init(r: KaleidRenderer) {
         //if we're (re)loading a particular model ID, it would be nice to get the old state back ASAP.
         //that's up to the server once the connection is registered.
 
-        const mat = r.mat;
         onMessage("/fragCode", json => {
             //threact?
             console.log(`shader code changed...`);
@@ -80,47 +79,32 @@ export async function init(r: KaleidRenderer) {
 }
 //window.onbeforeunload = () => alert('unload');
 //window.onclose = () => alert('close')
-socket.onclose = (ev) => {
+socket.on('disconnect', (ev) => {
     console.log(`socket closed`);
-}
-const onMsgs: Map<string, (msg:any) => void> = new Map();
-socket.onmessage = (ev) => {
-    //How shall we specify our message schema?
-    //and model in general?
-    //very roughly, for now....
-    try {
-        const json = JSON.parse(ev.data as string);
-        if (json.address === OscCommandType.Set) {
-            const model = json.model as KaleidModel;
-            paramState.setValues(model.tweakables);
-            //just because we've decided which config we want, doesn't mean it'll be ready straight away
-            vidState.setImageState(model.imageSource);
-            //vidEl.currentTime// server should understand "Accept-Ranges": "bytes"
-            //but if I want to add jumping to cue points then I don't want to set that with every update
-            //need to be more careful about what I'm setting.
-            //(also would want to be able to pre-cache if I know I might want to seek)
-            //// adding a 'time' that will only be there when restoring state
-            if (json.time) vidState.vidEl.currentTime = json.time;
-        }
-        if (onMsgs.has(json.address)) {
-            onMsgs.get(json.address)!(json);
-        }
-    } catch (error) { //??hitting error here in debugger on fragCode???
-        console.error(error);
-    }
-}
+});
+
+socket.on(OscCommandType.Set, (msg: {model: KaleidModel, time?: number}) => {
+    const model = msg.model;
+    paramState.setValues(model.tweakables);
+    //just because we've decided which config we want, doesn't mean it'll be ready straight away
+    vidState.setImageState(model.imageSource);
+    //vidEl.currentTime// server should understand "Accept-Ranges": "bytes"
+    //but if I want to add jumping to cue points then I don't want to set that with every update
+    //need to be more careful about what I'm setting.
+    //(also would want to be able to pre-cache if I know I might want to seek)
+    //// adding a 'time' that will only be there when restoring state
+    if (msg.time) vidState.vidEl.currentTime = msg.time;
+});
 
 function onMessage(key: string, callback: (msg: any) => void) {
-    onMsgs.set(key, callback);
+    socket.on(key, callback);
 }
 
-function reportTime() {//threact?
-    if (socket.readyState !== WebSocket.OPEN || !vidState) return;
-    const msg = {address: OscCommandType.ReportTime, time: vidState.vidEl.currentTime, id: id};
-    socket.send(JSON.stringify(msg));
+function reportTime() {
+    if (!vidState) return;
+    socket.send(OscCommandType.ReportTime, {time: vidState.vidEl.currentTime, id: id});
 };
 
 function reportError (error: string) {
-    const msg = {address: OscCommandType.Error, error: error};
-    socket.send(JSON.stringify(msg));
+    socket.send('error', {error: error});
 }

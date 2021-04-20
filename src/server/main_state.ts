@@ -7,7 +7,8 @@ import * as file_config from './assets/file_config'
 import * as fs from 'fs'
 import * as os from 'os'
 import * as path from 'path'
-import WebSocket from 'ws' //https://github.com/websockets/ws/issues/1583
+//import WebSocket from 'ws' //https://github.com/websockets/ws/issues/1583
+import { Socket } from 'socket.io'
 import {app, BrowserWindow} from 'electron'
 import { IVideoDescriptor } from "@common/media_model";
 // Without being too tied to a particular dependency, this may be a MobX state tree?
@@ -38,14 +39,14 @@ class LitState {
     //indeed, in the case of the current application, we would just have our main default controller as per usual 
     //(with appropriate derived model info...), a set of renderers as determind by the list of models (including info about which screen...)
     //any other controller (like on an iPad) would be started manually.
-    renderers = new Map<number, WebSocket>();
+    renderers = new Map<number, Socket>();
     playbackTimes = new Map<number, number>();
     
     videoMetadataRaw: any[] = []; //for quick debug...
     videoMetadataParsed: IVideoDescriptor[] = [];
     lastError: string = "";
     /// all of above can be Map<id, Model> where Model is responsible for state of an entity
-    controllers: WebSocket[] = [];
+    controllers: Socket[] = [];
     mainWindow?: BrowserWindow;
     constructor() {}
 }

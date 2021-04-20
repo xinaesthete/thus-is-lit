@@ -1,19 +1,9 @@
-// is this the OSC library we are looking for?
-// not typed, and docs talk about Electron incompatibility
-// I'm not sure I want all of the higher-level features anyway;
-// mostly I want something for packing & unpacking efficiently.
-// but a well designed API could guide me in a good direction...
-// (also @supercolliderjs/osc looks really slow)
-//import * as osc from 'osc-min'
-import { Uniforms } from '@common/tweakables';
-
+import { io } from 'socket.io-client'
 import { httpURL, newRenderer, websocketURL } from '@common/constants'
 import KaleidModel, { KaleidContextType } from '@common/KaleidModel';
 import { makeRegisterControllerMessage, OscCommandType } from '@common/socket_cmds';
 import { FileConfigPrefs } from '@common/media_model';
 import KaleidRenderer from 'renderer/kaleid_renderer';
-// let's make a button that creates a renderer...
-// and then very soon refactor this code somewhere sensible.
 
 /**send a message to the server asking for a renderer to be created.
  * Server responds with a model when ready.
@@ -90,32 +80,18 @@ export async function requestModelList() {
 //although, as long as there's only one GUI and it requested the renderer itself
 //it could use the response to establish connection.
 
-//Many WebSockets vs OSC style routing - hmmm... 
-console.log(`making websocket`);
-const ws = new WebSocket(websocketURL);
-ws.onopen = ev => {
+//switching to socket.io implementation
+const ws = io();//new WebSocket(websocketURL);
+
+ws.on('connected', () => {
     console.log(`websocket opened`);
     ws.send(makeRegisterControllerMessage());
-}
-ws.onmessage = ev => {
-    const msg = JSON.parse(ev.data);
-    const cmd = msg.address as OscCommandType;
-    switch (cmd) {
-        case OscCommandType.ModelList:
-            //I'm still not quite sure where I push my model here :/
-            //almost seems easiest to pull with GET request for now.
-            //but I really need a more coherent model before I create a monster.
-            break;
-        case OscCommandType.FragCode:
-            console.log(`shader code changed...`);
-            KaleidRenderer.fs = msg.code;
-            break;
-        default:
-            break;
-    }
-}
+});
+ws.on(OscCommandType.FragCode, (msg: any) => {
+    KaleidRenderer.fs = msg.code as string;
+    console.log(`shader code changed...`);
+});
 
 export function sendModel(model: KaleidModel) {
-    const msg = JSON.stringify({model: model, address: OscCommandType.Set});
-    ws.send(msg);
+    ws.send(OscCommandType.Set, model);
 }
