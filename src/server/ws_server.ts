@@ -1,7 +1,7 @@
 import { Server } from 'http'
 import SocketIO from 'socket.io'
 import KaleidModel from "@common/KaleidModel";
-import { OscCommandType } from "@common/socket_cmds";
+import { API } from "@common/socket_cmds";
 import { watchFragmentShader } from "./code_watch";
 import main_state from "./main_state";
 import { renderer } from '@common/threact/threact';
@@ -29,10 +29,10 @@ export default function startWsServer(server: Server) {
             if (controllers.includes(socket)) controllers.splice(controllers.indexOf(socket),1);
             //if (renderers.values...)) //lodash?....
         });
-        socket.on(OscCommandType.ReportTime, (msg: {id: number, time: number}) => {
+        socket.on(API.ReportTime, (msg: {id: number, time: number}) => {
             playbackTimes.set(msg.id, msg.time);
         });
-        socket.on(OscCommandType.RegisterRenderer, (json: {id: number})=>{
+        socket.on(API.RegisterRenderer, (json: {id: number})=>{
             console.log(`[ws] registering renderer...`);
             if (json.id === undefined) console.error(`expected {id: number}`);
             else {
@@ -41,24 +41,24 @@ export default function startWsServer(server: Server) {
                     //will the old one safely become garbage and be disposed? probably.
                     renderers.set(json.id, socket);
                     console.log(`[ws] restoring state for #${json.id}`);
-                    socket.send(OscCommandType.Set, {model: currentModels.get(json.id), time: playbackTimes.get(json.id)})
+                    socket.send(API.Set, {model: currentModels.get(json.id), time: playbackTimes.get(json.id)})
                 }
                 renderers.set(json.id, socket);
                 console.log(`[ws] ${json.id} socket established`);
             }
         });
-        socket.on(OscCommandType.RegisterController, ()=> {
+        socket.on(API.RegisterController, ()=> {
             console.log(`registering controller`);
             //report back to it about all of the renderers (models) that are about.
             //really what we mean is: let it know everything it needs to about the state of the application.
-            socket.send(OscCommandType.ModelList, {models: currentModels.values});
+            socket.send(API.ModelList, {models: currentModels.values});
         });
-        socket.on(OscCommandType.Set, (json: {model: KaleidModel})=> {
+        socket.on(API.Set, (json: {model: KaleidModel})=> {
             const model = json.model;
             //TODO: use socket.io to emit rather than rely on our housekeeping...
-            renderers.get(model.id)?.send(OscCommandType.Set, json);
+            renderers.get(model.id)?.send(API.Set, json);
         });
-        socket.on(OscCommandType.Error, (json: {error: string})=> {
+        socket.on(API.Error, (json: {error: string})=> {
             main_state.lastError = json.error;
         })
     });

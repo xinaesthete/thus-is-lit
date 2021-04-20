@@ -18,7 +18,7 @@
 
 import { rendererStarted, httpURL } from "@common/constants";
 import KaleidModel from "@common/KaleidModel";
-import { OscCommandType } from "@common/socket_cmds";
+import { API } from "@common/socket_cmds";
 import KaleidRenderer from "./kaleid_renderer";
 
 import { paramState } from './params'
@@ -32,7 +32,7 @@ async function setupWebSocket(model: KaleidModel) {
     //for now we know that the socket won't be open yet, but this is wrong place.
     socket.on('connected', () => {
         console.log(`sending WS message to establish this renderer as receiver for id '${model.id}'`);
-        socket.send(OscCommandType.RegisterRenderer, model.id);
+        socket.send(API.RegisterRenderer, model.id);
     });
 }
 
@@ -83,7 +83,7 @@ socket.on('disconnect', (ev) => {
     console.log(`socket closed`);
 });
 
-socket.on(OscCommandType.Set, (msg: {model: KaleidModel, time?: number}) => {
+socket.on(API.Set, (msg: {model: KaleidModel, time?: number}) => {
     const model = msg.model;
     paramState.setValues(model.tweakables);
     //just because we've decided which config we want, doesn't mean it'll be ready straight away
@@ -102,7 +102,7 @@ function onMessage(key: string, callback: (msg: any) => void) {
 
 function reportTime() {
     if (!vidState) return;
-    socket.send(OscCommandType.ReportTime, {time: vidState.vidEl.currentTime, id: id});
+    socket.send(API.ReportTime, {time: vidState.vidEl.currentTime, id: id});
 };
 
 function reportError (error: string) {

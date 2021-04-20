@@ -1,7 +1,7 @@
 import { io } from 'socket.io-client'
 import { httpURL, newRenderer } from '@common/constants'
 import KaleidModel, { KaleidContextType } from '@common/KaleidModel';
-import { makeRegisterControllerMessage, OscCommandType } from '@common/socket_cmds';
+import { makeRegisterControllerMessage, API } from '@common/socket_cmds';
 import { FileConfigPrefs } from '@common/media_model';
 import KaleidRenderer from 'renderer/kaleid_renderer';
 
@@ -90,11 +90,11 @@ ws.on('connected', () => {
     console.log(`websocket opened`);
     ws.send(makeRegisterControllerMessage());
 });
-ws.on(OscCommandType.FragCode, (msg: any) => {
+ws.on(API.FragCode, (msg: any) => {
     KaleidRenderer.fs = msg.code as string;
     console.log(`shader code changed...`);
 });
 
 export function sendModel(model: KaleidModel) {
-    ws.send(OscCommandType.Set, model);
+    ws.send(API.Set, model);
 }

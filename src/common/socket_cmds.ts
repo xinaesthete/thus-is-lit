@@ -8,7 +8,7 @@
 
 
 //Do I want this? Should it be here on in constants?
-export enum OscCommandType {
+export enum API {
     Set = "/set", Get = "/get", ModelList = "/model_list", Error = "/error", FragCode = "/fragCode",
     RegisterRenderer = "/register_renderer", RegisterController = "/register_controller",
     SetVideoFilename = "/vid_file", ReportTime = "/report_time", SeekTime = "/seek_time"
@@ -17,10 +17,10 @@ export enum OscCommandType {
 type LitMsg = string;
 
 export function makeRegisterRendererMessage(id: number) : LitMsg {
-    return JSON.stringify({address: OscCommandType.RegisterRenderer, id: id});
+    return JSON.stringify({address: API.RegisterRenderer, id: id});
 }
 export function makeRegisterControllerMessage() : LitMsg {
-    return JSON.stringify({address: OscCommandType.RegisterController});
+    return JSON.stringify({address: API.RegisterController});
 }
 
 // export function makeSetVideoFilenameMessage(id: number, filename: string) : LitMsg {
