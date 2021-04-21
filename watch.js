@@ -2,6 +2,8 @@ const { build } = require('esbuild');
 const liveServer = require('live-server');
 const chokidar = require('chokidar');
 
+///XXX: if you get an error about esbuild install scripts in console,
+//run 'node node_modules/esbuild/install.js'...
 
 // assuming that THREE is a global object,
 // makes any imported reference to three proxy to that instead.
