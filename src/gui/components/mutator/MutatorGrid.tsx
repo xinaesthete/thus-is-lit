@@ -9,14 +9,14 @@ import MutatorCell from "./MutatorCell";
 export default function MutatorGrid() {
   const kaleid = React.useContext(KaleidContext).model;
   const [variants, setVariants] = React.useState([baseSpecimen(kaleid)]);
-  
+  const [mutationRate] = React.useState(1);
   React.useEffect(()=> {
     const newVariants: Specimen[] = [...variants];
     for (let i=0; i<5; i++) {
       //mutate a new variant and add it to the list of variants
       //actually, they want to have other data associated, like 'picked' flag
       //just vaguelly sketching out now & moving on to other things.
-      newVariants.push(breed(variants, 0.3));
+      newVariants.push(breed(variants, mutationRate));
     }
     //"invalid hook call. Hooks can only be called from the body of a function."
     setVariants(newVariants);

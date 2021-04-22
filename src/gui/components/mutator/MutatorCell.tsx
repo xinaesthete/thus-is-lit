@@ -15,10 +15,12 @@ import { Specimen } from '@common/mutator';
  */
 export default function MutatorCell(props: {spec: Specimen}) {
     const classes = useStyles();
-    const kaleid = React.useContext(KaleidContext).model;
+    //consider having a property for aspect ratio, 
+    //such that these can properly reflect the shape of the renderer
+    //const kaleid = React.useContext(KaleidContext).model;
     const activate = action(() => {
         props.spec.genes.forEach((p, t) => {
-            t.value = p;
+            t.value = p; //this should be better for not getting indices mixed up?
             //kaleid.tweakables[index].value = p;
         });
     });
