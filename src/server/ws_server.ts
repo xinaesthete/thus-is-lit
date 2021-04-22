@@ -56,7 +56,9 @@ export default function startWsServer(server: Server) {
         socket.on(API.Set, (json: {model: KaleidModel})=> {
             const model = json.model;
             //TODO: use socket.io to emit rather than rely on our housekeeping...
-            renderers.get(model.id)?.send(API.Set, json);
+            console.log('setting model ' + model.id);
+            //renderers.get(model.id)?.send(API.Set, json);
+            wsServer.emit(API.Set, json); //TODO: finish sorting out send vs emit etc. (or revert to not using socket.io)
         });
         socket.on(API.Error, (json: {error: string})=> {
             main_state.lastError = json.error;

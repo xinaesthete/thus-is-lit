@@ -77,14 +77,14 @@ export async function init(r: KaleidRenderer) {
         r.onUpdate = reportTime;
     }
 }
-//window.onbeforeunload = () => alert('unload');
-//window.onclose = () => alert('close')
+//shouldn't matter that events are registered before socket is connected.
 socket.on('disconnect', (ev) => {
     console.log(`socket closed`);
 });
 
 socket.on(API.Set, (msg: {model: KaleidModel, time?: number}) => {
     const model = msg.model;
+    if (model.id !== id) return;
     paramState.setValues(model.tweakables);
     //just because we've decided which config we want, doesn't mean it'll be ready straight away
     vidState.setImageState(model.imageSource);

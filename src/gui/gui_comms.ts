@@ -96,5 +96,5 @@ ws.on(API.FragCode, (msg: any) => {
 });
 
 export function sendModel(model: KaleidModel) {
-    ws.send(API.Set, model);
+    ws.emit(API.Set, {model: model}); //somewhat slow...
 }

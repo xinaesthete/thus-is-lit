@@ -143,6 +143,7 @@ export class ParamGroup {
         });
     }
     setValues(newValues: Tweakable<Numeric>[]) {
+        //console.table(newValues, ['name', 'value']);
         newValues.forEach(t => {
             //so slow and wrong in various ways but probably not enough to matter for a while.
             const p = this.parms.find(p => p.name === t.name);
