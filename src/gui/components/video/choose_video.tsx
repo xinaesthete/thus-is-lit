@@ -26,7 +26,10 @@ export default observer( function ChooseVideo(props: {
   
   const notNice = `${httpURL}/video/`.length;
   const niceName = (v: string) => (v.length > notNice) ? decodeURI(v.substring(notNice)) : v;
-  const availableMenu = availableVideos.map(v => ( <MenuItem key={v} value={v}>{niceName(v)}</MenuItem> ));
+  //TODO: benchmark useMemo() vs not. maybe do things differently anyway.
+  const availableMenu = React.useMemo(() => availableVideos.map(v => (
+     <MenuItem key={v} value={v}>{niceName(v)}</MenuItem> 
+     )), [availableVideos]);
   return (
     <>
       <Select className={classes.vidDropdown} label="video file" value={url} 
