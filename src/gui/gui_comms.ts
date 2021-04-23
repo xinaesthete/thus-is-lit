@@ -4,6 +4,7 @@ import KaleidModel, { KaleidContextType } from '@common/KaleidModel';
 import { makeRegisterControllerMessage, API } from '@common/socket_cmds';
 import { FileConfigPrefs } from '@common/media_model';
 import KaleidRenderer from 'renderer/kaleid_renderer';
+import { ParamValue, Tweakable } from '@common/tweakables';
 
 //XXX::: NB. currently using somewhat arbitrary mix of REST & socket...
 
@@ -97,4 +98,9 @@ ws.on(API.FragCode, (msg: any) => {
 
 export function sendModel(model: KaleidModel) {
     ws.emit(API.Set, {model: model}); //somewhat slow...
+}
+
+export function sendParameterValue(parm: Tweakable<any>, modelId: number) {
+    const msg: ParamValue<any> = {value: parm.value, modelId: modelId, key: parm.name!};
+    ws.emit(API.SetParm, msg);
 }

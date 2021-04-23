@@ -1,6 +1,6 @@
 import * as dat from "dat.gui"
 import * as THREE from 'three'
-import {isNum, MovementType, Numeric, vec2, Tweakable, Uniforms} from '@common/tweakables'
+import {isNum, MovementType, Numeric, vec2, Tweakable, Uniforms, ParamValue} from '@common/tweakables'
 
 function lerp(s: number, t: number, a: number) {
     if (a<0) return s;
@@ -158,6 +158,20 @@ export class ParamGroup {
                 //(p.val.targVal as vec2) = scratchVec2.set(t.value.x, t.value.y);
             }
         });
+    }
+    setValue(newValue: ParamValue<any>) {
+        const t = newValue;
+        const k = newValue.key;
+        const p = typeof k === 'string' ? this.parms.find(p => p.name === k) : this.parms[k];
+        if (!p) return;
+        if (isNum(t.value)) {
+            p.val.targVal = t.value;
+        } else {
+            //only numbers and vec2 for now...
+            const v = (p.val as LagVec2).controlVec;
+            v.x = t.value.x;
+            v.y = t.value.y;
+        }
     }
     update(dt: number) {
         //hacking in, pending more coherent approach

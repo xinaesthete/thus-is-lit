@@ -36,6 +36,11 @@ export interface Tweakable<T extends Numeric> {
     //also if I want to send functions for eval across wire, I need to be careful about trust... and anyway, I'm not using this yet.
 }
 
+/** enough information to transmit slider change */
+export interface ParamValue<T> {
+    value: T, modelId: number, key: string | number
+}
+
 export type Uniforms = Record<string, Tweakable<any>>;
 //no such luck
 //function isTweakNum(t: Tweakable<number>) // t.value is number {}

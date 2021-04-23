@@ -5,9 +5,9 @@
 // With the current very-static form of Kaleid renderer, could be good to make this a straightforward
 // reflection of that (serving also a guide to what generated).
 
-import { observable, makeObservable, autorun } from 'mobx'
+import { observable, makeObservable, autorun, trace } from 'mobx'
 import VideoState from 'renderer/video_state';
-import { sendModel } from '../gui/gui_comms';
+import { sendModel, sendParameterValue } from '../gui/gui_comms';
 import { AbstractImageDecriptor, ImageType } from "./media_model";
 import { MovementType, Numeric, Tweakable } from "./tweakables";
 
@@ -20,10 +20,15 @@ export default interface KaleidModel {
 }
 
 class MobxTweakable<T extends Numeric> implements Tweakable<T> {
-    constructor(init: Tweakable<T>) {
+    constructor(init: Tweakable<T>, modelId: number) {
         Object.assign(this, init);
         this.value = init.value;
         makeObservable(this, {value: observable});
+        //should this have a reference to the model?
+        autorun((r) => {
+            r.trace();
+            sendParameterValue(this, modelId);
+        }, {name: `Tweakable '${this.name}'#${modelId}`});
     }
     name?: string | undefined;
     value: T;
@@ -43,15 +48,19 @@ export class ObservableKaleidModel implements KaleidModel {
     constructor(init: KaleidModel) {
         this.imageSource = { width: -1, height: -1, imgType: ImageType.Null };
         Object.assign(this, init);
-        this.tweakables = init.tweakables.map(t => new MobxTweakable(t));
+        this.tweakables = init.tweakables.map(t => new MobxTweakable(t, init.id));
         //"Only plain object, array, Map, Set, function, generator function are convertible. Class instances and others are untouched."
         makeObservable(this, {
             imageSource: observable,
-            tweakables: observable,
+            // tweakables: observable,
         });
-        autorun(() => {
+        autorun((r) => {
+            //this is a small problem
+            //I have a big problem
+            //this is not it.
+            r.trace();
             sendModel(this);
-        });
+        }, {name: `kaleid#${this.id}`});
     }
 }
 
@@ -66,10 +75,10 @@ export class KaleidContextType {
         this.vidState = new VideoState();
         autorun(() => {
             this.vidState.setImageState(this.model.imageSource);
-        });
+        }, {name: `KaleidContext #${this.model.id}`});
         makeObservable(this.vidState, {
             imageState: observable
-        });
+        }, {name: `KaleidContextObserver #${this.model.id}`});
     }
 }
 

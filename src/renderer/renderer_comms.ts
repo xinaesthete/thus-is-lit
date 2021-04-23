@@ -24,6 +24,7 @@ import KaleidRenderer from "./kaleid_renderer";
 import { paramState } from './params'
 import VideoState from "./video_state";
 import { io } from 'socket.io-client'
+import { ParamValue } from "@common/tweakables";
 
 let socket = io();// new WebSocket(websocketURL);
 
@@ -94,6 +95,11 @@ socket.on(API.Set, (msg: {model: KaleidModel, time?: number}) => {
     //(also would want to be able to pre-cache if I know I might want to seek)
     //// adding a 'time' that will only be there when restoring state
     if (msg.time) vidState.vidEl.currentTime = msg.time;
+});
+
+socket.on(API.SetParm, (msg: ParamValue<any>) => {
+    if (msg.modelId !== id) return;
+    paramState.setValue(msg);
 });
 
 function onMessage(key: string, callback: (msg: any) => void) {

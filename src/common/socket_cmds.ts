@@ -10,6 +10,7 @@
 //Do I want this? Should it be here on in constants?
 export enum API {
     Set = "/set", Get = "/get", ModelList = "/model_list", Error = "/error", FragCode = "/fragCode",
+    SetParm = "/set_parm",
     RegisterRenderer = "/register_renderer", RegisterController = "/register_controller",
     SetVideoFilename = "/vid_file", ReportTime = "/report_time", SeekTime = "/seek_time"
 }
