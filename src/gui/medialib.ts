@@ -36,8 +36,7 @@ class MediaLibrary {
                 this.setAvailableVideos(await API.requestVideoList());
             } else {
                 console.error(`failed to set asset path ${newPath}, reverting to ${oldPath}`);
-                //mobx might complain about this async change:
-                this.mainAssetPath = oldPath;
+                action(()=>this.mainAssetPath = oldPath);
             }
         });
     }
