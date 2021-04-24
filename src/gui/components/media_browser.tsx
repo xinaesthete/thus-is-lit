@@ -74,7 +74,7 @@ export default observer(function MediaBrowser() {
             <GridList cellHeight='auto' cols={4} className={classes.videoGridList} >
                 {displayedVideos.map((url) => {
                     return (
-                        <GridListTile cols={1} className={classes.videoTile}>
+                        <GridListTile key={url} cols={1} className={classes.videoTile}>
                             <VideoTileInner url={url} />
                         </GridListTile>
                     )
