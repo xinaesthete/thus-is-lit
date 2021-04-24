@@ -147,9 +147,7 @@ const KaleidGUI = observer(() => {
                 <ToggleButton value={mutateMode} onChange={()=>setMutator(!mutateMode)}>
                     {mutateMode ? "mutator" : "sliders"}
                 </ToggleButton>
-                <KaleidContext.Provider value={kaleidContext}>
-                    {tweaker}
-                </KaleidContext.Provider>
+                {tweaker}
             </div>
             </AccordionDetails>
         </Accordion>
