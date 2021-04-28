@@ -21,12 +21,18 @@ enum AppTabs {
 }
 const App = observer(function App() {
   const classes = useStyles();
-  const [tab, setTab] = React.useState(1 as AppTabs);
+  const [tab, setTab] = React.useState(AppTabs.Renderer);
 
-  // const el = React.useCallback(()=>{
-  //   const content = {0: MediaBrowser, 1: RendererControl, 2: DebugPanel}
-  //   return content[tab];
-  // }, [tab]);
+  const el = React.useCallback(()=>{
+    switch (tab) {
+      case AppTabs.Media:
+        return (<MediaBrowser />)
+      case AppTabs.Renderer:
+        return (<RendererControl />)
+      case AppTabs.Debug:
+        return (<DebugPanel />)
+    }
+  }, [tab]);
 
   return (
     <>
@@ -42,9 +48,7 @@ const App = observer(function App() {
           </AppBar>
           <KaleidListProvider>
             <Container className={classes.content}>
-              <div role="tabpanel" hidden={tab !== 0}><MediaBrowser /></div>
-              <div role="tabpanel" hidden={tab !== 1}><RendererControl /></div>
-              <div role="tabpanel" hidden={tab !== 2}><DebugPanel /></div>
+              <div role="tabpanel" >{el()}</div>
             </Container>
           </KaleidListProvider>
         </div>
