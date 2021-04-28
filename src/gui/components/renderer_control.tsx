@@ -6,18 +6,11 @@ import { makeStyles, Theme } from '@material-ui/core';
 import KaleidGUI from './uniforms_gui';
 import { KaleidContext, useKaleidList } from '@gui/kaleid_context';
 import { observer } from 'mobx-react';
+import { useStyles } from '@gui/theme';
 
 function Alert(props: any) {
     return <MuiAlert elevation={6} variant="filled" {...props} />
 }
-const useStyles = makeStyles((theme: Theme) => ({
-    root: {
-        width: '30%',
-        '& > * + *': {
-            marginTop: theme.spacing(2)
-        },
-    },
-}));
 
 export default observer(function RendererControl() {
     const classes = useStyles();
