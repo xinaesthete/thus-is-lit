@@ -1,17 +1,13 @@
 import { 
-    Accordion, AccordionSummary, AccordionDetails, Slider, Typography, Grid
+    Accordion, AccordionSummary, AccordionDetails, Slider, Typography, Grid, Button
 } from '@material-ui/core'
-import ToggleButton from '@material-ui/lab/ToggleButton/ToggleButton'
+import ToggleButton from '@material-ui/lab/ToggleButton/ToggleButton' //broken in new version?
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import React from 'react'
-import produce from 'immer'
-import {produceWithPatches} from 'immer'
-import KaleidModel, { ObservableKaleidModel } from '@common/KaleidModel';
 //maybe want to use material, or just plain-old vanilla dat.gui...
 //maybe revisit react-dat-gui with benefit of understanding React a bit better.
 //import DatGui, {DatNumber, DatString} from 'react-dat-gui'
 import {Uniforms, Numeric, Tweakable, isNum, vec2} from '@common/tweakables'
-import { sendModel } from '../gui_comms';
 import { AbstractImageDecriptor } from '@common/media_model'
 import { useStyles } from '../theme'
 import AbstractImageController from './video/abstract_image_controller'
@@ -147,11 +143,10 @@ const KaleidGUI = observer(() => {
             </AccordionSummary>
             <AccordionDetails>
             <div>
-                {/* shouldn't need to update often */}
-                {/* <AbstractImageController image={k.model.imageSource} setImage={handleSetImage} /> */}
-                <ToggleButton value={mutateMode} onChange={()=>setMutator(!mutateMode)}>
-                    Mut
-                </ToggleButton>
+                <AbstractImageController image={k.model.imageSource} setImage={handleSetImage} />
+                <Button onClick={()=>setMutator(!mutateMode)}>
+                    {mutateMode ? "mutator" : "sliders"}
+                </Button>
                 {tweaker}
             </div>
             </AccordionDetails>
