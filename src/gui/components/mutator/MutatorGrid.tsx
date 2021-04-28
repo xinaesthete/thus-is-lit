@@ -22,13 +22,13 @@ export default function MutatorGrid() {
     setVariants(newVariants);
   }, []);
 
-  const children = variants.map((spec,i) => {
+  const children = React.useCallback(()=>variants.map((spec,i) => {
     return (<MutatorCell spec={spec} key={i}/>)
-  });
+  }), [variants]);
 
   return (
     <GridList cols={4} cellHeight='auto' >
-      {children}
+      {children()}
     </GridList>
   )
 }

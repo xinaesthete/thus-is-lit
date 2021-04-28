@@ -129,7 +129,12 @@ const KaleidGUI = observer(() => {
     });
 
     const [mutateMode, setMutator] = React.useState(false);
-    const tweaker = mutateMode ? <MutatorGrid /> : <SliderBank />;
+    ///.....
+    //const tweaker = mutateMode ? <MutatorGrid /> : <SliderBank />;
+    const tweaker = React.useCallback(()=> {
+        if (mutateMode) return <MutatorGrid />;
+        return <SliderBank />;
+    }, [mutateMode]);
     return (
         <div className={classes.uniformsGui}>
         <Accordion TransitionProps={{unmountOnExit: true, timeout: 50}}>
@@ -147,7 +152,7 @@ const KaleidGUI = observer(() => {
                 <ToggleButton value={mutateMode} onChange={()=>setMutator(!mutateMode)}>
                     {mutateMode ? "mutator" : "sliders"}
                 </ToggleButton>
-                {tweaker}
+                {tweaker()}
             </div>
             </AccordionDetails>
         </Accordion>
