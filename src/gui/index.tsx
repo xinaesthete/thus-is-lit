@@ -23,7 +23,7 @@ const App = observer(function App() {
   const classes = useStyles();
   const [tab, setTab] = React.useState(AppTabs.Renderer);
 
-  const el = React.useCallback(()=>{
+  const el = React.useMemo(()=>{
     switch (tab) {
       case AppTabs.Media:
         return (<MediaBrowser />)
@@ -48,7 +48,7 @@ const App = observer(function App() {
           </AppBar>
           <KaleidListProvider>
             <Container className={classes.content}>
-              <div role="tabpanel" >{el()}</div>
+              <div role="tabpanel" >{el}</div>
             </Container>
           </KaleidListProvider>
         </div>

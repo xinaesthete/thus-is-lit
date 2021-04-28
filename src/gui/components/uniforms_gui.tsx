@@ -131,7 +131,7 @@ const KaleidGUI = observer(() => {
     const [mutateMode, setMutator] = React.useState(false);
     ///.....
     //const tweaker = mutateMode ? <MutatorGrid /> : <SliderBank />;
-    const tweaker = React.useCallback(()=> {
+    const tweaker = React.useMemo(()=> {
         if (mutateMode) return <MutatorGrid />;
         return <SliderBank />;
     }, [mutateMode]);
@@ -148,11 +148,11 @@ const KaleidGUI = observer(() => {
             <AccordionDetails>
             <div>
                 {/* shouldn't need to update often */}
-                <AbstractImageController image={k.model.imageSource} setImage={handleSetImage} />
+                {/* <AbstractImageController image={k.model.imageSource} setImage={handleSetImage} /> */}
                 <ToggleButton value={mutateMode} onChange={()=>setMutator(!mutateMode)}>
-                    {mutateMode ? "mutator" : "sliders"}
+                    Mut
                 </ToggleButton>
-                {tweaker()}
+                {tweaker}
             </div>
             </AccordionDetails>
         </Accordion>
