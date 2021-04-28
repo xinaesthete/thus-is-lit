@@ -136,9 +136,15 @@ export function addRestAPI(expApp: express.Application) {
     });
 
     expApp.get('/videoDescriptor/*', async (req, res) => {
-        const id = decodeURI(req.url.substring('/videoDescriptor/'.length))
-        const info = await probeMp4(id);
-        res.send(info);
+        const id = decodeURI(req.url.substring('/videoDescriptor/'.length));
+        //console.log(`--- ${req.url} ---`);
+        try {
+            const info = await probeMp4(id);
+            res.send(info);
+        } catch (err) {
+            console.error(`${err.name}: ${err.message}`);
+            res.sendStatus(500);
+        }
     });
         
     /** respond with a flat array of mp4s contained under mainAssetPath */

@@ -66,10 +66,14 @@ async function probeMediaInfo(filename: string) {
 }
 
 //something very much like this should exist for AbstractImageDescriptor
-export default async function probeVideoMetadata(url: string) : Promise<VideoDescriptor> {
-    const id = decodeURI(url.substring(url.indexOf('/video/') + 7));
-    const filename = path.join((await getConfig()).mainAssetPath || "", id);
-
+export default async function probeVideoMetadata(url: string) : Promise<IVideoDescriptor> {
+    const cached = main_state.videoMetadataParsed.find(i=>i.url===url); //TODO: cache to catalog db...
+    if (cached) return cached;
+    let id = decodeURI(url.substring(url.indexOf('/video/') + 7));
+    let filename = path.join((await getConfig()).mainAssetPath || "", id);
+    if (url === "red.mp4") {
+        filename = path.join(__dirname, '../red.mp4');
+    }
     const data1 = await probeMediaInfo(filename);
     const parsed = parseMediaInfoVideoDescriptor(url, data1);
     const info = new VideoDescriptor(url, parsed);
