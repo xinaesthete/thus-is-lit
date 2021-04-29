@@ -58,7 +58,7 @@ const TweakableSlider = observer(function TweakableSlider(u: SliderProp<Numeric>
     )
 });
 
-function TweakableSliderPair(u: SliderProp<vec2>) {
+const TweakableSliderPair = observer(function TweakableSliderPair(u: SliderProp<vec2>) {
     const classes = useStyles();
     const { name='', min, max, value, step = defaultStep(u) } = u;
     //just enough state so that when any one slider changes, we can pass a vec2 to onChange
@@ -85,7 +85,7 @@ function TweakableSliderPair(u: SliderProp<vec2>) {
             </Grid>
         </>
     )
-}
+});
 
 const SliderBank = observer(() => {
     const kaleidContext = React.useContext(KaleidContext);
