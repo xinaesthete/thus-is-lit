@@ -14,7 +14,6 @@ export default observer( function ChooseVideo(props: {
 }) {
   
   const classes = useStyles();
-  const availableVideos = mediaLib.availableVideos;
   //TODO options for advance to next video in sequence / random after it finishes.
   const url = encodeURI(props.video.url); //would probably rather it was kept encoded.
   
@@ -27,9 +26,9 @@ export default observer( function ChooseVideo(props: {
   const notNice = `${httpURL}/video/`.length;
   const niceName = (v: string) => (v.length > notNice) ? decodeURI(v.substring(notNice)) : v;
   //TODO: benchmark useMemo() vs not. maybe do things differently anyway.
-  const availableMenu = React.useMemo(() => availableVideos.map(v => (
+  const availableMenu = React.useMemo(() => mediaLib.availableVideos.map(v => (
      <MenuItem key={v} value={v}>{niceName(v)}</MenuItem> 
-     )), [availableVideos]);
+     )), [mediaLib.availableVideos]);
   return (
     <>
       <Select className={classes.vidDropdown} label="video file" value={url} 
