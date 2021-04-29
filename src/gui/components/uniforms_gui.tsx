@@ -34,7 +34,7 @@ const defaultStep = (u: hasOptionalRange) => {
 const TweakableSlider = observer(function TweakableSlider(u: SliderProp<Numeric>) {
     ///AAARGGGH noooo... this isNum thing is bad & I seem to be having a bad time with TS generics just now.
     //isVec2() was flat-out useless???
-    if (!isNum(u.value)) return TweakableSliderPair(u as SliderProp<vec2>);
+    if (!isNum(u.value)) return <TweakableSliderPair {...(u as SliderProp<vec2>)} />;
     const classes = useStyles();
     //--- state should be owned further up the hierarchy ---
     const { name ='', min, max, value, step = defaultStep(u), onChange } = u as SliderProp<number>;
@@ -96,7 +96,7 @@ const SliderBank = observer(() => {
         <Grid container spacing={1}>
             {kaleidContext.model.tweakables.map((u, i) => {
                 return (
-                    <TweakableSlider key={i} {...u}
+                    <TweakableSlider key={u.name} {...u}
                     onChange={action((e, v) => { u.value = v; })}
                     />
                 )
@@ -111,7 +111,6 @@ const SliderBank = observer(() => {
  * flexible dynamic models might look like.
  */
 const KaleidGUI = observer(() => {
-    trace(); //making this whole HOC an observer means expensive update when any part changes.
     //also, https://mobx.js.org/react-optimizations.html
     const classes = useStyles();
     const kaleidContext = React.useContext(KaleidContext);
