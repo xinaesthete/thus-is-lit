@@ -5,6 +5,7 @@ import { API } from "@common/socket_cmds";
 import { watchFragmentShader } from "./code_watch";
 import main_state from "./main_state";
 import { ParamValue } from '@common/tweakables';
+import { createRendererWindow } from './screen_config';
 
 
 export default function startWsServer(server: Server) {
@@ -32,6 +33,10 @@ export default function startWsServer(server: Server) {
         socket.on(API.ReportTime, (msg: {id: number, time: number}) => {
             playbackTimes.set(msg.id, msg.time);
         });
+        socket.on(API.RequestNewRenderer, async () => {
+            const m = await createRendererWindow();
+            wsServer.emit(API.RendererAdded, m);
+        });
         socket.on(API.RegisterRenderer, (json: {id: number})=>{
             console.log(`[ws] registering renderer...`);
             if (json.id === undefined) console.error(`expected {id: number}`);
@@ -51,7 +56,7 @@ export default function startWsServer(server: Server) {
             console.log(`registering controller`);
             //report back to it about all of the renderers (models) that are about.
             //really what we mean is: let it know everything it needs to about the state of the application.
-            socket.send(API.ModelList, {models: currentModels.values});
+            socket.send(API.ModelList, {models: currentModels.values}); ///??
         });
         socket.on(API.Set, (json: {model: KaleidModel})=> {
             const model = json.model;
@@ -69,6 +74,6 @@ export default function startWsServer(server: Server) {
         });
         socket.on(API.Error, (json: {error: string})=> {
             main_state.lastError = json.error;
-        })
+        });
     });
 }

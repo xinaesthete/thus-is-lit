@@ -14,7 +14,6 @@ function Alert(props: any) {
 
 export default observer(function RendererControl() {
     const classes = useStyles();
-    //previously useState, made context for access across other parts of app.
     const listContext = useKaleidList();
     const {renderModels, setRenderModels} = listContext;
     
@@ -29,16 +28,9 @@ export default observer(function RendererControl() {
 
     return (
         <>
-        <Button className={classes.root} variant="contained" color="primary" onClick={
-            async () => {
-                const m = await requestNewRenderer(); //the only way we know a renderer is there at the moment
-                //is that we request one via REST and get a response here.
-                //(it should be possible to be pushed over socket by server as well, or instead)
-
-                const newModels = [...renderModels, m];
-                setRenderModels(newModels); //action
-            }
-        }>Make new renderer</Button>
+        <Button className={classes.root} variant="contained" color="primary" onClick={requestNewRenderer}>
+            Make new renderer
+        </Button>
         {renderModels.map((m,i)=> (
             <KaleidContext.Provider key={m.model.id} value={m}>
                 <KaleidGUI />

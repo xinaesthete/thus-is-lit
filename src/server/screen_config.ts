@@ -44,18 +44,6 @@ const pendingRenderInits = new Map<number, RendererInitCompletionHandler>();
 let nextRendererID = 0;
 
 export function addRestAPI(expApp: express.Application) {
-    expApp.get(consts.newRenderer, async (req, res) => {
-        console.log("[GET] newRenderer request received");
-        let id = nextRendererID++;
-        //wait for the renderer to send us info back... respond with KaleidModel.
-        const m = await createRendererWindow(id);
-        
-        //I could pass info about what WS port to connect to & what parameters to control here.
-        //yes, let's.
-        res.send(m);
-        // res.send({body: m, CORS: "Access-Control-Allow-Origin: *"});
-    });
-    
     //sent by renderer as it initialises
     expApp.post(consts.rendererStarted, (req, res) => {
         console.log(`[POST] received /rendererStarted`);
@@ -86,7 +74,8 @@ export function addRestAPI(expApp: express.Application) {
     });
 }
 
-export async function createRendererWindow(id: number) {
+export async function createRendererWindow() {
+    let id = nextRendererID++;
     //TODO: configure based on saved setup etc.
     //relay info about available screens back to gui.
     const screen = getNextScreen();

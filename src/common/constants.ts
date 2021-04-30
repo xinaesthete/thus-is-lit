@@ -4,8 +4,6 @@ export const host_port = 8321;
 
 // addresses of server API calls:
 
-/** GET for requesting that a new renderer output window be created */
-export const newRenderer = "/newRenderer";
 /** POST that a new renderer window has been created, with info about its model */
 export const rendererStarted = "/rendererStarted";
 //I thought it might be nice to have a central place where they were defined, avoid typos etc...

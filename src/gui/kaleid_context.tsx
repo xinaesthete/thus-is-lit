@@ -1,4 +1,4 @@
-import { KaleidContextType } from '@common/KaleidModel';
+import KaleidModel, { KaleidContextType } from '@common/KaleidModel';
 import { makeAutoObservable } from 'mobx';
 import { observer } from 'mobx-react';
 import React, { SetStateAction } from 'react'
@@ -13,6 +13,7 @@ export const KaleidContext = React.createContext<KaleidContextType>(
 export interface KaleidList {
   renderModels: KaleidContextType[];
   setRenderModels: React.Dispatch<SetStateAction<KaleidContextType[]>>;
+  addNewModel: (model: KaleidModel) => void;
   debugName: string;
 }
 
@@ -29,7 +30,11 @@ export const useKaleidList = () => {
 export const KaleidListProvider = observer(({...props}) => {
   const [renderModels, setRenderModels] = React.useState([] as KaleidContextType[]);
   const listContext = makeAutoObservable({
-    renderModels: renderModels, setRenderModels: setRenderModels, debugName: 'hello'
+    renderModels: renderModels, setRenderModels: setRenderModels, debugName: 'hello',
+    addNewModel: (model: KaleidModel) => {
+      const newModelContext = new KaleidContextType(model);
+      setRenderModels([...renderModels, newModelContext]);
+    }
   }, undefined, {deep: false, name: 'KaleidList'});
   React.useEffect(()=> {
     registerModelEvents(listContext);

@@ -1,7 +1,7 @@
 import { io } from 'socket.io-client'
-import { httpURL, newRenderer } from '@common/constants'
+import { httpURL } from '@common/constants'
 import KaleidModel, { KaleidContextType } from '@common/KaleidModel';
-import { makeRegisterControllerMessage, API } from '@common/socket_cmds';
+import { API } from '@common/socket_cmds';
 import { FileConfigPrefs } from '@common/media_model';
 import KaleidRenderer from 'renderer/kaleid_renderer';
 import { ParamValue, Tweakable } from '@common/tweakables';
@@ -9,21 +9,33 @@ import { KaleidList } from './kaleid_context';
 import { action } from 'mobx';
 
 //XXX::: NB. currently using somewhat arbitrary mix of REST & socket...
+/// --> moving more towards socket.
+
+const ws = io();//new WebSocket(websocketURL);
+
+//at the moment, all of our models are stored in an array
+//which is in component KaleidListProvider.
+//this is a local copy of that; we assume there will only be one etc.
+let kaleidList: KaleidList;
+/**
+ * Register events received over websocket to effect the state of the given
+ * KaleidList.
+ * Called once in KaleidListProvider such that emitted events
+ * about the state of models will be encorporated into the context
+ * of this GUI instance.
+ */
+export function registerModelEvents(kList: KaleidList) {
+    console.log(`registering model events`);
+    kaleidList = kList; // keeping this as module state & re-running useEffect
+}
 
 
 /**send a message to the server asking for a renderer to be created.
- * Server responds with a model when ready.
+ * Server broadcasts info about new model when ready (to be picked up elsewhere).
 */
 export async function requestNewRenderer() {
-    //who should be responsible for keeping track of which renderers are around, associated with with GUI?
-    //*probably really needs to be the server* that is the only way that we can ensure integrity.
     console.log(`requesting newRenderer...`);
-    const response = await fetch(`${httpURL}${newRenderer}`, {
-        //mode: 'cors', headers: {'Access-Control-Allow-Origin' : '*'}
-    });
-    const info = await response.json() as KaleidModel;
-    console.log(`newRenderer response received`);
-    return new KaleidContextType(info);
+    ws.emit(API.RequestNewRenderer);
 }
 
 export async function requestFileConfigPrefs() {
@@ -81,46 +93,23 @@ export async function requestModelList() {
     return info.map(m => new KaleidContextType(m));
 }
 
-//Establish a WebSocket connection to server 
-//so that it can notify us about things like new renderers.
-//although, as long as there's only one GUI and it requested the renderer itself
-//it could use the response to establish connection.
-
-//switching to socket.io implementation
-const ws = io();//new WebSocket(websocketURL);
 
 ws.on('connected', () => {
     console.log(`websocket opened`);
-    ws.send(makeRegisterControllerMessage());
+    ws.send(API.RegisterController);
 });
 ws.on(API.FragCode, (msg: any) => {
     KaleidRenderer.fs = msg.code as string;
     console.log(`shader code changed...`);
 });
 
-//at the moment, all of our models are stored in an array
-//which is in component KaleidListProvider.
-//this is a local copy of that; we assume there will only be one etc.
-let kaleidList: KaleidList;
-/**
- * Register events received over websocket to effect the state of the given
- * KaleidList.
- * Called once in KaleidListProvider such that emitted events
- * about the state of models will be encorporated into the context
- * of this GUI instance.
- */
-export function registerModelEvents(kList: KaleidList) {
-    console.log(`registering model events`);
-    kaleidList = kList; // keeping this as module state & re-running useEffect
-}
 ws.on(API.Set, action((json: {model: KaleidModel}) => {
     const newModel = json.model;
     console.log(`setting model ${newModel.id} from network event`);
     const oldModel = kaleidList.renderModels.find(m => m.model.id === newModel.id);
     if (!oldModel) {
         console.log('appending model to list');
-        const newModelContext = new KaleidContextType(newModel);
-        kaleidList.setRenderModels([...kaleidList.renderModels, newModelContext]);
+        kaleidList.addNewModel(newModel);
     } else {
         Object.assign(oldModel, newModel);
     }
@@ -140,8 +129,13 @@ ws.on(API.SetParm, action((msg: ParamValue<any>)=>{
     }
     parm.value = msg.value;
 }));
+ws.on(API.RendererAdded, (model: KaleidModel) => {
+    kaleidList.addNewModel(model);
+});
+//ws.on(API.ModelList, action())
 
 export function sendModel(model: KaleidModel) {
+    console.log(`sendModel #${model.id}`);
     ws.emit(API.Set, {model: model}); //somewhat slow...
 }
 
