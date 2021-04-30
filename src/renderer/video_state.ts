@@ -48,8 +48,6 @@ export default class VideoState {
         const vidEl = this.vidEl;
         vidEl.muted = state.muted;
         vidEl.volume = state.volume;
-        //TODO fix the stupid error when switching back to red.mp4
-        //if (state.url === "red.mp4" && vidEl.currentSrc.endsWith("red.mp4")) return;
         this._vidUrl = vidEl.src = state.url;
         await state.paused ? vidEl.pause() : vidEl.play();
     }
@@ -58,7 +56,7 @@ export default class VideoState {
         vid.pause();
         vid.currentTime = time;
         //https://stackoverflow.com/questions/10461669/seek-to-a-point-in-html5-video
-        //there is evidence that this helps, other issues with other heavier imageState stuff.
+        //there is evidence that this helps, other issues with other heavier imageState / setModel stuff.
         const timer = setInterval(()=> {
             if (vid.paused && vid.readyState === 4 || !vid.paused) {
                 vid.play();
