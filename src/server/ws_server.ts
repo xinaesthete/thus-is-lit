@@ -72,6 +72,10 @@ export default function startWsServer(server: Server) {
             if (param) param.value = msg.value;
             socket.broadcast.emit(API.SetParm, msg);
         });
+        socket.on(API.SetVideoFilename, (msg: {url: string, modelId: number}) => {
+            //somewhat works, but need more coherence in various ways...
+            socket.broadcast.emit(API.SetVideoFilename, msg);
+        });
         socket.on(API.Error, (json: {error: string})=> {
             main_state.lastError = json.error;
         });

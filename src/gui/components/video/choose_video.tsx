@@ -17,12 +17,6 @@ export default observer( function ChooseVideo(props: {
   //TODO options for advance to next video in sequence / random after it finishes.
   const url = encodeURI(props.video.url); //would probably rather it was kept encoded.
   
-  const handleChoose = action((n: string) => {
-    //consider resetting time as well...
-    props.setURL(n); //this ends up being async, so divorced from 'action' wrap above
-    //but shouldn't matter, because once it gets down to actually mutating the model, it is another action.
-  });
-  
   const notNice = `${httpURL}/video/`.length;
   const niceName = (v: string) => (v.length > notNice) ? decodeURI(v.substring(notNice)) : v;
   //TODO: benchmark useMemo() vs not. maybe do things differently anyway.
@@ -32,7 +26,7 @@ export default observer( function ChooseVideo(props: {
   return (
     <>
       <Select className={classes.vidDropdown} label="video file" value={url} 
-        onChange={e=>handleChoose(e.target.value as string)}>
+        onChange={e=>props.setURL(e.target.value as string)}>
         {availableMenu}
       </Select>
     </>

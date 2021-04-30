@@ -143,3 +143,6 @@ export function sendParameterValue(parm: Tweakable<any>, modelId: number) {
     const msg: ParamValue<any> = {value: parm.value, modelId: modelId, key: parm.name!};
     ws.emit(API.SetParm, msg);
 }
+export function sendVideoChange(url: string, modelId: number) {
+    ws.emit(API.SetVideoFilename, {url: url, modelId: modelId});
+}

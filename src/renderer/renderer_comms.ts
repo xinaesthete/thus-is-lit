@@ -102,6 +102,11 @@ socket.on(API.SetParm, (msg: ParamValue<any>) => {
     paramState.setValue(msg);
 });
 
+socket.on(API.SetVideoFilename, (msg: {url: string, modelId: number}) => {
+    if (msg.modelId !== id) return;
+    vidState.vidUrl = msg.url;
+});
+
 function onMessage(key: string, callback: (msg: any) => void) {
     socket.on(key, callback);
 }

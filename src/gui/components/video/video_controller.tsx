@@ -11,6 +11,8 @@ import { observer } from 'mobx-react'
 import mediaLib from '../../medialib'
 import { action } from 'mobx'
 import { Button } from '@material-ui/core'
+import { sendVideoChange } from '@gui/gui_comms'
+import { useKaleid } from '@gui/kaleid_context'
 
 export interface VProps {
   video: VideoDescriptor;
@@ -44,9 +46,10 @@ const PauseToggle = observer((props: VProps) => {
 
 export default observer(function VideoController(props: VProps) {
   const {video, setVideo} = {...props};
+  const kaleid = useKaleid();
   const setName = async (name: string) => {
     console.log(`[video_controller] setName ${name}`);
-    
+    sendVideoChange(name, kaleid.model.id);
     const desc = await mediaLib.getDescriptorAsync(name) as VideoDescriptor;
     setVideo(desc);
   }

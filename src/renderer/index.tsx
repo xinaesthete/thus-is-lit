@@ -12,9 +12,9 @@ vid.vidEl.oncanplay = () => {
   console.log(`can play`);
   vid.vidEl.play();
 }
-setTimeout(async ()=>{
-  vid.setImageState(vid.imageState);
-}, 3000);
+// setTimeout(async ()=>{
+//   vid.setImageState(vid.imageState);
+// }, 3000);
 const renderer = new THREE.WebGLRenderer({antialias: true, alpha: false});
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.prepend(renderer.domElement);

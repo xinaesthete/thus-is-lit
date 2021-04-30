@@ -6,7 +6,7 @@ import { AbstractImageDecriptor, FeedbackDescriptor, ImageFileDescriptor,
 export default class VideoState {
     imageState: AbstractImageDecriptor;
     vidEl: HTMLVideoElement;
-    vidUrl = "red.mp4";
+    _vidUrl = "red.mp4";
     vidTex: THREE.Texture;
     activeTexture: THREE.Texture;
     pendingVideoSwitch = false; //did this ever help? Make new element instead?
@@ -20,11 +20,11 @@ export default class VideoState {
         this.vidEl.autoplay = true;
         this.vidEl.muted = true;
         document.body.appendChild(this.vidEl);
-        this.vidEl.src = this.vidUrl;
+        this.vidEl.src = this._vidUrl;
         this.vidTex = new THREE.VideoTexture(this.vidEl);
         setTextureParams(this.vidTex);
         this.activeTexture = this.vidTex;
-        const s = new VideoDescriptor(this.vidUrl);
+        const s = new VideoDescriptor(this._vidUrl);
         s.width = 1920;
         s.height = 1080;
         this.imageState = s; //satisfy TS that field is initialised
@@ -48,8 +48,20 @@ export default class VideoState {
         vidEl.volume = state.volume;
         //TODO fix the stupid error when switching back to red.mp4
         //if (state.url === "red.mp4" && vidEl.currentSrc.endsWith("red.mp4")) return;
-        this.vidUrl = vidEl.src = state.url;
+        this._vidUrl = vidEl.src = state.url;
         await state.paused ? vidEl.pause() : vidEl.play();
+    }
+    get vidUrl() {
+        return this._vidUrl;
+    }
+    /** doing this will mean that this.imageState will be a bit out of sync...
+     * but it switches ASAP to a different video.
+     */
+    set vidUrl(url: string) {
+        this._vidUrl = url;
+        this.vidEl.src = url;
+        //seek to zero...
+        this.vidEl.currentTime = 0;
     }
     fitTexture = fitTexture;
 }
