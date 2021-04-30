@@ -5,7 +5,7 @@
 // With the current very-static form of Kaleid renderer, could be good to make this a straightforward
 // reflection of that (serving also a guide to what generated).
 
-import { observable, makeObservable, autorun, trace } from 'mobx'
+import { observable, makeObservable, autorun, reaction } from 'mobx'
 import VideoState from 'renderer/video_state';
 import { sendModel, sendParameterValue } from '../gui/gui_comms';
 import { AbstractImageDecriptor, ImageType } from "./media_model";
@@ -23,12 +23,8 @@ class MobxTweakable<T extends Numeric> implements Tweakable<T> {
     constructor(init: Tweakable<T>, modelId: number) {
         Object.assign(this, init);
         this.value = init.value;
+        this.modelId = modelId;
         makeObservable(this, {value: observable});
-        //should this have a reference to the model?
-        autorun((r) => {
-            r.trace();
-            sendParameterValue(this, modelId);
-        }, {name: `Tweakable '${this.name}'#${modelId}`});
     }
     name?: string | undefined;
     value: T;
@@ -37,6 +33,7 @@ class MobxTweakable<T extends Numeric> implements Tweakable<T> {
     step?: number | undefined;
     delta?: number | undefined;
     movement?: MovementType | undefined;
+    modelId: number;
 }
 
 
@@ -54,13 +51,19 @@ export class ObservableKaleidModel implements KaleidModel {
             imageSource: observable,
             // tweakables: observable,
         });
-        autorun((r) => {
-            //this is a small problem
-            //I have a big problem
-            //this is not it.
-            r.trace();
-            sendModel(this);
-        }, {name: `kaleid#${this.id}`});
+        //for now...
+        reaction(
+            ()=>{
+                return this.imageSource
+            }, () => {
+                sendModel(this);
+            },
+        )
+        // autorun((r) => {
+        //     // sendModel(this); //result will be that MobX subscribes to all tweakables.
+        //     //this has nothing to do with whether or not they are 'observable' above.
+        // }, {name: `kaleid#${this.id}`});
+
     }
 }
 

@@ -6,6 +6,7 @@ import { action } from 'mobx';
 import KaleidComponent from '../kaleid_component';
 import { useStyles } from '@gui/theme';
 import { Specimen } from '@common/mutator';
+import { sendModel } from '@gui/gui_comms';
 
 /**
  * This should have a graphic representation of a particular parameter representation, 
@@ -17,11 +18,12 @@ export default function MutatorCell(props: {spec: Specimen}) {
     const classes = useStyles();
     //consider having a property for aspect ratio, 
     //such that these can properly reflect the shape of the renderer
-    //const kaleid = React.useContext(KaleidContext).model;
+    const kaleidContext = React.useContext(KaleidContext);
     const activate = action(() => {
         props.spec.genes.forEach((p, t) => {
             t.value = p; //this should be better for not getting indices mixed up?
             //kaleid.tweakables[index].value = p;
+            sendModel(kaleidContext.model);
         });
     });
     return (

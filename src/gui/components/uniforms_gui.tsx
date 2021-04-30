@@ -15,8 +15,10 @@ import { observer } from 'mobx-react'
 import { action, trace } from 'mobx'
 import MutatorGrid from './mutator/MutatorGrid'
 import { KaleidContext } from '@gui/kaleid_context'
+import { sendParameterValue } from '@gui/gui_comms'
 
 interface SliderProp<T extends Numeric> extends Tweakable<T> {
+    modelId: number;
     // onChangeX: React.ChangeEventHandler<number>
     onChange: (event: React.ChangeEvent<{}>, newValue: T) => void
 }
@@ -96,8 +98,12 @@ const SliderBank = observer(() => {
         <Grid container spacing={1}>
             {kaleidContext.model.tweakables.map((u, i) => {
                 return (
-                    <TweakableSlider key={u.name} {...u}
-                    onChange={action((e, v) => { u.value = v; })}
+                    <TweakableSlider key={u.name} {...u} modelId={kaleidContext.model.id}
+                    onChange={action((e, v) => { 
+                        u.value = v;
+                        //no need for a mobx reaction, straightforward side-effect
+                        sendParameterValue(u, kaleidContext.model.id);
+                    })}
                     />
                 )
             })}
@@ -115,6 +121,12 @@ const KaleidGUI = observer(() => {
     const classes = useStyles();
     const kaleidContext = React.useContext(KaleidContext);
     const k = kaleidContext;
+    trace(); //we *do* keep hitting reaction to top level of model changing, although we *don't* see this re-render.
+    // const deps = getDependencyTree(k.model, 'tweakables');
+    // console.log(JSON.stringify(deps, null, 2));
+    // const obs = getObserverTree(k.model, 'tweakables');
+    // console.log(JSON.stringify(obs, null, 2));
+
     //const model = kaleidContext.model; //late dereferencing potentially saves unnecessary re-render
 
     //--> ImageContext? What if there are multiple layers later?
