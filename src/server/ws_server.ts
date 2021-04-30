@@ -58,14 +58,14 @@ export default function startWsServer(server: Server) {
             console.log('setting model ' + model.id);
             currentModels.set(model.id, model);
             //renderers.get(model.id)?.send(API.Set, json);
-            wsServer.emit(API.Set, json); //TODO: finish sorting out send vs emit etc. (or revert to not using socket.io)
+            socket.broadcast.emit(API.Set, json);
         });
         socket.on(API.SetParm, (msg: ParamValue<any>) => {
             if (!currentModels.has(msg.modelId)) throw (`trying to SetParm on unknown model ${msg.modelId}`);
             const model = currentModels.get(msg.modelId);
             const param = model?.tweakables.find(p => p.name === msg.key);
             if (param) param.value = msg.value;
-            wsServer.emit(API.SetParm, msg);
+            socket.broadcast.emit(API.SetParm, msg);
         });
         socket.on(API.Error, (json: {error: string})=> {
             main_state.lastError = json.error;

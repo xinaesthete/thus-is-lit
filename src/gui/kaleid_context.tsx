@@ -2,6 +2,7 @@ import { KaleidContextType } from '@common/KaleidModel';
 import { makeAutoObservable } from 'mobx';
 import { observer } from 'mobx-react';
 import React, { SetStateAction } from 'react'
+import { registerModelEvents } from './gui_comms';
 
 export const KaleidContext = React.createContext<KaleidContextType>(
   //sorry, I should really have a mock defaultValue.
@@ -30,7 +31,9 @@ export const KaleidListProvider = observer(({...props}) => {
   const listContext = makeAutoObservable({
     renderModels: renderModels, setRenderModels: setRenderModels, debugName: 'hello'
   }, undefined, {deep: false, name: 'KaleidList'});
-
+  React.useEffect(()=> {
+    registerModelEvents(listContext);
+  }, [listContext]);
   return (
     <KaleidRendererListContext.Provider value={listContext}>
       {props.children}

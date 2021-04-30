@@ -5,6 +5,8 @@ import { makeRegisterControllerMessage, API } from '@common/socket_cmds';
 import { FileConfigPrefs } from '@common/media_model';
 import KaleidRenderer from 'renderer/kaleid_renderer';
 import { ParamValue, Tweakable } from '@common/tweakables';
+import { KaleidList } from './kaleid_context';
+import { action } from 'mobx';
 
 //XXX::: NB. currently using somewhat arbitrary mix of REST & socket...
 
@@ -95,6 +97,49 @@ ws.on(API.FragCode, (msg: any) => {
     KaleidRenderer.fs = msg.code as string;
     console.log(`shader code changed...`);
 });
+
+//at the moment, all of our models are stored in an array
+//which is in component KaleidListProvider.
+//this is a local copy of that; we assume there will only be one etc.
+let kaleidList: KaleidList;
+/**
+ * Register events received over websocket to effect the state of the given
+ * KaleidList.
+ * Called once in KaleidListProvider such that emitted events
+ * about the state of models will be encorporated into the context
+ * of this GUI instance.
+ */
+export function registerModelEvents(kList: KaleidList) {
+    console.log(`registering model events`);
+    kaleidList = kList; // keeping this as module state & re-running useEffect
+}
+ws.on(API.Set, action((json: {model: KaleidModel}) => {
+    const newModel = json.model;
+    console.log(`setting model ${newModel.id} from network event`);
+    const oldModel = kaleidList.renderModels.find(m => m.model.id === newModel.id);
+    if (!oldModel) {
+        console.log('appending model to list');
+        const newModelContext = new KaleidContextType(newModel);
+        kaleidList.setRenderModels([...kaleidList.renderModels, newModelContext]);
+    } else {
+        Object.assign(oldModel, newModel);
+    }
+}));
+ws.on(API.SetParm, action((msg: ParamValue<any>)=>{
+    const model = kaleidList.renderModels.find(m => m.model.id === msg.modelId);
+    if (!model) {
+        console.error(`couldn't find model to SetParm ${JSON.stringify(msg)} (${kaleidList.renderModels.length} models)`);
+        return;
+    }
+    //non-optimal, not expected to be significant bottleneck anytime soon.
+    //but would be good to design differently.
+    const parm = model?.model.tweakables.find(p => p.name === msg.key);
+    if (!parm) {
+        console.error(`couldn't find parm ${msg.key}`);
+        return;
+    }
+    parm.value = msg.value;
+}));
 
 export function sendModel(model: KaleidModel) {
     ws.emit(API.Set, {model: model}); //somewhat slow...
