@@ -65,4 +65,13 @@ class MediaLibrary {
 }
 
 const mediaLib = new MediaLibrary();
+//// crude debugging to test video switching behaviour
+//// indicates that sendVideoChange is fine but other stuff with VideoDescriptor et al is not.
+// const switcher = setInterval(()=> {
+//     const vids = mediaLib.availableVideos;
+//     const i = Math.floor(Math.random() * vids.length);
+//     API.sendVideoChange(vids[i], 0);
+//     // props.setURL(vids[i]);
+// }, 2000);
+
 export default mediaLib;

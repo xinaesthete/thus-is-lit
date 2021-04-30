@@ -29,6 +29,8 @@ export default class VideoState {
         s.height = 1080;
         this.imageState = s; //satisfy TS that field is initialised
         this.setImageState(s);
+        //for debugging.
+        (window as any).VID = this;
     }
     async setImageState(state: AbstractImageDecriptor) {
         switch (state.imgType) {
@@ -51,6 +53,19 @@ export default class VideoState {
         this._vidUrl = vidEl.src = state.url;
         await state.paused ? vidEl.pause() : vidEl.play();
     }
+    seek(time: number) {
+        const vid = this.vidEl;
+        vid.pause();
+        vid.currentTime = time;
+        //https://stackoverflow.com/questions/10461669/seek-to-a-point-in-html5-video
+        //there is evidence that this helps, other issues with other heavier imageState stuff.
+        const timer = setInterval(()=> {
+            if (vid.paused && vid.readyState === 4 || !vid.paused) {
+                vid.play();
+                clearInterval(timer);
+            }
+        }, 10);
+    }
     get vidUrl() {
         return this._vidUrl;
     }
@@ -60,8 +75,7 @@ export default class VideoState {
     set vidUrl(url: string) {
         this._vidUrl = url;
         this.vidEl.src = url;
-        //seek to zero...
-        this.vidEl.currentTime = 0;
+        this.seek(0);
     }
     fitTexture = fitTexture;
 }
