@@ -4,7 +4,7 @@ import KaleidModel from "@common/KaleidModel";
 import { API } from "@common/socket_cmds";
 import { watchFragmentShader } from "./code_watch";
 import main_state from "./main_state";
-import { renderer } from '@common/threact/threact';
+import { ParamValue } from '@common/tweakables';
 
 
 export default function startWsServer(server: Server) {
@@ -55,12 +55,16 @@ export default function startWsServer(server: Server) {
         });
         socket.on(API.Set, (json: {model: KaleidModel})=> {
             const model = json.model;
-            //TODO: use socket.io to emit rather than rely on our housekeeping...
             console.log('setting model ' + model.id);
+            currentModels.set(model.id, model);
             //renderers.get(model.id)?.send(API.Set, json);
             wsServer.emit(API.Set, json); //TODO: finish sorting out send vs emit etc. (or revert to not using socket.io)
         });
-        socket.on(API.SetParm, msg => {
+        socket.on(API.SetParm, (msg: ParamValue<any>) => {
+            if (!currentModels.has(msg.modelId)) throw (`trying to SetParm on unknown model ${msg.modelId}`);
+            const model = currentModels.get(msg.modelId);
+            const param = model?.tweakables.find(p => p.name === msg.key);
+            if (param) param.value = msg.value;
             wsServer.emit(API.SetParm, msg);
         });
         socket.on(API.Error, (json: {error: string})=> {
