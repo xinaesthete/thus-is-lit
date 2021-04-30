@@ -1,13 +1,13 @@
 import { Specimen, baseSpecimen, breed } from "@common/mutator";
 import { Numeric } from "@common/tweakables";
-import { KaleidContext } from "@gui/kaleid_context";
+import { KaleidContext, useKaleid } from "@gui/kaleid_context";
 import { GridList } from '@material-ui/core'
 import React from "react";
 import MutatorCell from "./MutatorCell";
 
 
-export default function MutatorGrid() {
-  const kaleid = React.useContext(KaleidContext).model;
+export default function MutatorGrid() { //observer...
+  const kaleid = useKaleid().model;
   const [variants, setVariants] = React.useState([baseSpecimen(kaleid)]);
   const [mutationRate] = React.useState(1);
   React.useEffect(()=> {

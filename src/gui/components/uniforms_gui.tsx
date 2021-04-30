@@ -14,7 +14,7 @@ import AbstractImageController from './video/abstract_image_controller'
 import { observer } from 'mobx-react'
 import { action, trace } from 'mobx'
 import MutatorGrid from './mutator/MutatorGrid'
-import { KaleidContext } from '@gui/kaleid_context'
+import { useKaleid } from '@gui/kaleid_context'
 import { sendParameterValue } from '@gui/gui_comms'
 
 interface SliderProp<T extends Numeric> extends Tweakable<T> {
@@ -90,7 +90,7 @@ const TweakableSliderPair = observer(function TweakableSliderPair(u: SliderProp<
 });
 
 const SliderBank = observer(() => {
-    const kaleidContext = React.useContext(KaleidContext);
+    const kaleidContext = useKaleid();
     //const model = kaleidContext.model; //dereference late (see 'mobx react optimizations')
     //TODO: don't use array indices as keys. (actually ok at the time of writing as they're not changing)
     //--- if I implement a 'filter' then indices are liable to change, depending on how the filter works.
@@ -119,7 +119,7 @@ const SliderBank = observer(() => {
 const KaleidGUI = observer(() => {
     //also, https://mobx.js.org/react-optimizations.html
     const classes = useStyles();
-    const kaleidContext = React.useContext(KaleidContext);
+    const kaleidContext = useKaleid();
     const k = kaleidContext;
     trace(); //we *do* keep hitting reaction to top level of model changing, although we *don't* see this re-render.
     // const deps = getDependencyTree(k.model, 'tweakables');

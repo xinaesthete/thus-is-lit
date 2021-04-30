@@ -10,6 +10,12 @@ export const KaleidContext = React.createContext<KaleidContextType>(
   undefined as unknown as KaleidContextType
 );
 
+export const useKaleid = () => {
+  const kaleid = React.useContext(KaleidContext);
+  if (!kaleid) throw new Error('useKaleid must be used within provider');
+  return kaleid;
+}
+
 export interface KaleidList {
   renderModels: KaleidContextType[];
   setRenderModels: React.Dispatch<SetStateAction<KaleidContextType[]>>;

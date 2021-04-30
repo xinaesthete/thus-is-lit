@@ -1,7 +1,7 @@
 import { Numeric, Tweakable } from '@common/tweakables';
 import React from 'react'
 import { Button, GridListTile, GridListTileBar } from '@material-ui/core'
-import { KaleidContext } from '@gui/kaleid_context';
+import { useKaleid } from '@gui/kaleid_context';
 import { action } from 'mobx';
 import KaleidComponent from '../kaleid_component';
 import { useStyles } from '@gui/theme';
@@ -18,7 +18,7 @@ export default function MutatorCell(props: {spec: Specimen}) {
     const classes = useStyles();
     //consider having a property for aspect ratio, 
     //such that these can properly reflect the shape of the renderer
-    const kaleidContext = React.useContext(KaleidContext);
+    const kaleidContext = useKaleid();
     const activate = action(() => {
         props.spec.genes.forEach((p, t) => {
             t.value = p; //this should be better for not getting indices mixed up?
