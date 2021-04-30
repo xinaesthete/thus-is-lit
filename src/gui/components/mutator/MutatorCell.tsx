@@ -23,8 +23,8 @@ export default function MutatorCell(props: {spec: Specimen}) {
         props.spec.genes.forEach((p, t) => {
             t.value = p; //this should be better for not getting indices mixed up?
             //kaleid.tweakables[index].value = p;
-            sendModel(kaleidContext.model);
         });
+        sendModel(kaleidContext.model);
     });
     return (
         <GridListTile cols={1}>
