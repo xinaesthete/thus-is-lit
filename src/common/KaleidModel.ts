@@ -51,19 +51,14 @@ export class ObservableKaleidModel implements KaleidModel {
             imageSource: observable,
             // tweakables: observable,
         });
-        //for now...
-        reaction(
-            ()=>{
-                return this.imageSource
-            }, () => {
-                sendModel(this);
-            },
-        )
-        // autorun((r) => {
-        //     // sendModel(this); //result will be that MobX subscribes to all tweakables.
-        //     //this has nothing to do with whether or not they are 'observable' above.
-        // }, {name: `kaleid#${this.id}`});
-
+        // //for now...
+        // reaction(
+        //     ()=>{
+        //         return this.imageSource
+        //     }, () => {
+        //         sendModel(this);
+        //     },
+        // )
     }
 }
 
@@ -83,11 +78,4 @@ export class KaleidContextType {
             imageState: observable
         }, {name: `KaleidContextObserver #${this.model.id}`});
     }
-}
-
-//passing entire KaleidModel as JSON is heavy.
-//we don't use anything like this as of this writing, but...
-export interface KaleidControlMessage {
-    id: number;
-    changed: Record<string, Numeric>;
 }

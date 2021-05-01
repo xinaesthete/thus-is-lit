@@ -73,7 +73,7 @@ export default class VideoState {
     set vidUrl(url: string) {
         this._vidUrl = url;
         this.vidEl.src = url;
-        this.seek(0);
+        // this.seek(0);
     }
     fitTexture = fitTexture;
 }
