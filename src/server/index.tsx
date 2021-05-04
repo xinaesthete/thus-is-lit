@@ -46,3 +46,5 @@ app.on("ready", async () => {
     //https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS/Errors/CORSMissingAllowOrigin
     createGUIWindow();
 });
+//give main/index.ts something to import.
+export default 42;
