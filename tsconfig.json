@@ -1,5 +1,6 @@
 
 {
+    "extends": "electron-snowpack/config/tsconfig.json",
     "compilerOptions": {
         "experimentalDecorators": true,
         "strict": true,
@@ -12,9 +13,11 @@
         "noImplicitAny": true,
         "sourceMap": true,
         "baseUrl": "./src",
+        "allowSyntheticDefaultImports": true,
         "noEmit": true,
         "paths": {
             "@gui/*": ["gui/*"],
+            "@server/*": ["src/server/*"],
             "@common/*": ["common/*"]
         }
     },
