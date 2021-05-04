@@ -17,12 +17,12 @@ export const rendererStarted = "/rendererStarted";
 console.log(globalThis.location?.host);
 export let addr = globalThis.location?.host;
 //Protocol-relative '//' URLs?
-export let websocketURL = `ws://${addr}`;
+//export let websocketURL = `ws://${addr}`;
 export let httpURL = `http://${addr}`;
 export let guiURL = `http://${addr}/gui.html`;
 export function setAddr(v: string) { 
   addr = v;
-  websocketURL = `ws://${addr}`;
+  //websocketURL = `ws://${addr}`;
   httpURL = `http://${addr}`;
   guiURL = `http://${addr}/gui.html`;
 }////ungood
