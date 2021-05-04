@@ -7,7 +7,6 @@ import main_state from './main_state';
 import { guiURL } from '@common/constants';
 // import installReactDevtool from './devtool'
 
-startServer();
 
 export const buildDir = path.join(__dirname, '..');
 
@@ -41,10 +40,13 @@ function createGUIWindow() {
 }
 
 
-app.on("ready", async () => {
-    //await installReactDevtool(); //let's try getting at page in browser instead - useful to have that working.
-    //https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS/Errors/CORSMissingAllowOrigin
-    createGUIWindow();
-});
 //give main/index.ts something to import.
-export default 42;
+export default function main() {
+    startServer();
+    
+    app.on("ready", async () => {
+        //await installReactDevtool(); //let's try getting at page in browser instead - useful to have that working.
+        //https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS/Errors/CORSMissingAllowOrigin
+        createGUIWindow();
+    });
+};

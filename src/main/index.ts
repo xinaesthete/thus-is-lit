@@ -1,4 +1,4 @@
-import test from '../server'
+import main from '../server'
 
 /**
  * Difference between how our app was in the past, and how electron-snowpack expects it to be:
@@ -12,3 +12,5 @@ import test from '../server'
  * We still want to serve HTTP in built application so that remote iPad etc can connect.
  * 
  */
+
+main();
