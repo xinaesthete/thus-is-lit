@@ -5,10 +5,10 @@ module.exports = {
   mount: {
     'src/common': '/common',
     'src/gui': '/gui',
-    'src/server': '/server',//probably don't want to mount this...
+    // 'src/server': '/server',//probably don't want to mount this...
   },
   packageOptions: {
-    'external': ['fsevents']
+    'external': ['fsevents', 'chokidar']
   },
   alias: {
     '@/': './src/',
