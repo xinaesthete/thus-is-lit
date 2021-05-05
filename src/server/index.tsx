@@ -31,10 +31,6 @@ async function createGUIWindow() {
     window.loadURL(guiURL);
     // window.loadURL(`file://${buildDir}/gui.html`);
     main_state.mainWindow = window;
-    const ses = window.webContents.session;
-    ses.setProxy({
-        proxyRules: "http:8123,direct://"//;ws:8123,direct://"
-    });
     //really slow to quit when devtools is up?
     //fairly slow anyway. hiding the window makes it feel responsive...
     //hopefully not hiding some other problem from ourselves.

@@ -1,14 +1,5 @@
 const httpProxy = require('http-proxy');
-const { networkInterfaces } = require('os');
-
-//using this instead of 'localhost' doesn't seem to be helping my proxy.
-const localExternalIP = (() => ([]).concat(...Object.values(networkInterfaces()))
-  .filter(details => details.family === 'IPv4' && !details.internal)
-  .shift().address)();
-
-
-const proxy = httpProxy.createServer({target: `http://${localExternalIP}:8123`});
-const wsProxy = httpProxy.createServer({target: `ws://${localExternalIP}:8123`, ws: true});
+const proxy = httpProxy.createServer({target: `http://localhost:8123`});
 
 const routes = [
   'modelList',
@@ -57,17 +48,15 @@ module.exports = {
         } 
       }
     },
-    {
-      src: '/socket\.io/.*',
-      dest: (req, res) => wsProxy.ws(req, res.socket)
-    }
   ],
   packageOptions: {
-    'external': ['fsevents', 'chokidar']
+    'external': ['fsevents', 'chokidar'],
+    'knownEntrypoints': ['./src/renderer/index.tsx']
   },
   alias: {
     '@/': './src/',
     '@gui/': './src/gui/',
+    '@renderer/': './src/renderer/',
     '@server/': './src/server/',
     '@common/': './src/common/',
   },
