@@ -11,7 +11,7 @@ import { action } from 'mobx';
 //XXX::: NB. currently using somewhat arbitrary mix of REST & socket...
 /// --> moving more towards socket.
 
-const ws = io();//new WebSocket(websocketURL);
+const ws = io({port: '8123'});//new WebSocket(websocketURL);
 
 //at the moment, all of our models are stored in an array
 //which is in component KaleidListProvider.
@@ -37,10 +37,12 @@ export async function requestNewRenderer() {
     console.log(`requesting newRenderer...`);
     ws.emit(API.RequestNewRenderer);
 }
+///XXX: trying to hit a combination that'll allow proxy to work.
+const address = httpURL.replace('61016', '8123');
 
 export async function requestFileConfigPrefs() {
     console.log('requesting file config');
-    const response = await fetch(`${httpURL}/getConfigPrefs`);
+    const response = await fetch(`${address}/getConfigPrefs`);
     const config = await response.json() as FileConfigPrefs;
     console.log(`file config response: ${JSON.stringify(config)}`);
     return config as FileConfigPrefs;
@@ -62,7 +64,7 @@ export async function requestFileDialog() {
 
 export async function requestSetMainAssetPath(path: string) {
     console.log(`requesting to set main asset path to '${path}'`);
-    const result = await fetch(`${httpURL}/setMainAssetPath`, {
+    const result = await fetch(`${address}/setMainAssetPath`, {
         method: "POST", body: path,
         headers: {"Content-Type": "text/plain; charset=UTF-8"}
     });
@@ -73,14 +75,14 @@ export async function requestSetMainAssetPath(path: string) {
 
 export async function requestVideoList() {
     console.log('requesting list of videos');
-    const result = await fetch(`${httpURL}/videoList`);
+    const result = await fetch(`${address}/videoList`);
     const json = await result.json();
     // console.log(JSON.stringify(json));
     return json;
 }
 export async function requestImageList() {
     console.log('requesting list of images');
-    const result = await fetch(`${httpURL}/imageList`);
+    const result = await fetch(`${address}/imageList`);
     const json = await result.json();
     console.log(JSON.stringify(json));
     return json;
@@ -88,7 +90,7 @@ export async function requestImageList() {
 
 
 export async function requestModelList() {
-    const result = await fetch(`${httpURL}/modelList`);
+    const result = await fetch(`${address}/modelList`);
     const info = await result.json() as KaleidModel[];
     return info.map(m => new KaleidContextType(m));
 }

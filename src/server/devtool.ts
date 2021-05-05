@@ -1,4 +1,4 @@
-import installExtension, {REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer'
+// import installExtension, {REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer'
 
 
 //https://www.electronjs.org/docs/tutorial/devtools-extension
@@ -10,12 +10,12 @@ import installExtension, {REACT_DEVELOPER_TOOLS } from 'electron-devtools-instal
 //Cannot load extension with file or directory name _metadata. Filenames starting with "_" are reserved for use by the system.
 
 export default async function installReactDevtool() {
-    try {
-        //DANGER, DANGER... HIGH VOLTAGE!! (likely to cause problems building / running elsewhere if care not taken.)
-        //not working anyway on my machine as of this writing.
-        await installExtension(REACT_DEVELOPER_TOOLS);
-        //setTimeout(()=>installExtension(REACT_DEVELOPER_TOOLS), 5000);
-    } catch (e) {
-        console.error("Failed to install react devtools");
-    }
+    // try {
+    //     //DANGER, DANGER... HIGH VOLTAGE!! (likely to cause problems building / running elsewhere if care not taken.)
+    //     //not working anyway on my machine as of this writing.
+    //     await installExtension(REACT_DEVELOPER_TOOLS);
+    //     //setTimeout(()=>installExtension(REACT_DEVELOPER_TOOLS), 5000);
+    // } catch (e) {
+    //     console.error("Failed to install react devtools");
+    // }
 }

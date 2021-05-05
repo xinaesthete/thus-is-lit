@@ -1,11 +1,9 @@
-// this file is starting to have too many separate areas of concern:
-// should be broken up
-// I make BrowserWindows in here, which seems fishy.
 /// express API
 /// fileserver (with hot-reloading of code, config of asset paths etc)
 /// websocket comms for control changes...
 
 import express from 'express'
+import cors from 'cors'
 import * as consts from '@common/constants'
 import * as screen_server from './screen_config';
 import initFileConfig, * as file_config  from './assets/file_config'
@@ -19,18 +17,21 @@ export const localExternalIP = (() => ([] as any[]).concat(...Object.values(netw
   .filter(details => details.family === 'IPv4' && !details.internal)
   .shift().address)()
 
-consts.setAddr(localExternalIP + ':' + consts.host_port); //ugh
+const port = 8123;
+const port2 = process.env.NODE_ENV !== 'production' ? process.env.SNOWPACK_PORT! : 8123;
+console.log(`using port ${port}`);
+consts.setAddr(localExternalIP, port, port2); //ugh
 
 export const expApp = express();
+expApp.use(cors());
 expApp.use(express.urlencoded({extended: false}));//...
 expApp.use(express.json());
 expApp.use(express.text({type: 'text/*'}));
 
-
 file_config.addRestAPI(expApp);
 media_server.addRestAPI(expApp);
 screen_server.addRestAPI(expApp);
-expApp.get('/modelList', async (req, res) => {
+expApp.get('/modellist', async (req, res) => {
     console.log(`GET /modelList`);
     const v = [...main_state.currentModels.values()];
     res.send(v);
@@ -42,9 +43,10 @@ expApp.get('/getJsonState', async (req, res) => {
 
 export function startServer() {
     console.log("initialising server_comms...");
-    const server = expApp.listen(consts.host_port, () => {
+    const server = expApp.listen(8123, () => {
         console.log(`express server listening at ${consts.httpURL}`);
     });
+    //expApp.
     startWsServer(server);
     initFileConfig();
     expApp.use(express.static('public'));

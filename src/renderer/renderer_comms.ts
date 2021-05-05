@@ -26,7 +26,7 @@ import VideoState from "./video_state";
 import { io } from 'socket.io-client'
 import { ParamValue } from "@common/tweakables";
 
-let socket = io();// new WebSocket(websocketURL);
+let socket = io({port: '8123'});// new WebSocket(websocketURL);
 
 async function setupWebSocket(model: KaleidModel) {
     //send a message so that our socket is associated with our ID on server.

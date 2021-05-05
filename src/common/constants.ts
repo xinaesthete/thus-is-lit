@@ -1,8 +1,6 @@
 /** port used by express server, may want to consider setting this differently */
-export const host_port = 8321;
-//export const ws_port = 8322;
+//export const host_port = 8123;
 
-// addresses of server API calls:
 
 /** POST that a new renderer window has been created, with info about its model */
 export const rendererStarted = "/rendererStarted";
@@ -20,9 +18,9 @@ export let addr = globalThis.location?.host;
 //export let websocketURL = `ws://${addr}`;
 export let httpURL = `http://${addr}`;
 export let guiURL = `http://${addr}/gui.html`;
-export function setAddr(v: string) { 
-  addr = v;
+export function setAddr(ip: string, restPort = 8123, port2: number|string) {
+  addr = ip;
   //websocketURL = `ws://${addr}`;
-  httpURL = `http://${addr}`;
-  guiURL = `http://${addr}/gui.html`;
+  httpURL = `http://${ip}:${restPort}`;
+  guiURL = `http://${ip}:${port2}/gui.html`;
 }////ungood

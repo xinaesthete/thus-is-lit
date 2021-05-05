@@ -21,7 +21,7 @@ enum AppTabs {
 }
 const App = observer(function App() {
   const classes = useStyles();
-  const [tab, setTab] = React.useState(AppTabs.Renderer);
+  const [tab, setTab] = React.useState(AppTabs.Media);
 
   const el = React.useMemo(()=>{
     switch (tab) {
@@ -64,3 +64,8 @@ const App = observer(function App() {
 
 ReactDOM.render(<App />, document.querySelector('#app'));
 
+// Hot Module Replacement (HMR) - Remove this snippet to remove HMR.
+// Learn more: https://www.snowpack.dev/concepts/hot-module-replacement
+if (import.meta.hot) {
+  import.meta.hot.accept();
+}

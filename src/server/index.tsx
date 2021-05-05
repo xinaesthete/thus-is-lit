@@ -4,21 +4,20 @@ import * as path from 'path'
 import {startServer} from './server_comms'
 import { getNextScreen } from './screen_config';
 import main_state from './main_state';
-import { guiURL } from '@common/constants';
+
+///// getAssetURL from electron-snowpack vs our previous 'constants'////
+//// we kinda want to use our local IP address
+// so that we're on the same origin as remote GUI pages
+// don't want to use file:/// even in 'production'
+//---> we DO want to use process.env.SNOWPACK_PORT for HMR, though.
+//import { getAssetURL } from 'electron-snowpack';
+import { guiURL, addr } from '@common/constants';
 // import installReactDevtool from './devtool'
 
 
 export const buildDir = path.join(__dirname, '..');
 
-//nb, use of this library subject to review
-//also currently with hacked-in TS types https://github.com/yan-foto/electron-reload/issues/65
-//which is probably a Bad Idea as it'll break build.
-// import electronReload from 'electron-reload'
-/// also it didn't immediately work, and is fairly simple so could maybe be either replicated, or we can use something else.
-//const electronReload = require('electron-reload');
-// electronReload(buildDir);
-
-function createGUIWindow() {
+async function createGUIWindow() {
     const screen = getNextScreen();
     const { x, y } = screen.bounds;
     const window = new BrowserWindow({
@@ -32,7 +31,10 @@ function createGUIWindow() {
     window.loadURL(guiURL);
     // window.loadURL(`file://${buildDir}/gui.html`);
     main_state.mainWindow = window;
-
+    const ses = window.webContents.session;
+    ses.setProxy({
+        proxyRules: "http:8123,direct://"//;ws:8123,direct://"
+    });
     //really slow to quit when devtools is up?
     //fairly slow anyway. hiding the window makes it feel responsive...
     //hopefully not hiding some other problem from ourselves.

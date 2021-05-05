@@ -4,7 +4,8 @@ import FolderIcon from '@material-ui/icons/Folder';
 import SettingsIcon from '@material-ui/icons/Settings';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
-import Dialog from '@material-ui/core/Dialog';
+//https://stackoverflow.com/questions/62935533/ho-to-fix-react-forwardrefmenu-material-ui
+import {Dialog} from '@material-ui/core';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
@@ -12,6 +13,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import mediaLib from '../medialib'
 import { observer } from 'mobx-react'
 import { requestFileDialog } from '../gui_comms';
+import ErrorBoundary from './debug/error_boundary';
 
 const MediaConfig = observer( function MediaConfig() {
   const [open, setOpen] = React.useState(false);
@@ -41,6 +43,7 @@ const MediaConfig = observer( function MediaConfig() {
   return (
     <div>
       <IconButton aria-label="media-config" onClick={handleClickOpen} ><SettingsIcon /></IconButton>
+      <ErrorBoundary>
       <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
         <DialogTitle id="form-dialog-title">Where are your files?</DialogTitle>
         <DialogContent>
@@ -57,7 +60,7 @@ const MediaConfig = observer( function MediaConfig() {
             defaultValue={path}
             onChange={e=>setPath(e.target.value)}
             fullWidth
-          />
+            />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">
@@ -68,6 +71,8 @@ const MediaConfig = observer( function MediaConfig() {
           </Button>
         </DialogActions>
       </Dialog>
+      </ErrorBoundary>
+
     </div>
   );
 });
