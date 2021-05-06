@@ -23,11 +23,11 @@ export function baseSpecimen(model: KaleidModel) {
     } as Specimen;
 }
 
-export function breed(parents: Specimen[], mutationAmount: number) {
+export function breed(parents: Specimen[], mutationAmount: number, geneFilter?: (g: GeneDef)=>boolean) {
     //const p = [...parents].sort((a, b) => a.weight - b.weight);
     if (parents.length === 1) {
         const p = parents[0];
-        const genes = mutateGenome(p.genes, mutationAmount);
+        const genes = mutateGenome(p.genes, mutationAmount, geneFilter);
         return {genes: genes, weight: 0} as Specimen;
     } else {
         const p1 = parents[Math.floor(Math.random() * parents.length)];
@@ -116,10 +116,14 @@ export function mutate(genes: Tweakable<Numeric>[], amount: number) {
 }
 
 /** clone & mutate (NOT with mutation in the programming sense) */
-export function mutateGenome(genes: Genome, amount: number) {
+export function mutateGenome(genes: Genome, amount: number, geneFilter?: (g: GeneDef)=>boolean) {
     const newGenes: Genome = new Map<GeneDef, Numeric>();
     genes.forEach((v, k) => {
-        newGenes.set(k, mutateSingle(k, amount, v));
+        if (geneFilter && !geneFilter(k)) {
+            newGenes.set(k, v);
+        } else {
+            newGenes.set(k, mutateSingle(k, amount, v));
+        }
     });
     return newGenes;
 }

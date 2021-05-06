@@ -32,6 +32,7 @@ export interface Tweakable<T extends Numeric> {
     delta?: number,
     wrap?: boolean,
     movement?: MovementType,
+    tags?: string[]
     //scale?: (T) => T //change to be similar to MuiSlider? but that has a different idea about relation to min&max?
     //also if I want to send functions for eval across wire, I need to be careful about trust... and anyway, I'm not using this yet.
 }

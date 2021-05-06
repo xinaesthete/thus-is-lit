@@ -16,7 +16,7 @@ export default function MutatorGrid() { //observer...
       //mutate a new variant and add it to the list of variants
       //actually, they want to have other data associated, like 'picked' flag
       //just vaguelly sketching out now & moving on to other things.
-      newVariants.push(breed(variants, mutationRate));
+      newVariants.push(breed(variants, mutationRate, (g)=>g.tags?.includes('geometry') || false));
     }
     //"invalid hook call. Hooks can only be called from the body of a function."
     setVariants(newVariants);
