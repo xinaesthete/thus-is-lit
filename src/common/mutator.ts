@@ -40,7 +40,11 @@ export function breed(parents: Specimen[], mutationAmount: number, geneFilter?: 
         const genes: Genome = new Map<GeneDef, Numeric>();
         p1.genes.forEach((v, k) => {
             v = crossover > i++ ? p1.genes.get(k)! : p2.genes.get(k)!;
-            genes.set(k, mutateSingle(k, mutationAmount, v));
+            if (geneFilter && !geneFilter(k)) {
+                genes.set(k, mutateSingle(k, mutationAmount, v));
+            } else {
+                genes.set(k, v);
+            }
         });
         return {genes: genes, weight: 0} as Specimen;
     }
