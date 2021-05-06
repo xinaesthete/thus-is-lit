@@ -97,7 +97,7 @@ export interface IThree {
 
 export interface IThreact {
     gfx: IThree;
-    
+    className?: string;
     //reactChildren?: React.Component[]; //React components already have children.
 }
 
@@ -124,7 +124,7 @@ export class Threact extends React.Component<IThreact, any> {
     constructor(props: any) {
         super(props);
         this.state = {
-            frameCount: 0
+            frameCount: 0, className: props.className || 'threact_view_proxy'
         }
         this.renderTarget = new THREE.WebGLRenderTarget(256, 256);
         
@@ -168,14 +168,17 @@ export class Threact extends React.Component<IThreact, any> {
         this.renderGL(time);
     }
     resize(rect: DOMRect) {
+        ///....
         const r = window.devicePixelRatio;
         const w = rect.width * r;
         const h = rect.height * r;
         let dirty = (w !== this.lastW) || (h !== this.lastH);
         if (!dirty) return;
-        this.renderTarget.setSize(w, h);
-        this.composite.scale.setX(w);
-        this.composite.scale.setY(h - 1);
+        if (compositeMode === 'proxy') {
+            this.renderTarget.setSize(w, h);
+            this.composite.scale.setX(w);
+            this.composite.scale.setY(h - 1);
+        }
         this.lastW = w;
         this.lastH = h;
         this.props.gfx.resize(rect);
@@ -225,6 +228,6 @@ export class Threact extends React.Component<IThreact, any> {
         ctx.drawImage(renderer.domElement, 0, 0);
     }
     render() {
-        return <canvas className='threact_view_proxy' ref={(mount) => this.mount = mount as HTMLCanvasElement} />
+        return <canvas className={this.state.className} ref={(mount) => this.mount = mount as HTMLCanvasElement} />
     }
 }

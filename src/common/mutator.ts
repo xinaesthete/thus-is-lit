@@ -1,6 +1,7 @@
 // not to do with mutation as it pertains to immutability, state etc.
 // this is (approximately) functional mutation, so new objects are created with different values
 // would like less garbage etc (especially as I currently have lots of redundant delta etc with every copy).
+import { makeAutoObservable } from 'mobx';
 import KaleidModel from './KaleidModel';
 import {MovementType, Numeric, Tweakable, vec2} from './tweakables'
 
@@ -18,9 +19,8 @@ export function baseSpecimen(model: KaleidModel) {
     model.tweakables.forEach(t => {
         genes.set(t, t.value);
     });
-    return {
-        genes: genes, weight: 0
-    } as Specimen;
+    const s: Specimen = makeAutoObservable({ genes: genes, weight: 0});
+    return s;
 }
 
 export function breed(parents: Specimen[], mutationAmount: number, geneFilter?: (g: GeneDef)=>boolean) {
@@ -28,7 +28,7 @@ export function breed(parents: Specimen[], mutationAmount: number, geneFilter?: 
     if (parents.length === 1) {
         const p = parents[0];
         const genes = mutateGenome(p.genes, mutationAmount, geneFilter);
-        return {genes: genes, weight: 0} as Specimen;
+        return makeAutoObservable({genes: genes, weight: 0}) as Specimen;
     } else {
         const p1 = parents[Math.floor(Math.random() * parents.length)];
         let p2 = parents[Math.floor(Math.random() * parents.length)];
@@ -46,7 +46,7 @@ export function breed(parents: Specimen[], mutationAmount: number, geneFilter?: 
                 genes.set(k, v);
             }
         });
-        return {genes: genes, weight: 0} as Specimen;
+        return makeAutoObservable({genes: genes, weight: 0}) as Specimen;
     }
 }
 

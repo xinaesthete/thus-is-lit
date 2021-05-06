@@ -87,6 +87,15 @@ export const useStyles = makeStyles((theme: Theme) =>
       justifyContent: 'center',
       padding: 0,
       objectFit: 'contain' //the element is larger than its container, so this doesn't work
+    },
+    kaleidComponent: {
+      width: '200px'
+    },
+    mutatorCell: {
+      margin: '0.2em'
+    },
+    mutatorGrid: {
+
     }
   }),
 );

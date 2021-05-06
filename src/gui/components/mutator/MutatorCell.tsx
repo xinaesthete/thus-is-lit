@@ -7,6 +7,7 @@ import KaleidComponent from '../kaleid_component';
 import { useStyles } from '@gui/theme';
 import { Specimen } from '@common/mutator';
 import { sendModel } from '@gui/gui_comms';
+import { observer } from 'mobx-react';
 
 /**
  * This should have a graphic representation of a particular parameter representation, 
@@ -14,7 +15,7 @@ import { sendModel } from '@gui/gui_comms';
  * @param props 
  * @returns 
  */
-export default function MutatorCell(props: {spec: Specimen}) {
+export default observer(function MutatorCell(props: {spec: Specimen}) {
     const classes = useStyles();
     //consider having a property for aspect ratio, 
     //such that these can properly reflect the shape of the renderer
@@ -26,13 +27,14 @@ export default function MutatorCell(props: {spec: Specimen}) {
         });
         sendModel(kaleidContext.model);
     });
+    //add a 'weight' representation
     return (
-        <GridListTile cols={1}>
+        <GridListTile cols={1} className={classes.mutatorCell}>
             <KaleidComponent {...props} />
             <GridListTileBar actionIcon={
-                <Button onClick={activate}>Pick Me!</Button>
+                <Button onClick={activate}>{props.spec.weight}</Button>
             }
             />
         </GridListTile>
     )
-}
+})
