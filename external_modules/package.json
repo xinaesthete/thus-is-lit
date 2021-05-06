@@ -2,12 +2,18 @@
   "name": "external_modules",
   "version": "1.0.0",
   "description": "When I make a release, I just want the node_modules from here (which are external in watch.js)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "chokidar": "^3.5.1",
     "express": "^4.17.1",
     "mediainfo.js": "^0.1.5"
+  },
+  "optionalDependencies": {
+    "fsevents": "^2.3.2"
   }
 }
