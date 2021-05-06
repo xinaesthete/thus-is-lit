@@ -1,5 +1,4 @@
 const { build } = require('esbuild');
-const liveServer = require('live-server');
 const chokidar = require('chokidar');
 
 ///XXX: if you get an error about esbuild install scripts in console,
@@ -74,8 +73,9 @@ async function watch(name, node=false) {
     //still haven't got live-reload working, should be good eventually...
     //handy to be able to see gui / renderer in browser and see how things work with basic server, but for interop we need our custom server.
     //might even consider putting most of this build logic into actual Electron script...
-    liveServer.start({
-        root: 'public',
-        open: false,
-    });
+    ///// server is express running in electron.
+    // liveServer.start({
+    //     root: 'public',
+    //     open: false,
+    // });
 })();
