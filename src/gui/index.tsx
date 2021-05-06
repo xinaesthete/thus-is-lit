@@ -44,7 +44,7 @@ const App = observer(function App() {
             </Tabs>
           </AppBar>
           <KaleidListProvider>
-            <Container className={classes.content}>
+            <Container className={classes.content} maxWidth={false}>
               <div role="tabpanel" >{el}</div>
             </Container>
           </KaleidListProvider>
