@@ -1,13 +1,11 @@
 import React from 'react'
 import MediaConfig from './media_config'
-import { Button, GridList, GridListTile, GridListTileBar, Typography } from '@material-ui/core'
+import { GridList, GridListTile, GridListTileBar } from '@material-ui/core'
 import { Pagination } from '@material-ui/lab'
 import { observer } from 'mobx-react'
 import mediaLib from '../medialib'
 import { useStyles } from '../theme'
-import { produce } from 'immer'
 import { useKaleidList } from '@gui/kaleid_context'
-import { VideoDescriptor } from '@common/media_model'
 
 interface VidAssignerProps {
     url: string;

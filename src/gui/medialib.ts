@@ -1,4 +1,4 @@
-import { computed, makeObservable } from "mobx";
+import { makeObservable } from "mobx";
 import { observable, action } from "mobx";
 import { httpURL } from "@common/constants";
 import { VideoDescriptor, AbstractImageDecriptor, IVideoDescriptor } from "@common/media_model";
@@ -41,9 +41,6 @@ class MediaLibrary {
         });
     }
     async getDescriptorAsync(url: string) {
-        //getting cached version is *not working*, maybe because no action/reaction is triggered?
-        //"Uncaught (in promise) Error: [MobX] Dynamic observable objects cannot be frozen"
-        //... in uniforms_gui handleSetImage, when calling immer produce()
         if (this.imageDescriptors.has(url)) return this.imageDescriptors.get(url);
         const res = await fetch(`${httpURL}/videoDescriptor/${url}`);
         const info: IVideoDescriptor = await res.json();

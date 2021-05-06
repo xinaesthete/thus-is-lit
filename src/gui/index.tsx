@@ -4,7 +4,6 @@ import {
 } from '@material-ui/core';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { enableMapSet } from 'immer'
 import { ThemeProvider } from '@material-ui/core/styles';
 import theme, { useStyles } from './theme'
 import DebugPanel from './components/debug/debug_panel';
@@ -13,8 +12,6 @@ import MediaBrowser from './components/media_browser';
 import RendererControl from './components/renderer_control'
 import { KaleidListProvider } from './kaleid_context';
 import { observer } from 'mobx-react';
-
-enableMapSet();
 
 enum AppTabs {
   Media, Renderer, Debug
