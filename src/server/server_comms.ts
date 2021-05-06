@@ -13,6 +13,7 @@ import * as media_server from './assets/media_server'
 import main_state, { getStateAsJsonString } from './main_state';
 import startWsServer from './ws_server';
 import { networkInterfaces } from 'os'
+import path from 'path'
 
 //technically, this could change if network interface changes while app is running.
 export const localExternalIP = (() => ([] as any[]).concat(...Object.values(networkInterfaces()))
@@ -39,7 +40,8 @@ expApp.get('/getJsonState', async (req, res) => {
     console.log(`GET /getJsonState`);
     res.send(await getStateAsJsonString());
 });
-
+const publicPath = path.resolve(__dirname, '../');
+console.log('publicPath: ' + publicPath);
 export function startServer() {
     console.log("initialising server_comms...");
     const server = expApp.listen(consts.host_port, () => {
@@ -47,5 +49,5 @@ export function startServer() {
     });
     startWsServer(server);
     initFileConfig();
-    expApp.use(express.static('public'));
+    expApp.use(express.static(publicPath));
 }
