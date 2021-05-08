@@ -25,6 +25,7 @@ export default observer(function MutatorCell(props: {spec: Specimen}) {
             t.value = p; //this should be better for not getting indices mixed up?
             //kaleid.tweakables[index].value = p;
         });
+        props.spec.active = true;
         sendModel(kaleidContext.model);
     });
     //add a 'weight' representation
@@ -32,7 +33,9 @@ export default observer(function MutatorCell(props: {spec: Specimen}) {
         <GridListTile cols={1} className={classes.mutatorCell}>
             <KaleidComponent {...props} />
             <GridListTileBar actionIcon={
-                <Button onClick={activate}>{props.spec.weight}</Button>
+                <Button onClick={activate} onMouseEnter={activate}
+                onMouseLeave={()=>props.spec.active=false}
+                >{props.spec.weight}</Button>
             }
             />
         </GridListTile>

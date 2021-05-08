@@ -5,13 +5,19 @@ import { makeAutoObservable } from 'mobx';
 import KaleidModel from './KaleidModel';
 import {MovementType, Numeric, Tweakable, vec2} from './tweakables'
 
-type GeneDef = Tweakable<Numeric>;
-type Genome = Map<GeneDef, Numeric>;
+export type GeneDef = Tweakable<Numeric>;
+export type Genome = Map<GeneDef, Numeric>;
 
 export interface Specimen {
     genes: Genome;
     /** high value = good. */
     weight: number;
+    active: boolean;
+}
+
+function specimen(genes: Genome) {
+    const s: Specimen = makeAutoObservable({ genes: genes, weight: 1, active: false});
+    return s;
 }
 
 export function baseSpecimen(model: KaleidModel) {
@@ -19,21 +25,20 @@ export function baseSpecimen(model: KaleidModel) {
     model.tweakables.forEach(t => {
         genes.set(t, t.value);
     });
-    const s: Specimen = makeAutoObservable({ genes: genes, weight: 0});
-    return s;
+    return specimen(genes);
 }
 
 export function breed(parents: Specimen[], mutationAmount: number, geneFilter?: (g: GeneDef)=>boolean) {
-    //const p = [...parents].sort((a, b) => a.weight - b.weight);
+    const p = [...parents].sort((a, b) => a.weight - b.weight);
     if (parents.length === 1) {
         const p = parents[0];
         const genes = mutateGenome(p.genes, mutationAmount, geneFilter);
-        return makeAutoObservable({genes: genes, weight: 0}) as Specimen;
+        return specimen(genes);
     } else {
-        const p1 = parents[Math.floor(Math.random() * parents.length)];
-        let p2 = parents[Math.floor(Math.random() * parents.length)];
+        const p1 = p[Math.floor(Math.random() * p.length)];
+        let p2 = p[Math.floor(Math.random() * p.length)];
         while (p2 === p1) {
-            p2 = parents[Math.floor(Math.random() * parents.length)];
+            p2 = p[Math.floor(Math.random() * p.length)];
         }
         const crossover = Math.floor(p1.genes.size * Math.random());
         let i = 0;
@@ -46,7 +51,7 @@ export function breed(parents: Specimen[], mutationAmount: number, geneFilter?: 
                 genes.set(k, v);
             }
         });
-        return makeAutoObservable({genes: genes, weight: 0}) as Specimen;
+        return specimen(genes);
     }
 }
 
