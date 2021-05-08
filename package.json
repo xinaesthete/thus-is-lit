@@ -4,10 +4,8 @@
   "description": "experimental multimedia environment",
   "main": "public/build/server.js",
   "dependencies": {
-    "dat.gui": "^0.7.7",
     "express": "^4.17.1",
-    "mediainfo.js": "^0.1.4",
-    "ws": "^7.4.1"
+    "mediainfo.js": "^0.1.4"
   },
   "devDependencies": {
     "@electron-forge/cli": "^6.0.0-beta.54",
@@ -25,6 +23,7 @@
     "@types/three": "^0.127.0",
     "@types/ws": "^7.4.0",
     "chokidar": "^3.4.3",
+    "dat.gui": "^0.7.7",
     "electron": "^12.0.2",
     "electron-rebuild": "^2.3.4",
     "electron-squirrel-startup": "^1.0.0",
@@ -39,7 +38,8 @@
     "socket.io-client": "^4.0.1",
     "source-map-support": "^0.5.19",
     "three": "^0.127.0",
-    "tslib": "^2.0.3"
+    "tslib": "^2.0.3",
+    "ws": "^7.4.1"
   },
   "scripts": {
     "launch": "electron .",
