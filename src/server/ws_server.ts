@@ -1,5 +1,5 @@
 import { Server } from 'http'
-import SocketIO from 'socket.io'
+import {Server as ioServer} from 'socket.io'
 import KaleidModel from "@common/KaleidModel";
 import { API } from "@common/socket_cmds";
 import { watchFragmentShader } from "./code_watch";
@@ -11,7 +11,7 @@ import { createRendererWindow } from './screen_config';
 export default function startWsServer(server: Server) {
     const {renderers, currentModels, playbackTimes, controllers} = {...main_state};
     
-    const wsServer = new SocketIO.Server(server);
+    const wsServer = new ioServer(server);
     
     watchFragmentShader((newCode) => {
         wsServer.emit('/fragCode', {code: newCode});

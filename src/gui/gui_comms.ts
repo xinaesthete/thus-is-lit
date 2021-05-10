@@ -3,7 +3,7 @@ import { httpURL } from '@common/constants'
 import KaleidModel, { KaleidContextType } from '@common/KaleidModel';
 import { API } from '@common/socket_cmds';
 import { FileConfigPrefs } from '@common/media_model';
-import KaleidRenderer from 'renderer/kaleid_renderer';
+import KaleidRenderer from '../renderer/kaleid_renderer';
 import { ParamValue, Tweakable } from '@common/tweakables';
 import { KaleidList } from './kaleid_context';
 import { action } from 'mobx';

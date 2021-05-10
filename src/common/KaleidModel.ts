@@ -6,7 +6,7 @@
 // reflection of that (serving also a guide to what generated).
 
 import { observable, makeObservable, autorun, reaction } from 'mobx'
-import VideoState from 'renderer/video_state';
+import VideoState from '../renderer/video_state';
 import { sendModel, sendParameterValue } from '../gui/gui_comms';
 import { AbstractImageDecriptor, ImageType } from "./media_model";
 import { MovementType, Numeric, Tweakable } from "./tweakables";

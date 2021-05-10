@@ -46,6 +46,7 @@
   "scripts": {
     "launch": "electron .",
     "watch": "node watch.js",
+    "vite_watch": "node watch.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "electron-forge start",
     "package": "electron-forge package",

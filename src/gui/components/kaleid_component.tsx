@@ -5,7 +5,7 @@ import { useKaleid } from '@gui/kaleid_context'
 import { useStyles } from '@gui/theme';
 import { observer } from 'mobx-react';
 import React from 'react'
-import KaleidRenderer from 'renderer/kaleid_renderer';
+import KaleidRenderer from '../../renderer/kaleid_renderer';
 
 export default observer(function KaleidComponent(props: { spec: Specimen }) {
     const classes = useStyles();
