@@ -118,7 +118,7 @@ export async function createRendererWindow() {
     //and use that to create sets of windows each on correct screens.
     //nb may go back to old organic-art method of making one big borderless window
     //spanning entire extended desktop
-    await window.loadURL(`${consts.httpURL}/renderer.html?id=${id}`);
+    await window.loadURL(`${consts.rendererURL}?id=${id}`);
     
     
     return promise;

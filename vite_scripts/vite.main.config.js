@@ -26,7 +26,7 @@ export default defineConfig({
   build: {
     sourcemap: 'inline',
     target: `node${node}`,
-    outDir: 'dist',
+    outDir: '../../public/build',
     assetsDir: '.',
     minify: process.env.MODE === 'development' ? false : 'terser',
     terserOptions: {
@@ -37,7 +37,7 @@ export default defineConfig({
       safari10: false,
     },
     lib: {
-      entry: '../server/index.tsx',
+      entry: './index.tsx',
       formats: ['cjs'],
     },
     rollupOptions: {
@@ -46,12 +46,13 @@ export default defineConfig({
         'electron-updater',
         'express',
         'fsevents',
+        'mediainfo.js',
         // 'socket.io', //https://github.com/socketio/socket.io/issues/3859
         'ws',
         ...builtinModules,
       ],
       output: {
-        entryFileNames: '[name].cjs',
+        entryFileNames: 'server.js',
       },
     },
     emptyOutDir: true,

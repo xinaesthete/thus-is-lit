@@ -20,9 +20,7 @@ function createGUIWindow() {
             nodeIntegration: false
         }
     });
-    //will this still work with build?
     window.loadURL(guiURL);
-    // window.loadURL(`file://${buildDir}/gui.html`);
     main_state.mainWindow = window;
 
     //really slow to quit when devtools is up?

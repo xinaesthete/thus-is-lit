@@ -11,6 +11,9 @@ import { ImageType } from '@common/media_model'
 
 const Vector2 = THREE.Vector2;
 
+console.log('----- frag.glsl: -----');
+console.log(fs);
+console.log('----- frag.glsl: -----');
 //const vid = new VideoState();
 
 //Note to self: adding 'threact?' comments where I need to consider design.

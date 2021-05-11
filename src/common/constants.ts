@@ -1,5 +1,6 @@
 /** port used by express server, may want to consider setting this differently */
-export const host_port = 8321;
+export const apiPort = 8321;
+export let httpPort = 3000; //hardocded for devServer
 //export const ws_port = 8322;
 
 // addresses of server API calls:
@@ -15,14 +16,18 @@ export const rendererStarted = "/rendererStarted";
 //XXXX_____ this 'constants' thing has been made tricky by node vs browser stuff...
 /// some ugliness below.
 console.log(globalThis.location?.host);
-export let addr = globalThis.location?.host;
+//// this worked before because of proxy...
+const host = globalThis.location?.host;
+export let addr = 'localhost:'+apiPort;// globalThis.location?.host;
 //Protocol-relative '//' URLs?
 export let websocketURL = `ws://${addr}`;
 export let httpURL = `http://${addr}`;
-export let guiURL = `http://${addr}/gui.html`;
-export function setAddr(v: string) { 
+export let guiURL = `http://${host}/index.html`; //gui.html`;
+export let rendererURL = `http://${host}/renderer.html`;
+export function setAddr(v: string, httpPort: number) { 
   addr = v;
-  websocketURL = `ws://${addr}`;
-  httpURL = `http://${addr}`;
-  guiURL = `http://${addr}/gui.html`;
+  websocketURL = `ws://${addr}:${apiPort}`;
+  httpURL = `http://${addr}:${apiPort}`;
+  guiURL = `http://${addr}:${httpPort}/index.html`; //gui.html`;
+  rendererURL = `http://${addr}:${httpPort}/renderer.html`;
 }////ungood

@@ -11,7 +11,12 @@ import { createRendererWindow } from './screen_config';
 export default function startWsServer(server: Server) {
     const {renderers, currentModels, playbackTimes, controllers} = {...main_state};
     
-    const wsServer = new ioServer(server);
+    const wsServer = new ioServer(server, {
+        cors: {
+            origin: '*',
+            methods: ['GET', 'POST'],
+        }
+    });
     
     watchFragmentShader((newCode) => {
         wsServer.emit('/fragCode', {code: newCode});

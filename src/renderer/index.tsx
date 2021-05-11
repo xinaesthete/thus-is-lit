@@ -31,3 +31,4 @@ window.onresize = () => {
     //camera.aspect = window.innerWidth / window.innerHeight;
     KRenderer.resize(renderer.domElement.getBoundingClientRect());
 };
+export default "exporting from /src/renderer/index so that src/gui/renderIndexShim has something to import...";

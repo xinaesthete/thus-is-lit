@@ -1,5 +1,5 @@
 import { io } from 'socket.io-client'
-import { httpURL } from '@common/constants'
+import { httpURL, websocketURL } from '@common/constants'
 import KaleidModel, { KaleidContextType } from '@common/KaleidModel';
 import { API } from '@common/socket_cmds';
 import { FileConfigPrefs } from '@common/media_model';
@@ -11,7 +11,7 @@ import { action } from 'mobx';
 //XXX::: NB. currently using somewhat arbitrary mix of REST & socket...
 /// --> moving more towards socket.
 
-const ws = io();//new WebSocket(websocketURL);
+const ws = io(websocketURL);//new WebSocket(websocketURL);
 
 //at the moment, all of our models are stored in an array
 //which is in component KaleidListProvider.

@@ -16,7 +16,7 @@
  * 
  */
 
-import { rendererStarted, httpURL } from "@common/constants";
+import { rendererStarted, httpURL, websocketURL } from "@common/constants";
 import KaleidModel from "@common/KaleidModel";
 import { API } from "@common/socket_cmds";
 import KaleidRenderer from "./kaleid_renderer";
@@ -26,7 +26,7 @@ import VideoState from "./video_state";
 import { io } from 'socket.io-client'
 import { ParamValue } from "@common/tweakables";
 
-let socket = io();// new WebSocket(websocketURL);
+let socket = io(websocketURL);// new WebSocket(websocketURL);
 
 async function setupWebSocket(model: KaleidModel) {
     //send a message so that our socket is associated with our ID on server.
