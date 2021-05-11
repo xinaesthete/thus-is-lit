@@ -9,7 +9,7 @@ import { dialog } from 'electron'
 import main_state from '../main_state';
 import { expApp } from '../server_comms';
 
-const currentVersion = require('../../../package.json').version;
+const currentVersion = require('../../package.json').version;
 console.log(`currentVersion: ` + currentVersion);
 let config: FileConfigPrefs;
 
