@@ -45,7 +45,7 @@ export default defineConfig({
         'electron',
         'electron-updater',
         'express',
-        'fsevents',
+        'chokidar',
         'mediainfo.js',
         // 'socket.io', //https://github.com/socketio/socket.io/issues/3859
         'ws',
