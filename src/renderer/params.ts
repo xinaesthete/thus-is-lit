@@ -1,4 +1,3 @@
-import * as dat from "dat.gui"
 import * as THREE from 'three'
 import {isNum, MovementType, Numeric, vec2, Tweakable, Uniforms, ParamValue} from '@common/tweakables'
 
@@ -80,18 +79,6 @@ function getLagger(v: Numeric, lagTime: number): Lagger<Numeric> {
 }
 
 
-const gui = new dat.GUI();
-//this gui should either not exist on renderer, or be hidden by default...
-gui.hide();
-let guiHidden = true;
-document.onkeypress = (ev) => {
-    if (ev.key === "/") {
-        if (guiHidden) gui.show();
-        else gui.hide();
-        guiHidden = !guiHidden;
-    }
-}
-
 export let paramState: ParamGroup;
 
 /** 
@@ -125,7 +112,6 @@ export class ParamGroup {
             if (typeof v === "number") {
                 const p = new ShaderParam(uniforms, s.name!, v, s.min, s.max);
                 parms.push(p);
-                gui.add(p.val, 'targVal', s.min, s.max, s.step).name(s.name!);
                 if (s.name === 'LagTime') {
                     //Should I make this observable (mobx?)
                     //probably don't need a special case here, but gotta start somewhere
@@ -137,8 +123,6 @@ export class ParamGroup {
                 //to be updated by the GUI, while the actual values passed to uniform will be encapsulated
                 const p = new ShaderParam(uniforms, s.name!, v, s.min, s.max);
                 parms.push(p);
-                gui.add(v, 'x', s.min, s.max, s.step).name(s.name + '.x');
-                gui.add(v, 'y', s.min, s.max, s.step).name(s.name + '.y');
             }
         });
     }
