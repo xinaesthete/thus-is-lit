@@ -2,7 +2,7 @@
   "name": "thus-is-lit",
   "version": "0.0.2",
   "description": "experimental multimedia environment",
-  "main": "public/build/server.js",
+  "main": "src/server/dist/index.cjs",
   "dependencies": {
     "express": "^4.17.1",
     "mediainfo.js": "^0.1.4"
@@ -41,12 +41,13 @@
     "three": "^0.127.0",
     "tslib": "^2.0.3",
     "vite": "^2.2.4",
+    "vite-plugin-string": "^1.0.1",
     "ws": "^7.4.1"
   },
   "scripts": {
     "launch": "electron .",
     "watch": "node watch.js",
-    "vite_watch": "node watch.js",
+    "vite_watch": "node vite_scripts/watch.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "electron-forge start",
     "package": "electron-forge package",

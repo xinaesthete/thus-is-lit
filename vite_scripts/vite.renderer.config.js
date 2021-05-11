@@ -5,6 +5,7 @@ import path from 'path';
 import { builtinModules } from 'module';
 import {defineConfig} from 'vite';
 import reactRefresh from '@vitejs/plugin-react-refresh';
+import vitePluginString from 'vite-plugin-string';
 import {loadAndSetEnv} from './loadAndSetEnv.mjs';
 
 const PACKAGE_ROOT = path.resolve(__dirname, '../src/gui');
@@ -14,7 +15,6 @@ const PACKAGE_ROOT = path.resolve(__dirname, '../src/gui');
  * Therefore, you must manually load and set the environment variables from the root directory above
  */
 loadAndSetEnv(process.env.MODE, process.cwd());
-
 
 /**
  * @see https://vitejs.dev/config/
@@ -27,7 +27,7 @@ export default defineConfig({
       '@common/': path.resolve(PACKAGE_ROOT, '../common') + '/',
     },
   },
-  plugins: [reactRefresh()],
+  plugins: [reactRefresh(), vitePluginString()],
   base: '',
   build: {
     sourcemap: true,
