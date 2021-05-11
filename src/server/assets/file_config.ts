@@ -1,5 +1,5 @@
 import { app } from 'electron'
-//import { version } from '../../../package.json' //why not working?
+import { version as currentVersion } from '../../../package.json' //seems ok now
 import * as os from 'os'
 import * as path from 'path'
 import * as fs from 'fs'
@@ -9,7 +9,6 @@ import { dialog } from 'electron'
 import main_state from '../main_state';
 import { expApp } from '../server_comms';
 
-const currentVersion = require('../../package.json').version;
 console.log(`currentVersion: ` + currentVersion);
 let config: FileConfigPrefs;
 
