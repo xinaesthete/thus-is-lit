@@ -20,7 +20,6 @@ export default defineConfig({
   root: PACKAGE_ROOT,
   resolve: {
     alias: {
-      '@gui/': PACKAGE_ROOT + '/',
       '@common/': join(PACKAGE_ROOT, '../common') + '/',
     },
   },
