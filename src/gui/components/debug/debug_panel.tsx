@@ -6,7 +6,7 @@ import { Typography } from '@material-ui/core';
 
 
 export default function DebugPanel() {
-    const url = guiURL;//`http://${location.host}/gui.html`; //ask for address of gui.html
+    const url = guiURL;
     //qrcode is a bit slow, maybe impacting more than thought?
     return (
         <>
