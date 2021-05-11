@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 const {loadEnv} = require('vite')
-
+//see cross-env ...
 /**
  * Load variables from `.env.[mode]` files in cwd
  * and set it to `process.env`
