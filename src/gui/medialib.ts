@@ -71,6 +71,10 @@ class MediaLibrary {
     }
 }
 
+const notNice = `${httpURL}/video/`.length;
+export const niceName = (v: string) => (v.length > notNice) ? decodeURI(v.substring(notNice)) : v;
+export const shortName = (v: string) => decodeURI(v.substring(v.lastIndexOf('/')));
+
 const mediaLib = new MediaLibrary();
 //// crude debugging to test video switching behaviour
 //// indicates that sendVideoChange is fine but other stuff with VideoDescriptor et al is not.
