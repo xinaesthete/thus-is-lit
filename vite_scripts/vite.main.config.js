@@ -26,7 +26,7 @@ export default defineConfig({
   build: {
     sourcemap: 'inline',
     target: `node${node}`,
-    outDir: '../../public/build',
+    outDir: '../../public/server',
     assetsDir: '.',
     minify: process.env.MODE === 'development' ? false : 'terser',
     terserOptions: {

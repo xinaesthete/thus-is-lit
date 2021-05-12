@@ -39,7 +39,7 @@ export default defineConfig({
     sourcemap: true,
     target: `chrome${chrome}`,
     polyfillDynamicImport: false,
-    outDir: 'dist', //pending review
+    outDir: '../../public/gui',
     assetsDir: '.',
     terserOptions: {
       ecma: 2020,
@@ -49,8 +49,12 @@ export default defineConfig({
       safari10: false,
     },
     rollupOptions: {
+      input: [
+        PACKAGE_ROOT + '/index.html', PACKAGE_ROOT + '/renderer.html'
+      ],
       external: [
         ...builtinModules,
+        'ws'
       ],
     },
     emptyOutDir: true,
