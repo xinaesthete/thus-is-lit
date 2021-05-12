@@ -80,6 +80,12 @@ export const useStyles = makeStyles((theme: Theme) =>
       justifyContent: 'center',
       alignItems: 'center'
     },
+    vidAssigner: {
+      position: 'absolute',
+      top: '0px',
+      right: '5px',
+      color: 'cyan'
+    },
     videoPreview: {
       display: 'flex',
       width: '100%',

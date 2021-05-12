@@ -6,6 +6,9 @@ import { observer } from 'mobx-react'
 import mediaLib from '../medialib'
 import { useStyles } from '../theme'
 import { useKaleidList } from '@gui/kaleid_context'
+import { sendVideoChange } from '@gui/gui_comms'
+import { VideoDescriptor } from '@common/media_model'
+import { action } from 'mobx'
 
 interface VidAssignerProps {
     url: string;
@@ -23,11 +26,17 @@ const VidAssigner = observer((props: VidAssignerProps) => {
     const { renderModels } = useKaleidList();
     const classes = useStyles();
     return (
-        <>
+        <div className={classes.vidAssigner}>
         {renderModels.map((m, i) => {
-            return <p key={i}>{m.model.id}</p>
+            //console.log(i);
+            return <p key={i} onClick={async () => {
+                //TODO: make a nice little notification thingy
+                sendVideoChange(props.url, m.model.id);
+                const desc = await mediaLib.getDescriptorAsync(props.url) as VideoDescriptor;
+                action(()=>m.model.imageSource = desc);
+            }}>{m.model.id}</p>
         })}
-        </>
+        </div>
     )
 });
 
@@ -48,7 +57,7 @@ const VideoTileInner = ({...props}) => {
                     setTime(t);
                 }}
             />
-            {/* <VidAssigner url={url} /> */}
+            <VidAssigner url={url} />
             <GridListTileBar title={name}/>
         </>
     )
@@ -57,8 +66,8 @@ const VideoTileInner = ({...props}) => {
 
 export default observer(function MediaBrowser() {
     const classes = useStyles();
-    const maxItems = 4*3;
-    const availableVideos = mediaLib.availableVideos;
+    const maxItems = 4*6;
+    const availableVideos = mediaLib.filteredVideos;
     const pageCount = Math.floor(availableVideos.length / maxItems);
     const [page, setPage] = React.useState(0);
     

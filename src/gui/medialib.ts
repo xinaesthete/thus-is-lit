@@ -1,4 +1,4 @@
-import { makeObservable } from "mobx";
+import { computed, makeObservable } from "mobx";
 import { observable, action } from "mobx";
 import { httpURL } from "@common/constants";
 import { VideoDescriptor, AbstractImageDecriptor, IVideoDescriptor } from "@common/media_model";
@@ -8,7 +8,7 @@ class MediaLibrary {
     mainAssetPath: string = "";
     availableVideos: string[] = ['red.mp4'];
     imageDescriptors = new Map<string, AbstractImageDecriptor>();
-
+    filter: (v: string)=>boolean = (v) => true;
     constructor() {
         makeObservable(this, {
             //somewhat prefer @decorator style, but it's warned against currently
@@ -18,8 +18,11 @@ class MediaLibrary {
             //hmmm. maybe I'm making life hard for myself.
             availableVideos: observable,
             imageDescriptors: observable,
+            filter: observable,
+            filteredVideos: computed,
             setMainAssetPath: action,
             setAvailableVideos: action,
+            stringFilter: action,
             setDescriptorForAsset: action
         });
         API.requestFileConfigPrefs().then(c => {
@@ -58,6 +61,13 @@ class MediaLibrary {
         //also incorrect to keep old keys around that could end up colliding with the new ones
         //but also nice to keep the cache, and in any case we want to change things up a bit
         //in terms of having more than one asset path, supporting other types of image...
+    }
+    get filteredVideos() {
+        return this.availableVideos.filter(this.filter);
+    }
+    stringFilter(val: string) {
+        const lval = val.toLowerCase();
+        this.filter = (test) => test.toLowerCase().includes(lval);
     }
 }
 

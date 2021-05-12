@@ -68,6 +68,7 @@ const MediaConfig = observer( function MediaConfig() {
           </Button>
         </DialogActions>
       </Dialog>
+      <TextField label="filter" onChange={(e) => mediaLib.stringFilter(e.target.value)} />
     </div>
   );
 });
