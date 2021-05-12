@@ -4,6 +4,9 @@ const chokidar = require('chokidar');
 ///XXX: if you get an error about esbuild install scripts in console,
 //run 'node node_modules/esbuild/install.js'...
 
+const watchChanges = process.argv[2] === "watch";
+console.log('watchChanges ' + watchChanges);
+//console.log(process.argv[2]);
 // assuming that THREE is a global object,
 // makes any imported reference to three proxy to that instead.
 const threeShim = Object.keys(require("three")).map(k => `export const ${k} = window.THREE.${k}`).join('\n');
@@ -25,7 +28,7 @@ const externaliseThreePlugin = {
 }
 
 
-async function watch(name, node=false) {
+async function startBuild(name, node=false) {
     console.log(`[${new Date()}] building ${name}, node=${node}`);
     // TODO: log errors / warnings / stats.
     const builder = await build({
@@ -50,27 +53,29 @@ async function watch(name, node=false) {
         },
         tsconfig: './tsconfig.json',
         logLevel: 'warning',
-        incremental: true,
+        incremental: watchChanges,
         loader: { '.glsl': 'text' }
     });
     //nb, now using renderer code in gui, so just watching all src
     //in a way it'd make sense to make those files 'common'
-    chokidar.watch([`src/**/*`], {ignoreInitial: true}).on('all', () => {
-        console.log(`[${new Date()}] rebuilding ${name}`);
-        try {
-            builder.rebuild();
-        } catch (error) {
-            //note: we get UnhandledPromiseRejectionWarning from node when there's an error,
-            //and trying to catch here does nothing AFAICT.
-            console.log(`caught error '${error}' while rebuilding ${name}`);
-        }
-    });
+    if (watchChanges) {
+        chokidar.watch([`src/**/*`], {ignoreInitial: true}).on('all', () => {
+            console.log(`[${new Date()}] rebuilding ${name}`);
+            try {
+                builder.rebuild();
+            } catch (error) {
+                //note: we get UnhandledPromiseRejectionWarning from node when there's an error,
+                //and trying to catch here does nothing AFAICT.
+                console.log(`caught error '${error}' while rebuilding ${name}`);
+            }
+        });
+    }
 }
 (async () => {
     //seems like it'd be pretty easy to add something so this script could be watched / watch itself...
-    watch('renderer');
-    watch('gui');
-    watch('server', true);
+    startBuild('renderer');
+    startBuild('gui');
+    startBuild('server', true);
     //still haven't got live-reload working, should be good eventually...
     //handy to be able to see gui / renderer in browser and see how things work with basic server, but for interop we need our custom server.
     //might even consider putting most of this build logic into actual Electron script...

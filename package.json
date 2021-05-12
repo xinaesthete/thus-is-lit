@@ -47,12 +47,13 @@
   },
   "scripts": {
     "launch": "electron .",
-    "watch": "node watch.js",
-    "vite_watch": "node vite_scripts/watch.js",
-    "vite_build": "node vite_scripts/build.js",
+    "eswatch": "node run_esbuild.js watch",
+    "esbuild": "node run_esbuild.js",
+    "dev": "node vite_scripts/watch.js",
+    "vite_build_unused": "node vite_scripts/build.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "electron-forge start",
-    "package": "npm run vite_build && electron-forge package",
+    "package": "npm run esbuild && electron-forge package",
     "make": "electron-forge make"
   },
   "keywords": [],
