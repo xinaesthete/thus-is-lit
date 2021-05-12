@@ -41,7 +41,7 @@ export function useFullscreen() {
 //it may still be cleaner to have some of the housekeeping of open renderers etc in another module.
 type RendererInitCompletionHandler = (v: KaleidModel)=>void;
 const pendingRenderInits = new Map<number, RendererInitCompletionHandler>();
-let nextRendererID = 0;
+let nextRendererID = 1;
 
 export function addRestAPI(expApp: express.Application) {
     //sent by renderer as it initialises
