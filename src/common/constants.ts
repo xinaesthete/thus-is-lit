@@ -13,18 +13,18 @@ export const rendererStarted = "/rendererStarted";
 //export const getConfigPrefs = "/getConfigPrefs";
 //TODO SSL.
 
-//XXXX_____ this 'constants' thing has been made tricky by node vs browser stuff...
 /// some ugliness below.
-console.log(globalThis.location?.host);
+console.log('location.host: ' + globalThis.location?.host);
 //// this worked before because of proxy...
 const host = globalThis.location?.host;
-export let addr = 'localhost:'+apiPort;// globalThis.location?.host;
+export let addr = `${globalThis.location?.hostname}:${apiPort}`;
 //Protocol-relative '//' URLs?
 export let websocketURL = `ws://${addr}`;
 export let httpURL = `http://${addr}`;
 export let guiURL = `http://${host}/index.html`; //gui.html`;
 export let rendererURL = `http://${host}/renderer.html`;
-export function setAddr(v: string, httpPort: number) { 
+export function setAddr(v: string, devMode: boolean) {
+  httpPort = devMode ? httpPort : apiPort;
   addr = v;
   websocketURL = `ws://${addr}:${apiPort}`;
   httpURL = `http://${addr}:${apiPort}`;

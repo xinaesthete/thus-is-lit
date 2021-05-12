@@ -25,7 +25,7 @@ export const localExternalIP = (() => ([] as any[]).concat(...Object.values(netw
 //need to decide how to get in here - simpler ways with vite config.
 //would be better not to hard-code devServer port.
 const devMode = true;//import.meta.env.MODE
-consts.setAddr(localExternalIP, devMode ? 3000 : consts.apiPort); //ugh
+consts.setAddr(localExternalIP, devMode); //ugh
 
 export const expApp = express();
 expApp.use(express.urlencoded({extended: false}));//...
