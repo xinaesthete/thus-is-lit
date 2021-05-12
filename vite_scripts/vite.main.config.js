@@ -1,7 +1,7 @@
 import {node} from './electron-vendors.config.json';
 import path, {join} from 'path';
 import { builtinModules } from 'module';
-
+// import visualizer from 'rollup-plugin-visualizer';
 import {defineConfig} from 'vite';
 import {loadAndSetEnv} from './loadAndSetEnv.mjs';
 
@@ -51,6 +51,7 @@ export default defineConfig({
         'ws',
         ...builtinModules,
       ],
+      // plugins: [ visualizer({ open: true }) ],
       output: {
         entryFileNames: 'server.js',
       },
