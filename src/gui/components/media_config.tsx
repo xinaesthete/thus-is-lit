@@ -12,11 +12,13 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import mediaLib from '../medialib'
 import { observer } from 'mobx-react'
 import { requestFileDialog } from '../gui_comms';
+import { useStyles } from '@gui/theme';
 
 const MediaConfig = observer( function MediaConfig() {
   const [open, setOpen] = React.useState(false);
   //keep state of path local, so if we cancel it doesn't change anything.
   const [path, setPath] = React.useState(mediaLib.mainAssetPath!);
+  const classes = useStyles();
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -39,7 +41,7 @@ const MediaConfig = observer( function MediaConfig() {
   }
 
   return (
-    <div>
+    <div className={classes.mediaConfigHeader}>
       <IconButton aria-label="media-config" onClick={handleClickOpen} ><SettingsIcon /></IconButton>
       <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
         <DialogTitle id="form-dialog-title">Where are your files?</DialogTitle>

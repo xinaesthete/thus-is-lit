@@ -69,6 +69,9 @@ export const useStyles = makeStyles((theme: Theme) =>
     vidCtrlButton: {
       margin: theme.spacing(1)
     },
+    mediaConfigHeader: {
+      paddingBottom: theme.spacing(3)
+    },
     videoGridList: {
     },
     videoTile: {
