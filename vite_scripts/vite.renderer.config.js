@@ -7,7 +7,7 @@ import {defineConfig} from 'vite';
 import reactRefresh from '@vitejs/plugin-react-refresh';
 import vitePluginString from 'vite-plugin-string';
 import {loadAndSetEnv} from './loadAndSetEnv.mjs';
-import visualizer from 'rollup-plugin-visualizer';
+// import visualizer from 'rollup-plugin-visualizer';
 
 const PACKAGE_ROOT = path.resolve(__dirname, '../src/gui');
 //const commonRoot = 
@@ -53,7 +53,7 @@ export default defineConfig({
       input: [
         PACKAGE_ROOT + '/index.html', PACKAGE_ROOT + '/renderer.html'
       ],
-      plugins: [visualizer({open: true, filename: 'renderer_stats.html'})],
+      // plugins: [visualizer({open: true, filename: 'renderer_stats.html'})],
       external: [
         ...builtinModules,
         'ws'
