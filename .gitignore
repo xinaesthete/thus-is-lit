@@ -1,7 +1,10 @@
 node_modules/
 
-public/build/
+public/esbuild/
 public/gui/
 public/server/
 out/
 dist/
+
+# vite
+.local
