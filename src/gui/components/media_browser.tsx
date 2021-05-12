@@ -49,7 +49,7 @@ const VideoTileInner = ({...props}) => {
                 }}
             />
             {/* <VidAssigner url={url} /> */}
-            <GridListTileBar title={name} subtitle={t}/>
+            <GridListTileBar title={name}/>
         </>
     )
 }
