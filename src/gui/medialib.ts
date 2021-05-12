@@ -63,10 +63,13 @@ class MediaLibrary {
         //in terms of having more than one asset path, supporting other types of image...
     }
     get filteredVideos() {
-        return this.availableVideos.filter(this.filter);
+        const list = this.availableVideos.filter(this.filter);
+        console.log(`${list.length} filteredVidoes`);
+        return list;
     }
     stringFilter(val: string) {
         const lval = val.toLowerCase();
+        console.log(`[medialib] stringFilter: ${val}`);
         this.filter = (test) => test.toLowerCase().includes(lval);
     }
 }
