@@ -3,6 +3,7 @@ import JsonView from './json_view'
 import QRCode from 'react-qr-code'
 import { guiURL } from '@common/constants';
 import { Typography } from '@material-ui/core';
+import ConnectionStatus from './connection_status';
 
 
 export default function DebugPanel() {
@@ -10,6 +11,7 @@ export default function DebugPanel() {
     //qrcode is a bit slow, maybe impacting more than thought?
     return (
         <>
+        <ConnectionStatus />
         <JsonView />
         <br />
         <Typography>{url}</Typography>

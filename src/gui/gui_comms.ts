@@ -6,7 +6,7 @@ import { FileConfigPrefs } from '@common/media_model';
 import KaleidRenderer from '../renderer/kaleid_renderer';
 import { ParamValue, Tweakable } from '@common/tweakables';
 import { KaleidList } from './kaleid_context';
-import { action } from 'mobx';
+import { action, computed, makeObservable } from 'mobx';
 
 //XXX::: NB. currently using somewhat arbitrary mix of REST & socket...
 /// --> moving more towards socket.
@@ -146,3 +146,16 @@ export function sendParameterValue(parm: Tweakable<any>, modelId: number) {
 export function sendVideoChange(url: string, modelId: number) {
     ws.emit(API.SetVideoFilename, {url: url, modelId: modelId});
 }
+
+
+/////
+///// Connection status
+/////
+
+export const ConnectionStatus = makeObservable({
+    get websocketConnected() {
+        return ws.connected;
+    }
+}, {
+    'websocketConnected': computed
+});
