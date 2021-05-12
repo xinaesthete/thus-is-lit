@@ -70,8 +70,8 @@ const setupMainPackageWatcher = (viteDevServer) => {
         spawnProcess.kill('SIGINT');
         spawnProcess = null;
       }
-
-      spawnProcess = spawn(String(electronPath), ['.']);
+      //make it choose a different main than listed in package.json
+      spawnProcess = spawn(String(electronPath), ['./public/server/server.js']);
 
       spawnProcess.stdout.on('data', d => d.toString().trim() && logger.warn(d.toString(), {timestamp: true}));
       spawnProcess.stderr.on('data', d => d.toString().trim() && logger.error(d.toString(), {timestamp: true}));
