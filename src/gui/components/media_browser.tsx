@@ -1,6 +1,6 @@
 import React from 'react'
 import MediaConfig from './media_config'
-import { GridList, GridListTile, GridListTileBar } from '@material-ui/core'
+import { GridList, GridListTile, GridListTileBar, Button } from '@material-ui/core'
 import { Pagination } from '@material-ui/lab'
 import { observer } from 'mobx-react'
 import mediaLib, { shortName } from '../medialib'
@@ -32,13 +32,13 @@ const VidAssigner = observer((props: VidAssignerProps) => {
         <div className={classes.vidAssigner}>
         {renderModels.map((m, i) => {
             //console.log(i);
-            return <p key={i} onClick={async () => {
+            return <Button key={i} onClick={async () => {
                 logger.log(`${shortName(url)} -> #${m.model.id}`);
                 //TODO change the interface so this is *fast* (and more consistent)
                 sendVideoChange(url, m.model.id);
                 const desc = await mediaLib.getDescriptorAsync(url) as VideoDescriptor;
                 action(()=>m.model.imageSource = desc);
-            }}>{m.model.id}</p>
+            }}>{m.model.id}</Button>
         })}
         </div>
     )
