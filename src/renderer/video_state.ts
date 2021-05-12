@@ -15,6 +15,7 @@ export default class VideoState {
         //XXX: I should remove vidEl when appropriate as well...
         //maybe deal with this differently in React vs not.
         this.vidEl = document.createElement('video');
+        this.vidEl.crossOrigin = "anonymous";
         this.vidEl.style.display = 'none';
         this.vidEl.loop = true;
         this.vidEl.autoplay = true;
