@@ -2,7 +2,7 @@
   "name": "thus-is-lit",
   "version": "0.0.2",
   "description": "experimental multimedia environment",
-  "main": "public/server/server.js",
+  "main": "public/esbuild/server.js",
   "dependencies": {
     "chokidar": "^3.5.1",
     "express": "^4.17.1",
@@ -52,9 +52,8 @@
     "vite_build": "node vite_scripts/build.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "electron-forge start",
-    "package": "electron-forge package",
-    "make": "electron-forge make",
-    "_postinstall": "node node_modules/esbuild/install.js"
+    "package": "npm run vite_build && electron-forge package",
+    "make": "electron-forge make"
   },
   "keywords": [],
   "author": "Peter Todd",

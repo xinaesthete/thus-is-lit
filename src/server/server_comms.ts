@@ -21,10 +21,14 @@ export const localExternalIP = (() => ([] as any[]).concat(...Object.values(netw
   .filter(details => details.family === 'IPv4' && !details.internal)
   .shift().address)();
 
-//in vite-electron-test import.meta.env has all environment variables...
+////https://vitejs.dev/guide/env-and-mode.html
+//TODO: better use of env.
 //need to decide how to get in here - simpler ways with vite config.
 //would be better not to hard-code devServer port.
-const devMode = true;//import.meta.env.MODE
+//and also be a bit more proper about some
+const devMode: boolean = (import.meta as any).env?.DEV || false;
+console.log('--- DEV : ' + devMode);
+
 consts.setAddr(localExternalIP, devMode); //ugh
 
 export const expApp = express();
@@ -46,9 +50,6 @@ expApp.get('/getJsonState', async (req, res) => {
     res.send(await getStateAsJsonString());
 });
 
-///check...
-const publicPath = path.resolve(__dirname, '../');
-console.log('publicPath: ' + publicPath);
 export function startServer() {
     console.log("initialising server_comms...");
     const server = expApp.listen(consts.apiPort, () => {
@@ -56,5 +57,11 @@ export function startServer() {
     });
     startWsServer(server);
     initFileConfig();
-    if (!devMode) expApp.use(express.static(publicPath));
+    if (!devMode) {
+        ///nb::: using esbuild & serving from '/public'
+        //some irregularity with vite_build (WHICH WE DON'T USE AT TIME OF WRITING).
+        const staticPath = path.resolve(__dirname, '../');
+        console.log('staticPath: ' + staticPath);
+        expApp.use(express.static(staticPath));
+    }
 }

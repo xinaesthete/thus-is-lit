@@ -12,7 +12,7 @@ import { AbstractImageDecriptor } from '@common/media_model'
 import { useStyles } from '../theme'
 import AbstractImageController from './video/abstract_image_controller'
 import { observer } from 'mobx-react'
-import { action, trace } from 'mobx'
+import { action } from 'mobx'
 import MutatorGrid from './mutator/MutatorGrid'
 import { useKaleid } from '@gui/kaleid_context'
 import { sendParameterValue } from '@gui/gui_comms'
@@ -121,7 +121,7 @@ const KaleidGUI = observer(() => {
     const classes = useStyles();
     const kaleidContext = useKaleid();
     const k = kaleidContext;
-    trace(); //we *do* keep hitting reaction to top level of model changing, although we *don't* see this re-render.
+    //trace(); //we *do* keep hitting reaction to top level of model changing, although we *don't* see this re-render.
     // const deps = getDependencyTree(k.model, 'tweakables');
     // console.log(JSON.stringify(deps, null, 2));
     // const obs = getObserverTree(k.model, 'tweakables');
