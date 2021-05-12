@@ -50,7 +50,7 @@
     "eswatch": "node run_esbuild.js watch",
     "esbuild": "node run_esbuild.js",
     "dev": "node vite_scripts/watch.js",
-    "vite_build_unused": "node vite_scripts/build.js",
+    "vite_build_visualizer": "node vite_scripts/build.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "electron-forge start",
     "package": "npm run esbuild && electron-forge package",
