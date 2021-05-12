@@ -36,16 +36,17 @@ async function watch(name, node=false) {
         external: ["electron", "fsevents", "express", "mediainfo.js"],
         plugins: [externaliseThreePlugin], //this is not a keeper... but...
         entryPoints: [`./src/${name}/index.tsx`],
-        outfile: `./public/build/${name}.js`, //putting build artefacts here, adding to .gitignore and removing old file.
+        outfile: `./public/esbuild/${name}.js`, //putting build artefacts here, adding to .gitignore and removing old file.
         //could do something like `git rm --cached `git ls-files -i -X .gitignore`` but I still want other files in public
         //and maintaining list of names in gitignore sounds fiddly.
         ///--- need to clarify what's going on with css ---
         
-        // minify: true,
+        minify: true,
         bundle: true,
         sourcemap: true,
         define: {
-            "process.env.NODE_ENV": '"development"'
+            "process.env.NODE_ENV": '"production"',
+            "import.meta.env.DEV": 'false' //vite-like
         },
         tsconfig: './tsconfig.json',
         logLevel: 'warning',
