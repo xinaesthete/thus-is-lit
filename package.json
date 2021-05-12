@@ -30,6 +30,7 @@
     "electron-rebuild": "^2.3.4",
     "electron-squirrel-startup": "^1.0.0",
     "esbuild": "^0.8.23",
+    "fuse.js": "^6.4.6",
     "mobx": "^6.0.4",
     "mobx-react": "^7.0.5",
     "react": "^17.0.1",

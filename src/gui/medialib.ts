@@ -1,6 +1,7 @@
 import { computed, makeObservable } from "mobx";
 import { observable, action } from "mobx";
 import { httpURL } from "@common/constants";
+import Fuse from 'fuse.js';
 import { VideoDescriptor, AbstractImageDecriptor, IVideoDescriptor } from "@common/media_model";
 import * as API from "./gui_comms";
 
@@ -9,6 +10,8 @@ class MediaLibrary {
     availableVideos: string[] = ['red.mp4'];
     imageDescriptors = new Map<string, AbstractImageDecriptor>();
     filter: (v: string)=>boolean = (v) => true;
+    filterString: string = '';
+    fuse: Fuse<string>;
     constructor() {
         makeObservable(this, {
             //somewhat prefer @decorator style, but it's warned against currently
@@ -18,6 +21,7 @@ class MediaLibrary {
             //hmmm. maybe I'm making life hard for myself.
             availableVideos: observable,
             imageDescriptors: observable,
+            filterString: observable,
             filter: observable,
             filteredVideos: computed,
             setMainAssetPath: action,
@@ -25,9 +29,10 @@ class MediaLibrary {
             stringFilter: action,
             setDescriptorForAsset: action
         });
+        this.fuse = new Fuse(this.availableVideos);
         API.requestFileConfigPrefs().then(c => {
             this.setMainAssetPath(c.mainAssetPath!);
-        })
+        });
     }
     setMainAssetPath(newPath: string) {
         const oldPath = this.mainAssetPath;
@@ -57,20 +62,26 @@ class MediaLibrary {
     }
     setAvailableVideos(newVids: string[]) {
         this.availableVideos = newVids;
+        this.fuse = new Fuse(newVids, {ignoreLocation: true});
         //nb what about imageDescriptors? should we clear the old ones? liable to leak, 
         //also incorrect to keep old keys around that could end up colliding with the new ones
         //but also nice to keep the cache, and in any case we want to change things up a bit
         //in terms of having more than one asset path, supporting other types of image...
     }
     get filteredVideos() {
-        const list = this.availableVideos.filter(this.filter);
-        console.log(`${list.length} filteredVidoes`);
-        return list;
+        if (this.filterString.length === 0) return this.availableVideos;
+        const list = this.fuse.search(this.filterString);
+        console.log(`${list.length} filteredVideos`);
+        return list.map(r => r.item);
+        // const list = this.availableVideos.filter(this.filter);
+        // console.log(`${list.length} filteredVidoes`);
+        // return list;
     }
     stringFilter(val: string) {
         const lval = val.toLowerCase();
-        console.log(`[medialib] stringFilter: ${val}`);
-        this.filter = (test) => test.toLowerCase().includes(lval);
+        console.log(`[medialib] filterString: ${val}`);
+        this.filterString = val;
+        // this.filter = (test) => test.toLowerCase().includes(lval);
     }
 }
 
