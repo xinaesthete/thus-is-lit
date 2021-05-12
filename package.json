@@ -54,7 +54,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "electron-forge start",
     "package": "npm run esbuild && electron-forge package",
-    "make": "electron-forge make"
+    "make": "npm run esbuild electron-forge make"
   },
   "keywords": [],
   "author": "Peter Todd",
