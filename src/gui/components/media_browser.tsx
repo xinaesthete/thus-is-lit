@@ -3,12 +3,13 @@ import MediaConfig from './media_config'
 import { GridList, GridListTile, GridListTileBar } from '@material-ui/core'
 import { Pagination } from '@material-ui/lab'
 import { observer } from 'mobx-react'
-import mediaLib from '../medialib'
+import mediaLib, { shortName } from '../medialib'
 import { useStyles } from '../theme'
 import { useKaleidList } from '@gui/kaleid_context'
 import { sendVideoChange } from '@gui/gui_comms'
 import { VideoDescriptor } from '@common/media_model'
 import { action } from 'mobx'
+import { useLogGui } from './log_gui'
 
 interface VidAssignerProps {
     url: string;
@@ -23,16 +24,19 @@ const useVidSource = (url: string) => {
 const VidAssigner = observer((props: VidAssignerProps) => {
     //context with list of renderers, such that we can add 'assign to renderer' buttons here.
     //may also consider keystrokes.
+    const { url } = props;
     const { renderModels } = useKaleidList();
+    const logger = useLogGui();
     const classes = useStyles();
     return (
         <div className={classes.vidAssigner}>
         {renderModels.map((m, i) => {
             //console.log(i);
             return <p key={i} onClick={async () => {
-                //TODO: make a nice little notification thingy
-                sendVideoChange(props.url, m.model.id);
-                const desc = await mediaLib.getDescriptorAsync(props.url) as VideoDescriptor;
+                logger.log(`${shortName(url)} -> #${m.model.id}`);
+                //TODO change the interface so this is *fast* (and more consistent)
+                sendVideoChange(url, m.model.id);
+                const desc = await mediaLib.getDescriptorAsync(url) as VideoDescriptor;
                 action(()=>m.model.imageSource = desc);
             }}>{m.model.id}</p>
         })}

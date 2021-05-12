@@ -12,6 +12,7 @@ import MediaBrowser from './components/media_browser';
 import RendererControl from './components/renderer_control'
 import { KaleidListProvider } from './kaleid_context';
 import { observer } from 'mobx-react';
+import { LogGuiProvider } from './components/log_gui';
 
 enum AppTabs {
   Media, Renderer, Debug
@@ -43,11 +44,13 @@ const App = observer(function App() {
               <Tab label="debug" />
             </Tabs>
           </AppBar>
-          <KaleidListProvider>
-            <Container className={classes.content} maxWidth={false}>
-              <div role="tabpanel" >{el}</div>
-            </Container>
-          </KaleidListProvider>
+          <LogGuiProvider>
+            <KaleidListProvider>
+              <Container className={classes.content} maxWidth={false}>
+                <div role="tabpanel" >{el}</div>
+              </Container>
+            </KaleidListProvider>
+          </LogGuiProvider>
         </div>
       </ThemeProvider>
     </>
