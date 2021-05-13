@@ -21,8 +21,6 @@ const QR: React.FC<{url: string, name: string}> = ({...props}) => {
 };
 
 export default function DebugPanel() {
-    const url = guiURL;
-    //qrcode is a bit slow, maybe impacting more than thought?
     return (
         <>
         <ConnectionStatus />
