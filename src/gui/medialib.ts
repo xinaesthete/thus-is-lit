@@ -14,11 +14,7 @@ class MediaLibrary {
     fuse: Fuse<string>;
     constructor() {
         makeObservable(this, {
-            //somewhat prefer @decorator style, but it's warned against currently
             mainAssetPath: observable,
-            //really, this should be 'computed' as an async result of changing mainAssetPath
-            //but this is not a simple case for mobx... 'computed-async-mobx' requires older mobx...
-            //hmmm. maybe I'm making life hard for myself.
             availableVideos: observable,
             imageDescriptors: observable,
             filterString: observable,
@@ -87,7 +83,7 @@ class MediaLibrary {
 
 const notNice = `${httpURL}/video/`.length;
 export const niceName = (v: string) => (v.length > notNice) ? decodeURI(v.substring(notNice)) : v;
-export const shortName = (v: string) => decodeURI(v.substring(v.lastIndexOf('/')));
+export const shortName = (v: string) => decodeURI(v.substring(v.lastIndexOf('/')+1));
 
 const mediaLib = new MediaLibrary();
 //// crude debugging to test video switching behaviour

@@ -46,7 +46,7 @@ const VidAssigner = observer((props: VidAssignerProps) => {
 
 const VideoTileInner = ({...props}) => {
     const { url } = props;
-    const name = React.useMemo(()=>decodeURI(url.replace(/.*video\//, '')).split(/[\\/]/).reverse()[0], [url]);
+    const name = React.useMemo(()=>shortName(url), [url]);
     const classes = useStyles();
     const [t, setTime] = React.useState(0);
     
