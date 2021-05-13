@@ -39,6 +39,7 @@ async function setupWebSocket(model: KaleidModel) {
 
 const params = new URLSearchParams(location.search);
 //nb, remembering that if we have more than one model in a JS context, we need to revise this scope.
+///---> at the moment, renderer_comms is only used in 'renderer.html' where there is 1 model.
 const id = params.has("id") ? Number.parseInt(params.get("id")!) : -1;
 document.title = "this is renderer " + id;
 let vidState: VideoState;
