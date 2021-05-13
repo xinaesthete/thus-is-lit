@@ -1,7 +1,7 @@
 import React from 'react'
 import JsonView from './json_view'
 import QRCode from 'react-qr-code'
-import { guiURL, rendererURL } from '@common/constants';
+import { guiURL, rendererApiURL } from '@common/constants';
 import { Typography } from '@material-ui/core';
 import ConnectionStatus from './connection_status';
 
@@ -29,7 +29,7 @@ export default function DebugPanel() {
         <JsonView />
         <br />
         <QR url={guiURL} name='GUI' />
-        <QR url={rendererURL} name='renderer' />
+        <QR url={rendererApiURL} name='renderer' />
         </>
     )
 }

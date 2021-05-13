@@ -4,6 +4,7 @@ import * as os from 'os'
 import KaleidModel from '@common/KaleidModel';
 import * as consts from '@common/constants'
 import main_state from './main_state';
+import { API } from '@common/socket_cmds';
 
 let displays: Electron.Display[];
 
@@ -53,7 +54,6 @@ type RendererInitCompletionHandler = (v: KaleidModel)=>void;
 const pendingRenderInits = new Map<number, RendererInitCompletionHandler>();
 let nextRendererID = 1;
 
-//Do I even want this as a REST API?
 export function addRestAPI(expApp: express.Application) {
     //sent by renderer as it initialises
     expApp.post(consts.rendererStarted, (req, res) => {
@@ -80,10 +80,21 @@ export function addRestAPI(expApp: express.Application) {
         }
         res.send();
     });
+    expApp.get(API.RequestNewRenderer, (req, res) => {
+        // serve ... with additional args...
+        const id = nextRendererID++;
+        //const vidUrl = TBD;
+        establishRenderComms(id).then(()=>{
+            console.log(`GET renderer ${id} comms established`);
+        });
+        const url = consts.rendererURL + `?id=${id}`
+        console.log(`GET ${API.RequestNewRenderer} redirecting to '${url}'`);
+        res.redirect(url);
+    });
 }
 
 export async function createRendererWindow(vidUrl?: string) {
-    let id = nextRendererID++;
+    const id = nextRendererID++;
     //TODO: configure based on saved setup etc.
     //relay info about available screens back to gui.
     const screen = getNextScreen(); //TODO: review auto screen-assignment
@@ -112,7 +123,21 @@ export async function createRendererWindow(vidUrl?: string) {
     //renderer will be responsible for sending us a '/rendererStarted' request with its id, along with details of Uniforms...
     //refer to psychogeo workerPool backlog promise implementation.
     if (pendingRenderInits.has(id)) throw new Error(`tried to add duplicated id '${id}' to pendingRenderInits`);
-    const promise = new Promise<KaleidModel>((resolve, reject) => {
+    const promise = establishRenderComms(id);
+
+    const vidArg = vidUrl ? '&vidUrl=' + encodeURI(vidUrl) : '';
+    await window.loadURL(`${consts.rendererURL}?id=${id}${vidArg}`);
+    
+    
+    return promise;
+}
+
+async function establishRenderComms(id: number) {
+    //establish communication link here.
+    //renderer will be responsible for sending us a '/rendererStarted' request with its id, along with details of Uniforms...
+    //refer to psychogeo workerPool backlog promise implementation.
+    if (pendingRenderInits.has(id)) throw new Error(`tried to add duplicated id '${id}' to pendingRenderInits`);
+    return new Promise<KaleidModel>((resolve, reject) => {
         console.log(`setting pendingRenderInits '${id}'...`);
         pendingRenderInits.set(id, (v: KaleidModel) => {
             console.log(`resolving '${id}'... sending model as response to gui`);
@@ -121,10 +146,4 @@ export async function createRendererWindow(vidUrl?: string) {
             resolve(v);
         })
     });
-
-    const vidArg = vidUrl ? '&vidUrl=' + encodeURI(vidUrl) : '';
-    await window.loadURL(`${consts.rendererURL}?id=${id}${vidArg}`);
-    
-    
-    return promise;
 }

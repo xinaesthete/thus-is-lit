@@ -1,3 +1,5 @@
+import { API } from "./socket_cmds";
+
 /** port used by express server, may want to consider setting this differently */
 export const apiPort = 8321;
 export let httpPort = 3000; //hardocded for devServer
@@ -23,6 +25,7 @@ export let websocketURL = `ws://${addr}`;
 export let httpURL = `http://${addr}`;
 export let guiURL = `http://${host}/index.html`; //gui.html`;
 export let rendererURL = `http://${host}/renderer.html`;
+export let rendererApiURL = `http://${addr}${API.RequestNewRenderer}`;
 export function setAddr(v: string, devMode: boolean) {
   httpPort = devMode ? httpPort : apiPort;
   addr = v;
@@ -30,4 +33,5 @@ export function setAddr(v: string, devMode: boolean) {
   httpURL = `http://${addr}:${apiPort}`;
   guiURL = `http://${addr}:${httpPort}/index.html`; //gui.html`;
   rendererURL = `http://${addr}:${httpPort}/renderer.html`;
+  rendererApiURL = `http://${addr}:${apiPort}${API.RequestNewRenderer}`;
 }////ungood
