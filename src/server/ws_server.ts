@@ -38,8 +38,8 @@ export default function startWsServer(server: Server) {
         socket.on(API.ReportTime, (msg: {id: number, time: number}) => {
             playbackTimes.set(msg.id, msg.time);
         });
-        socket.on(API.RequestNewRenderer, async () => {
-            const m = await createRendererWindow();
+        socket.on(API.RequestNewRenderer, async (vidUrl?: string) => {
+            const m = await createRendererWindow(vidUrl); 
             wsServer.emit(API.RendererAdded, m);
         });
         socket.on(API.RegisterRenderer, (json: {id: number})=>{

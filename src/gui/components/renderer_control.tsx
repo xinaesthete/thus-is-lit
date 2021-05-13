@@ -28,7 +28,7 @@ export default observer(function RendererControl() {
 
     return (
         <>
-        <Button className={classes.root} variant="contained" color="primary" onClick={requestNewRenderer}>
+        <Button className={classes.root} variant="contained" color="primary" onClick={()=>requestNewRenderer()}>
             Make new renderer
         </Button>
         {renderModels.map((m,i)=> (

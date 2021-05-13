@@ -79,6 +79,10 @@ class MediaLibrary {
         this.filterString = val;
         // this.filter = (test) => test.toLowerCase().includes(lval);
     }
+    chooseRandom() {
+        const i = Math.floor(Math.random()*this.filteredVideos.length);
+        return this.filteredVideos[i];
+    }
 }
 
 const notNice = `${httpURL}/video/`.length;

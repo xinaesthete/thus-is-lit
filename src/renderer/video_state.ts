@@ -6,12 +6,13 @@ import { AbstractImageDecriptor, FeedbackDescriptor, ImageFileDescriptor,
 export default class VideoState {
     imageState: AbstractImageDecriptor;
     vidEl: HTMLVideoElement;
-    _vidUrl = "red.mp4";
+    _vidUrl: string;
     vidTex: THREE.Texture;
     activeTexture: THREE.Texture;
     pendingVideoSwitch = false; //did this ever help? Make new element instead?
     feedbackBuffers: THREE.WebGLRenderTarget[] = [];
-    constructor() {
+    constructor(initUrl = 'red.mp4') {
+        this._vidUrl = initUrl;
         //XXX: I should remove vidEl when appropriate as well...
         //maybe deal with this differently in React vs not.
         this.vidEl = document.createElement('video');

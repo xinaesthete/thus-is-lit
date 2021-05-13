@@ -7,6 +7,7 @@ import KaleidRenderer from '../renderer/kaleid_renderer';
 import { ParamValue, Tweakable } from '@common/tweakables';
 import { KaleidList } from './kaleid_context';
 import { action, computed, makeObservable } from 'mobx';
+import mediaLib from './medialib';
 
 //XXX::: NB. currently using somewhat arbitrary mix of REST & socket...
 /// --> moving more towards socket.
@@ -33,9 +34,10 @@ export function registerModelEvents(kList: KaleidList) {
 /**send a message to the server asking for a renderer to be created.
  * Server broadcasts info about new model when ready (to be picked up elsewhere).
 */
-export async function requestNewRenderer() {
+export async function requestNewRenderer(vidUrl?: string) {
     console.log(`requesting newRenderer...`);
-    ws.emit(API.RequestNewRenderer);
+    if (!vidUrl) vidUrl = mediaLib.chooseRandom();
+    ws.emit(API.RequestNewRenderer, vidUrl);
 }
 
 export async function requestFileConfigPrefs() {

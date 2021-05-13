@@ -3,7 +3,10 @@ import KaleidRenderer from './kaleid_renderer'
 import VideoState from './video_state'
 import {init as commsInit} from './renderer_comms'
 
-const vid = new VideoState();
+const params = new URLSearchParams(location.search);
+const vidUrl = params.has('vidUrl') ? params.get('vidUrl')! : 'red.mp4';
+
+const vid = new VideoState(vidUrl);
 const KRenderer = new KaleidRenderer(vid);
 vid.vidEl.onplay = () => {
   console.log(`onplay`);

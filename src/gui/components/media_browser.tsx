@@ -6,7 +6,7 @@ import { observer } from 'mobx-react'
 import mediaLib, { shortName } from '../medialib'
 import { useStyles } from '../theme'
 import { useKaleidList } from '@gui/kaleid_context'
-import { sendVideoChange } from '@gui/gui_comms'
+import { requestNewRenderer, sendVideoChange } from '@gui/gui_comms'
 import { VideoDescriptor } from '@common/media_model'
 import { action } from 'mobx'
 import { useLogGui } from './log_gui'
@@ -40,6 +40,9 @@ const VidAssigner = observer((props: VidAssignerProps) => {
                 action(()=>m.model.imageSource = desc);
             }}>{m.model.id}</Button>
         })}
+        <Button onClick={(async () => {
+            requestNewRenderer(url);
+        })} name='new renderer output'>+</Button>
         </div>
     )
 });

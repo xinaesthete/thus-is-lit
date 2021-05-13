@@ -65,20 +65,15 @@ export function addRestAPI(expApp: express.Application) {
             pendingRenderInits.get(id)!(info);
             pendingRenderInits.delete(id);
         }
-        // const id = Number.parseInt(req.params['id']);
-        // const tweakables = JSON.parse(req.params['tweakables']);
-        //https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS/Errors/CORSMissingAllowOrigin
-        //this was relevant when loading page served by liveServer in watch script in web browser...
-        //but we probably want to serve from here instead, and certainly don't want to get too wild with which requests we serve.
-        res.send();//{CORS: "Access-Control-Allow-Origin: *"}); //XXXXXXXXX JUST TESTING WITH WILDCARD XXXXXXXXXXXXXXXX
+        res.send();
     });
 }
 
-export async function createRendererWindow() {
+export async function createRendererWindow(vidUrl?: string) {
     let id = nextRendererID++;
     //TODO: configure based on saved setup etc.
     //relay info about available screens back to gui.
-    const screen = getNextScreen();
+    const screen = getNextScreen(); //TODO: review auto screen-assignment
     const fullscreen = useFullscreen();
     console.log(`creating renderer, fullscreen: ${fullscreen}, screen: ${JSON.stringify(screen)}`);
     const { x, y, width, height } = screen.bounds;
@@ -113,12 +108,8 @@ export async function createRendererWindow() {
         })
     });
 
-
-    //would be good to have a saved configuration 
-    //and use that to create sets of windows each on correct screens.
-    //nb may go back to old organic-art method of making one big borderless window
-    //spanning entire extended desktop
-    await window.loadURL(`${consts.rendererURL}?id=${id}`);
+    const vidArg = vidUrl ? '&vidUrl=' + encodeURI(vidUrl) : '';
+    await window.loadURL(`${consts.rendererURL}?id=${id}${vidArg}`);
     
     
     return promise;
