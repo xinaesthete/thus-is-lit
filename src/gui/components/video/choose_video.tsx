@@ -1,6 +1,8 @@
 import React from 'react'
 import { observer } from 'mobx-react'
 import Select from '@material-ui/core/Select'
+import IconButton from '@material-ui/core/IconButton'
+import CasinoIcon from '@material-ui/icons/Casino'
 import MenuItem from '@material-ui/core/MenuItem'
 import mediaLib, { niceName } from '../../medialib'
 import { httpURL } from '@common/constants'
@@ -18,9 +20,15 @@ export default observer( function ChooseVideo(props: {
   
   const availableMenu = React.useMemo(() => mediaLib.filteredVideos.map(v => (
      <MenuItem key={v} value={v}>{niceName(v)}</MenuItem> 
-     )), [mediaLib.filteredVideos]);
+     )),
+    [mediaLib.filteredVideos]
+  );
+  const random = () => {
+    props.setURL(mediaLib.chooseRandom());
+  };
   return (
     <>
+      <IconButton onClick={random}><CasinoIcon /></IconButton>
       <Select className={classes.vidDropdown} label="video file" value={url} 
         onChange={e=>props.setURL(e.target.value as string)}>
         {availableMenu}
