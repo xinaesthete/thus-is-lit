@@ -13,7 +13,7 @@ const QR: React.FC<{url: string, name: string}> = ({...props}) => {
             <h1>Connect {name}:</h1>
             <Typography>{url}</Typography>
             <br />
-            <a href={url}>
+            <a href={url} target='_blank'>
             <QRCode value={url} />
             </a>
         </>
