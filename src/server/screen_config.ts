@@ -10,6 +10,7 @@ let displays: Electron.Display[];
 app.on('ready', () => {
     displays = screen.getAllDisplays();
     //at some point we may do something more with these listeners.
+    //(sending info to gui...)
     screen.addListener('display-added', (event, newDisplay) => {
         displays = screen.getAllDisplays();
     })
@@ -31,7 +32,16 @@ export function getNextScreen() {
     //likely mis-diagnosis.
     return displays[0];//[i++ % displays.length];
 }
-
+/** quick hack to position new renderer windows */
+function getNextBounds() {
+    const screen = getNextScreen();
+    const col = i % 2;
+    const row = Math.floor((i%4 / 2));
+    console.log(`row: ${row}, col: ${col}`);
+    i++;
+    const { x, y, width, height } = screen.bounds;
+    return {x: x+col*width/2, y: y+row*height/2, width: width/2, height: height/2};
+}
 export function useFullscreen() {
     return os.platform() !== 'win32';
 }
@@ -43,6 +53,7 @@ type RendererInitCompletionHandler = (v: KaleidModel)=>void;
 const pendingRenderInits = new Map<number, RendererInitCompletionHandler>();
 let nextRendererID = 1;
 
+//Do I even want this as a REST API?
 export function addRestAPI(expApp: express.Application) {
     //sent by renderer as it initialises
     expApp.post(consts.rendererStarted, (req, res) => {
@@ -60,6 +71,8 @@ export function addRestAPI(expApp: express.Application) {
             //this is not an error, it's a pending feature...
             //we should then have a record of what existing gui was associated, 
             //and then be able to get it to send the same values back and get back to similar state...
+            //EDIT: NOT NECESSARILY... what if I want to be able to make a renderer on another device 
+            //by just opening a browser window with manual ID... perhaps change that to have different logic
             console.log(`/rendererStarted ${id} was not pending init - reloaded?`);
         } else {
             pendingRenderInits.get(id)!(info);
@@ -75,8 +88,8 @@ export async function createRendererWindow(vidUrl?: string) {
     //relay info about available screens back to gui.
     const screen = getNextScreen(); //TODO: review auto screen-assignment
     const fullscreen = useFullscreen();
-    console.log(`creating renderer, fullscreen: ${fullscreen}, screen: ${JSON.stringify(screen)}`);
-    const { x, y, width, height } = screen.bounds;
+    const bounds = getNextBounds();
+    console.log(`creating renderer, fullscreen: ${fullscreen}, bounds: ${JSON.stringify(bounds)}`);
 
     const window = new BrowserWindow({
         autoHideMenuBar: true,
@@ -85,7 +98,8 @@ export async function createRendererWindow(vidUrl?: string) {
         //using frame: false appears to work better.  I should have an argument for that.
         // fullscreen: fullscreen,
         // frame: !fullscreen,
-        x: x+width/4, y: y+width/4, width: width/2, height: height/2,
+        // x: x+width/4, y: y+width/4, width: width/2, height: height/2,
+        ...bounds,
         webPreferences: {
             contextIsolation: true,
             nodeIntegration: false,
