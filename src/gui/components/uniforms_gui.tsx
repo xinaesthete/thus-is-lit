@@ -144,7 +144,6 @@ const KaleidGUI = observer(() => {
         if (mutateMode) return <MutatorGrid />;
         return <SliderBank />;
     }, [mutateMode]);
-    const spec = React.useMemo(()=>baseSpecimen(k.model), [k.model]);
     return (
         <div className={classes.uniformsGui}>
         <Accordion TransitionProps={{unmountOnExit: true, timeout: 50}}>
@@ -153,8 +152,8 @@ const KaleidGUI = observer(() => {
                 aria-controls="panel{model.id}-content" 
                 id="panel{model.id}-header"
             >
-                <Typography>Renderer {k.model.id}:</Typography>
-                <KaleidComponent spec={spec} />
+                <Typography style={{paddingRight: '2em', alignSelf: 'center'}}>Renderer {k.model.id}:</Typography>
+                <KaleidComponent />
             </AccordionSummary>
             <AccordionDetails>
             <div>

@@ -8,6 +8,7 @@ import * as params from './params'
 import VideoState from './video_state'
 import {MovementType, Numeric, Uniforms} from '@common/tweakables'
 import { ImageType } from '@common/media_model'
+import KaleidModel from "@common/KaleidModel";
 
 const Vector2 = THREE.Vector2;
 
@@ -17,6 +18,28 @@ const Vector2 = THREE.Vector2;
 //const vid = new VideoState();
 
 //Note to self: adding 'threact?' comments where I need to consider design.
+const fix = MovementType.Fixed;
+const defaultTweakables = [ //threact?
+  {name: "LagTime", value: -10, min: -180, max: 20, tags: ['motion']}, //"midi pitch" log scale.
+  {name: "Leaves", value: 3, min: 1, max: 8, step: 1, tags: ['geometry']},
+  {name: "Angle", value: 1.05, min: -Math.PI, max: Math.PI, wrap: true, tags: ['geometry']},
+  {name: "AngleGain", value: 0.5, min: 0, max: 1, tags: ['geometry']},
+  {name: "Angle2", value: 0, min: -1, max: 1, tags: ['geometry']},
+  {name: "OutAngle", value: 0, min: -1, max: 1, wrap: true, tags: ['geometry']},
+  {name: "Zoom", value: 1.3, min: 0, max: 10, tags: ['geometry']},
+  {name: "KaleidMix", value: 0.999, min: 0, max: 1, step: 1, movement: fix},
+  {name: "Mozaic", value: 4, min: 1, max: 40, tags: ['geometry']}, //log scale...
+  {name: "MozGain", value: .5, min: 0, max: 1, tags: ['geometry']},
+  {name: "ContrastPreBias", value: 0.5, min: 0, max: 1, tags: ['colour']},
+  {name: "ContrastGain", value: 0.5, min: 0, max: 1, tags: ['colour']},
+  {name: "ContrastPostBias", value: 0.5, min: 0, max: 1, tags: ['colour']},
+  {name: "SaturationBias", value: 0.5, min: 0, max: 1, tags: ['colour']},
+  {name: "SaturationGain", value: 0.5, min: 0, max: 1, tags: ['colour']},
+  {name: "ImageCentre", value: new Vector2(0.5, 0), min: -1, max: 1, wrap: true, tags: ['geometry']},
+  {name: "Centre", value: new Vector2(0., 0.), min: -1, max: 1, tags: ['geometry']},
+  {name: "Vignette", value: new Vector2(0.1, 0.1), min: 0, max: 0.2, movement: fix},
+];
+
 
 export default class KaleidRenderer implements IThree {
   scene = new THREE.Scene();
@@ -26,7 +49,7 @@ export default class KaleidRenderer implements IThree {
   vid: VideoState;
   mat: THREE.ShaderMaterial;
   static fs: string = fs;
-  constructor(vid: VideoState) {
+  constructor(vid: VideoState, model?: KaleidModel) {
     this.vid = vid;// || new VideoState();
     ////---
     let w = window.innerWidth, h = window.innerHeight; //threact? should know about container element
@@ -38,27 +61,11 @@ export default class KaleidRenderer implements IThree {
       'texture1': {value: vid.vidTex},
       'textureMatrix1': {value: vid.vidTex.matrix},
     };
-    const fix = MovementType.Fixed;
-    this.parms = params.makeGUI([ //threact?
-      {name: "LagTime", value: -10, min: -180, max: 20, tags: ['motion']}, //"midi pitch" log scale.
-      {name: "Leaves", value: 3, min: 1, max: 8, step: 1, tags: ['geometry']},
-      {name: "Angle", value: 1.05, min: -Math.PI, max: Math.PI, wrap: true, tags: ['geometry']},
-      {name: "AngleGain", value: 0.5, min: 0, max: 1, tags: ['geometry']},
-      {name: "Angle2", value: 0, min: -1, max: 1, tags: ['geometry']},
-      {name: "OutAngle", value: 0, min: -1, max: 1, wrap: true, tags: ['geometry']},
-      {name: "Zoom", value: 1.3, min: 0, max: 10, tags: ['geometry']},
-      {name: "KaleidMix", value: 0.999, min: 0, max: 1, step: 1, movement: fix},
-      {name: "Mozaic", value: 4, min: 1, max: 40, tags: ['geometry']}, //log scale...
-      {name: "MozGain", value: .5, min: 0, max: 1, tags: ['geometry']},
-      {name: "ContrastPreBias", value: 0.5, min: 0, max: 1, tags: ['colour']},
-      {name: "ContrastGain", value: 0.5, min: 0, max: 1, tags: ['colour']},
-      {name: "ContrastPostBias", value: 0.5, min: 0, max: 1, tags: ['colour']},
-      {name: "SaturationBias", value: 0.5, min: 0, max: 1, tags: ['colour']},
-      {name: "SaturationGain", value: 0.5, min: 0, max: 1, tags: ['colour']},
-      {name: "ImageCentre", value: new Vector2(0.5, 0), min: -1, max: 1, wrap: true, tags: ['geometry']},
-      {name: "Centre", value: new Vector2(0., 0.), min: -1, max: 1, tags: ['geometry']},
-      {name: "Vignette", value: new Vector2(0.1, 0.1), min: 0, max: 0.2, movement: fix},
-    ], this.uniforms);
+    if (model) {
+      this.parms = params.makeGUI(model.tweakables, this.uniforms);
+    } else {
+      this.parms = params.makeGUI(defaultTweakables, this.uniforms);
+    }
 
     //NOTE: more than one renderer should be able to use the same vid source.
     //don't need to fix that for initial translation of code.

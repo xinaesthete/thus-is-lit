@@ -5,6 +5,12 @@ import pink from '@material-ui/core/colors/pink'
 
 // Create a theme instance. (nb, this was hanging around, not doing anything now, but useStyles is)
 // (don't have a strong sense of how the more complex hook-based one helps)
+
+///// actually, I'm veering more towards specifying style locally for some things, 
+///// this doesn't play nice with HMR, having to refresh entire GUI with each tweak.
+
+
+
 const theme = createMuiTheme({
   palette: {
     type: 'dark',
