@@ -17,7 +17,7 @@ export default observer(function AbstractImageController(props: AbsImgProps) {
     });
     return (
         <>
-        <Typography variant="caption">{props.image.width} * {props.image.height}</Typography>
+        {/* <Typography variant="caption">{props.image.width} * {props.image.height}</Typography> */}
         <VideoController video={props.image as VideoDescriptor} setVideo={setAsVideo} />
         </>
     )
