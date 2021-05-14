@@ -3,6 +3,7 @@ import { observer } from 'mobx-react'
 import Select from '@material-ui/core/Select'
 import IconButton from '@material-ui/core/IconButton'
 import CasinoIcon from '@material-ui/icons/Casino'
+import StarIcon from '@material-ui/icons/StarOutline'
 import MenuItem from '@material-ui/core/MenuItem'
 import mediaLib, { niceName } from '../../medialib'
 import { useStyles } from '../../theme'
@@ -10,6 +11,7 @@ import { VideoDescriptor } from '@common/media_model'
 // import { TextField } from '@material-ui/core'
 import Fuse from 'fuse.js'
 import { useLogGui } from '../log_gui'
+import { starVideo } from '@gui/gui_comms'
 
 
 export default observer( function ChooseVideo(props: { 
@@ -40,6 +42,7 @@ export default observer( function ChooseVideo(props: {
         onChange={e=>props.setURL(e.target.value as string)}>
         {availableMenu}
       </Select>
+      <IconButton onClick={()=>starVideo(url)}><StarIcon /></IconButton>
       {/* <TextField label="filter" onChange={e=>setFilterText(e.target.value)} /> */}
     </>
   )
