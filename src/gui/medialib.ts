@@ -69,15 +69,10 @@ class MediaLibrary {
         const list = this.fuse.search(this.filterString);
         console.log(`${list.length} filteredVideos`);
         return list.map(r => r.item);
-        // const list = this.availableVideos.filter(this.filter);
-        // console.log(`${list.length} filteredVidoes`);
-        // return list;
     }
     stringFilter(val: string) {
-        const lval = val.toLowerCase();
         console.log(`[medialib] filterString: ${val}`);
         this.filterString = val;
-        // this.filter = (test) => test.toLowerCase().includes(lval);
     }
     chooseRandom() {
         const i = Math.floor(Math.random()*this.filteredVideos.length);
