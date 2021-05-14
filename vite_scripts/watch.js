@@ -80,7 +80,7 @@ const setupMainPackageWatcher = (viteDevServer) => {
         setTimeout(()=> {
           if (!restarting) process.exit(0);
           restarting = false;
-        }, 2000);
+        }, 500);
       });
     },
   });

@@ -43,8 +43,8 @@ function getNextBounds() {
     const { x, y, width, height } = screen.bounds;
     return {x: x+col*width/2, y: y+row*height/2, width: width/2, height: height/2};
 }
-export function useFullscreen() {
-    return os.platform() !== 'win32';
+export function isWindows() {
+    return os.platform() === 'win32';
 }
 // ----
 
@@ -93,14 +93,22 @@ export function addRestAPI(expApp: express.Application) {
     });
 }
 
+const renderWindows = new Map<number, BrowserWindow>();//not necessarily proper way of mapping
+export function toggleRendererFullscreen(id: number) {
+    console.log('makeRendererFullscreen', id);
+    const win = renderWindows.get(id);
+    if (!win) return;
+    const display = screen.getDisplayMatching(win.getBounds());
+    win.setSimpleFullScreen(!win.simpleFullScreen);
+}
 export async function createRendererWindow(vidUrl?: string) {
     const id = nextRendererID++;
     //TODO: configure based on saved setup etc.
     //relay info about available screens back to gui.
-    const screen = getNextScreen(); //TODO: review auto screen-assignment
-    const fullscreen = useFullscreen();
+    // const screen = getNextScreen(); //TODO: review auto screen-assignment
+    // const frame = !isWindows();
     const bounds = getNextBounds();
-    console.log(`creating renderer, fullscreen: ${fullscreen}, bounds: ${JSON.stringify(bounds)}`);
+    console.log(`creating renderer, bounds: ${JSON.stringify(bounds)}`);
 
     const window = new BrowserWindow({
         autoHideMenuBar: true,
@@ -108,7 +116,7 @@ export async function createRendererWindow(vidUrl?: string) {
         //(and not being seen directly, but rather fed in to THREE.VideoTexture)
         //using frame: false appears to work better.  I should have an argument for that.
         // fullscreen: fullscreen,
-        // frame: !fullscreen,
+        // frame: frame,
         // x: x+width/4, y: y+width/4, width: width/2, height: height/2,
         ...bounds,
         webPreferences: {
@@ -118,6 +126,7 @@ export async function createRendererWindow(vidUrl?: string) {
         }
     });
     //let's keep track of windows, load/save... not too much boilerplate preferably.
+    renderWindows.set(id, window);
     
     //establish communication link here.
     //renderer will be responsible for sending us a '/rendererStarted' request with its id, along with details of Uniforms...

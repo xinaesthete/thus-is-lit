@@ -5,7 +5,7 @@ import { API } from "@common/socket_cmds";
 import { watchFragmentShader } from "./code_watch";
 import main_state from "./main_state";
 import { ParamValue } from '@common/tweakables';
-import { createRendererWindow } from './screen_config';
+import { createRendererWindow, toggleRendererFullscreen } from './screen_config';
 import fs from 'fs';
 
 
@@ -52,7 +52,8 @@ export default function startWsServer(server: Server) {
                     //will the old one safely become garbage and be disposed? probably.
                     renderers.set(json.id, socket);
                     console.log(`[ws] restoring state for #${json.id}`);
-                    socket.send(API.Set, {model: currentModels.get(json.id), time: playbackTimes.get(json.id)})
+                    ///XXX::: not really working... (also not with emit, other things as well wrong)
+                    socket.emit(API.Set, {model: currentModels.get(json.id), time: playbackTimes.get(json.id)})
                 }
                 renderers.set(json.id, socket);
                 console.log(`[ws] ${json.id} socket established`);
@@ -92,6 +93,9 @@ export default function startWsServer(server: Server) {
             fs.appendFile('starred.txt', url+'\n', () => {
                 console.log('starred: ', url);
             });
-        })
+        });
+        socket.on(API.Fullscreen, (id: number) => {
+            toggleRendererFullscreen(id);
+        });
     });
 }

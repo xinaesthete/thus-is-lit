@@ -33,7 +33,7 @@ async function setupWebSocket(model: KaleidModel) {
     //for now we know that the socket won't be open yet, but this is wrong place.
     socket.on('connected', () => {
         console.log(`sending WS message to establish this renderer as receiver for id '${model.id}'`);
-        socket.send(API.RegisterRenderer, model.id);
+        socket.emit(API.RegisterRenderer, model.id);
     });
 }
 
@@ -114,9 +114,18 @@ function onMessage(key: string, callback: (msg: any) => void) {
 
 function reportTime() {
     if (!vidState) return;
-    socket.send(API.ReportTime, {time: vidState.vidEl.currentTime, id: id});
+    socket.emit(API.ReportTime, {time: vidState.vidEl.currentTime, id: id});
 };
 
 function reportError (error: string) {
-    socket.send('error', {error: error});
+    socket.emit('error', {error: error});
+}
+
+window.onkeydown = (event: KeyboardEvent) => {
+    if (event.key === 'f') {
+        //actually, id may not be the right key
+        //and if anything should be electron preload interface, it's this
+        console.log('sending fullscreen message', socket.active);
+        socket.emit(API.Fullscreen, id);
+    }
 }
