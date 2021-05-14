@@ -16,6 +16,8 @@ import { action } from 'mobx'
 import MutatorGrid from './mutator/MutatorGrid'
 import { useKaleid } from '@gui/kaleid_context'
 import { sendParameterValue } from '@gui/gui_comms'
+import KaleidComponent from './kaleid_component'
+import { baseSpecimen } from '@common/mutator'
 
 interface SliderProp<T extends Numeric> extends Tweakable<T> {
     modelId: number;
@@ -142,6 +144,7 @@ const KaleidGUI = observer(() => {
         if (mutateMode) return <MutatorGrid />;
         return <SliderBank />;
     }, [mutateMode]);
+    const spec = React.useMemo(()=>baseSpecimen(k.model), [k.model]);
     return (
         <div className={classes.uniformsGui}>
         <Accordion TransitionProps={{unmountOnExit: true, timeout: 50}}>
@@ -151,6 +154,7 @@ const KaleidGUI = observer(() => {
                 id="panel{model.id}-header"
             >
                 <Typography>Renderer {k.model.id}:</Typography>
+                <KaleidComponent spec={spec} />
             </AccordionSummary>
             <AccordionDetails>
             <div>
