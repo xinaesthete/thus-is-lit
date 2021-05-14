@@ -4,9 +4,9 @@ const chokidar = require('chokidar');
 ///XXX: if you get an error about esbuild install scripts in console,
 //run 'node node_modules/esbuild/install.js'...
 
-const watchChanges = process.argv[2] === "watch";
+const watchChanges = process.argv.includes("watch");
 console.log('watchChanges ' + watchChanges);
-//console.log(process.argv[2]);
+
 // assuming that THREE is a global object,
 // makes any imported reference to three proxy to that instead.
 const threeShim = Object.keys(require("three")).map(k => `export const ${k} = window.THREE.${k}`).join('\n');
