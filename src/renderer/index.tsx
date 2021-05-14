@@ -9,11 +9,11 @@ const vidUrl = params.has('vidUrl') ? params.get('vidUrl')! : 'red.mp4';
 const vid = new VideoState(vidUrl);
 const KRenderer = new KaleidRenderer(vid);
 vid.vidEl.onplay = () => {
-  console.log(`onplay`);
+  //console.log(`onplay`);
 }
 vid.vidEl.oncanplay = () => {
-  console.log(`can play`);
-  vid.vidEl.play();
+  // console.log(`can play`);
+  // vid.vidEl.play();
 }
 // setTimeout(async ()=>{
 //   vid.setImageState(vid.imageState);
