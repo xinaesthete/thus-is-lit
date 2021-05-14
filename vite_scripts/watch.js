@@ -75,6 +75,7 @@ const setupMainPackageWatcher = (viteDevServer) => {
 
       spawnProcess.stdout.on('data', d => d.toString().trim() && logger.warn(d.toString(), {timestamp: true}));
       spawnProcess.stderr.on('data', d => d.toString().trim() && logger.error(d.toString(), {timestamp: true}));
+      spawnProcess.on('close', () => process.exit(0) );
     },
   });
 };
@@ -86,6 +87,7 @@ const setupMainPackageWatcher = (viteDevServer) => {
     const viteDevServer = await createServer({
       ...sharedConfig,
       configFile: 'vite_scripts/vite.renderer.config.js',
+      server: {host: true},
     });
 
     await viteDevServer.listen();
