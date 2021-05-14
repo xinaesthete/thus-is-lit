@@ -17,16 +17,16 @@ export default observer( function ChooseVideo(props: {
 }) {
   
   const classes = useStyles();
-  const {log} = useLogGui();
+  // const {log} = useLogGui(); /// this is a bit broken just now
   //TODO options for advance to next video in sequence / random after it finishes.
   const url = encodeURI(props.video.url); //would probably rather it was kept encoded.
   const [filterText, setFilterText] = React.useState('');
   const availableMenu = React.useMemo(() => {
     const fuse = filterText ? new Fuse(mediaLib.filteredVideos, {ignoreLocation: true}) : null;
     const filterList = fuse ? fuse.search(filterText).map(r => r.item) : mediaLib.filteredVideos;
-    log(filterList.length + ' vis');
+    // log(filterList.length + ' vis');
     return filterList.map(v => (
-       <MenuItem key={v} value={v}>{niceName(v)}</MenuItem> 
+       <MenuItem key={v} value={v}>{niceName(v)}</MenuItem>
      ))
     }, [mediaLib.filteredVideos, filterText]
   );
