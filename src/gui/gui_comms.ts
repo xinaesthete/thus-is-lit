@@ -148,7 +148,9 @@ export function sendParameterValue(parm: Tweakable<any>, modelId: number) {
 export function sendVideoChange(url: string, modelId: number) {
     ws.emit(API.SetVideoFilename, {url: url, modelId: modelId});
 }
-
+export function starVideo(url: string) {
+    ws.emit(API.StarVideo, url);
+}
 
 /////
 ///// Connection status

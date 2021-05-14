@@ -6,6 +6,7 @@ import { watchFragmentShader } from "./code_watch";
 import main_state from "./main_state";
 import { ParamValue } from '@common/tweakables';
 import { createRendererWindow } from './screen_config';
+import fs from 'fs';
 
 
 export default function startWsServer(server: Server) {
@@ -84,5 +85,13 @@ export default function startWsServer(server: Server) {
         socket.on(API.Error, (json: {error: string})=> {
             main_state.lastError = json.error;
         });
+        socket.on(API.StarVideo, (url: string) => {
+            // in future I want to have something like a catalog db
+            // and maybe I was thinking about putting it along with other bits of state I want to save in a more formal way
+            // but NOW I want to be able to have a quick & dirty way to make a note of clips that I want to use.
+            fs.appendFile('starred.txt', url+'\n', () => {
+                console.log('starred: ', url);
+            });
+        })
     });
 }

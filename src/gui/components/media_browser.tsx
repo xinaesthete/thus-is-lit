@@ -1,12 +1,13 @@
 import React from 'react'
 import MediaConfig from './media_config'
-import { GridList, GridListTile, GridListTileBar, Button } from '@material-ui/core'
+import { GridList, GridListTile, GridListTileBar, Button, IconButton } from '@material-ui/core'
+import StarBorderIcon from '@material-ui/icons/StarBorder';
 import { Pagination } from '@material-ui/lab'
 import { observer } from 'mobx-react'
 import mediaLib, { shortName } from '../medialib'
 import { useStyles } from '../theme'
 import { useKaleidList } from '@gui/kaleid_context'
-import { requestNewRenderer, sendVideoChange } from '@gui/gui_comms'
+import { requestNewRenderer, sendVideoChange, starVideo } from '@gui/gui_comms'
 import { VideoDescriptor } from '@common/media_model'
 import { action } from 'mobx'
 import { useLogGui } from './log_gui'
@@ -32,7 +33,7 @@ const VidAssigner = observer((props: VidAssignerProps) => {
         <div className={classes.vidAssigner}>
         {renderModels.map((m, i) => {
             //console.log(i);
-            return <Button key={i} onClick={async () => {
+            return <Button variant="contained" size="small" color="primary" style={{opacity: 0.6}} key={i} onClick={async () => {
                 logger.log(`${shortName(url)} -> #${m.model.id}`);
                 //TODO change the interface so this is *fast* (and more consistent)
                 sendVideoChange(url, m.model.id);
@@ -40,7 +41,7 @@ const VidAssigner = observer((props: VidAssignerProps) => {
                 action(()=>m.model.imageSource = desc);
             }}>{m.model.id}</Button>
         })}
-        <Button onClick={(async () => {
+        <Button variant="contained" size="small" color="primary" style={{opacity: 0.6}} onClick={(async () => {
             requestNewRenderer(url);
         })} name='new renderer output'>+</Button>
         </div>
@@ -65,7 +66,11 @@ const VideoTileInner = ({...props}) => {
                 }}
             />
             <VidAssigner url={url} />
-            <GridListTileBar title={name}/>
+            <GridListTileBar title={name} actionIcon={
+                <IconButton aria-label={`star ${url}`} onClick={()=>starVideo(url)}>
+                    <StarBorderIcon />
+                </IconButton>
+            }/>
         </>
     )
 }
