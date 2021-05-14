@@ -61,12 +61,13 @@ const setupMainPackageWatcher = (viteDevServer) => {
 
   /** @type {ChildProcessWithoutNullStreams | null} */
   let spawnProcess = null;
-
+  let restarting = false;
   return getWatcher({
     name: 'reload-app-on-main-package-change',
     configFile: 'vite_scripts/vite.main.config.js',
     writeBundle() {
       if (spawnProcess !== null) {
+        restarting = true;
         spawnProcess.kill('SIGINT');
         spawnProcess = null;
       }
@@ -75,7 +76,12 @@ const setupMainPackageWatcher = (viteDevServer) => {
 
       spawnProcess.stdout.on('data', d => d.toString().trim() && logger.warn(d.toString(), {timestamp: true}));
       spawnProcess.stderr.on('data', d => d.toString().trim() && logger.error(d.toString(), {timestamp: true}));
-      spawnProcess.on('close', () => process.exit(0) );
+      spawnProcess.on('close', () => {
+        setTimeout(()=> {
+          if (!restarting) process.exit(0);
+          restarting = false;
+        }, 2000);
+      });
     },
   });
 };
