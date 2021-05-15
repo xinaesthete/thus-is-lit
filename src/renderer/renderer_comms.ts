@@ -25,6 +25,7 @@ import { paramState } from './params'
 import VideoState from "./video_state";
 import { io } from 'socket.io-client'
 import { ParamValue } from "@common/tweakables";
+import registerKey from "./renderer_keys";
 
 let socket = io(websocketURL);// new WebSocket(websocketURL);
 
@@ -121,11 +122,9 @@ function reportError (error: string) {
     socket.emit('error', {error: error});
 }
 
-window.onkeydown = (event: KeyboardEvent) => {
-    if (event.key === 'f') {
-        //actually, id may not be the right key
-        //and if anything should be electron preload interface, it's this
-        console.log('sending fullscreen message', socket.active);
-        socket.emit(API.Fullscreen, id);
-    }
-}
+registerKey('f', () => {
+    //actually, id may not be the right key
+    //and if anything should be electron preload interface, it's this
+    console.log('sending fullscreen message', socket.active);
+    socket.emit(API.Fullscreen, id);
+});

@@ -2,6 +2,8 @@ import * as THREE from 'three'
 import KaleidRenderer from './kaleid_renderer'
 import VideoState from './video_state'
 import {init as commsInit} from './renderer_comms'
+import recordAndDownload from './recorder';
+import registerKey from './renderer_keys';
 
 const params = new URLSearchParams(location.search);
 const vidUrl = params.has('vidUrl') ? params.get('vidUrl')! : 'red.mp4';
@@ -34,4 +36,9 @@ window.onresize = () => {
     //camera.aspect = window.innerWidth / window.innerHeight;
     KRenderer.resize(renderer.domElement.getBoundingClientRect());
 };
+
+registerKey('r', () => {
+  console.log('recording....');
+  recordAndDownload(renderer.domElement, 15000);
+});
 export default "exporting from /src/renderer/index so that src/gui/renderIndexShim has something to import...";
