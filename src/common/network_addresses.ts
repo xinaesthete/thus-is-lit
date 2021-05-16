@@ -24,7 +24,6 @@ console.log('location.host: ' + location?.host);
 //we pass the 'remote' ('local external IP') as a search parameter to facilitate this.
 const searchParams = new URLSearchParams(location?.search);
 const hostName = searchParams.get('remote') ?? location?.hostname;
-if (hostName) setAddr(hostName, (import.meta as any).env?.DEV || false);
 //Protocol-relative '//' URLs?
 export let websocketURL: string;
 export let httpURL: string;
@@ -33,6 +32,7 @@ export let remoteRendererURL: string;
 export let localGuiURL: string;
 export let localRendererURL: string;
 export let rendererApiURL: string;
+if (hostName) setAddr(hostName, (import.meta as any).env?.DEV || false);
 export function setAddr(v: string, devMode: boolean) {
   httpPort = devMode ? httpPort : apiPort;
   const addr = v;
