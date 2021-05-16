@@ -5,8 +5,11 @@ declare global { //todo: -> global.d.ts or something
 }
 export default async function recordAndDownload(canvas: HTMLCanvasElement, dur: number) {
   console.log(`recording...`);
-  const stream = canvas.captureStream();
-  const recorder = new MediaRecorder(stream, {mimeType: 'video/webm'}); //no vp9
+  const stream = canvas.captureStream(24);
+  const recorder = new MediaRecorder(stream, {
+    mimeType: 'video/webm', videoBitsPerSecond: 15000000
+  });
+  
 
   const recordedBlobs: Blob[] = [];
   recorder.ondataavailable = ev => {
