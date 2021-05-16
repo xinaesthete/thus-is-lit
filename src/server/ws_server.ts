@@ -97,5 +97,9 @@ export default function startWsServer(server: Server) {
         socket.on(API.Fullscreen, (id: number) => {
             toggleRendererFullscreen(id);
         });
+        socket.on(API.SetVideoDevice, (msg: {modelId: number, deviceId: string}) => {
+            console.log(API.SetVideoDevice, msg.deviceId);
+            socket.broadcast.emit(API.SetVideoDevice, msg);
+        });
     });
 }

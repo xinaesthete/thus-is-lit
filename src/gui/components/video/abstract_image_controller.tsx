@@ -1,15 +1,49 @@
-import { Typography } from '@material-ui/core'
+import { MenuItem, Select } from '@material-ui/core'
 import { action } from 'mobx';
 import { observer } from 'mobx-react';
 import React from 'react'
-import { AbstractImageDecriptor, VideoDescriptor } from '@common/media_model'
+import { AbstractImageDecriptor, ImageType, VideoDescriptor, VideoStreamDescriptor } from '@common/media_model'
 
 import VideoController from './video_controller'
+import mediaLib from '@gui/medialib';
+import { sendSetVideoDevice } from '@gui/gui_comms';
+import { useKaleid } from '@gui/kaleid_context';
 
 interface AbsImgProps {
     image: AbstractImageDecriptor;
     setImage: (newImage: AbstractImageDecriptor)=>void
 }
+
+/** List available video stream devices. currently inaccessible & not working. */
+function VideoStreamChooser({...props}) {
+    const [devices, setDevices] = React.useState<MediaDeviceInfo[]>([]);
+    const kaleid = useKaleid();
+    React.useMemo(async () => {
+        setDevices(await mediaLib.getVideoStreamDevices());
+    }, []);
+    const chooseDevice = action((d: string) => {
+        if (!d) return;
+        // console.log('video stream selected', d.label);
+        const descriptor: VideoStreamDescriptor = {
+            deviceId: d, imgType: ImageType.VideoStream, 
+            width: 1920, height: 1080 //I should be able to skip these, actually...
+        }
+        // props.setImage(descriptor);
+        sendSetVideoDevice(d, kaleid.model.id);
+    });
+    return (
+        <>
+            <Select label="video device" value={props.image.deviceId} onChange={(ev) => {
+                chooseDevice(ev.target.value as string);
+            }}>
+                {
+                    devices.map(d => (<MenuItem key={d.deviceId} value={d.deviceId}>{d.label}</MenuItem>))
+                }
+            </Select>
+        </>
+    )
+}
+
 export default observer(function AbstractImageController(props: AbsImgProps) {
     //const setAsVideo = props.setImage as (n: AbstractImageDecriptor) => void
     const setAsVideo = action((newVid: VideoDescriptor) => {
@@ -17,8 +51,11 @@ export default observer(function AbstractImageController(props: AbsImgProps) {
     });
     return (
         <>
-        {/* <Typography variant="caption">{props.image.width} * {props.image.height}</Typography> */}
-        <VideoController video={props.image as VideoDescriptor} setVideo={setAsVideo} />
+        {props.image.imgType === ImageType.VideoFile ?
+        (<VideoController video={props.image as VideoDescriptor} setVideo={setAsVideo} />)
+        : (<VideoStreamChooser />)
+        }
+        <VideoStreamChooser image={props.image} />
         </>
     )
-})
+});

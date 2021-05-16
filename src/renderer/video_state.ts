@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 import { AbstractImageDecriptor, FeedbackDescriptor, ImageFileDescriptor, 
-    ImageType, ImRot, VideoDescriptor 
+    ImageType, ImRot, VideoDescriptor, VideoStreamDescriptor 
 } from '@common/media_model';
 
 export default class VideoState {
@@ -38,6 +38,9 @@ export default class VideoState {
         switch (state.imgType) {
             case ImageType.VideoFile:
                 await this.setVideoState(state as VideoDescriptor);
+                break;
+            case ImageType.VideoStream:
+                await this.setStreamDevice((state as VideoStreamDescriptor).deviceId);
                 break;
             default:
                 throw new Error('only video is implemented for now :/');
@@ -77,6 +80,18 @@ export default class VideoState {
         this.vidEl.src = url;
         // this.seek(0);
     }
+    async setStreamDevice(deviceId: string) {
+        const vidEl = this.vidEl;
+        try {
+            //see https://webrtc.github.io/samples/src/content/devices/input-output/
+            const stream = await navigator.mediaDevices.getUserMedia({video: {deviceId: {exact: deviceId}}});
+            console.log(`setting stream id ${stream.id}, 1st video track: ${stream.getVideoTracks()[0].label}`);
+            vidEl.srcObject = stream;
+            vidEl.onloadedmetadata = () => vidEl.play();
+          } catch (err) {
+            console.error(err);
+          }
+      }
     fitTexture = fitTexture;
 }
 

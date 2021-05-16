@@ -109,6 +109,26 @@ socket.on(API.SetVideoFilename, (msg: {url: string, modelId: number}) => {
     vidState.vidUrl = msg.url;
 });
 
+socket.on(API.RequestVideoDevices, async (modelId: number) => {
+    if (modelId !== id) return;
+    try {
+        await navigator.mediaDevices.getUserMedia({video: true});
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const vids: MediaDeviceInfo[] = devices.filter(d => d.kind.includes('video'));
+        console.log(vids.length, 'video devices');
+        socket.emit(API.ReportVideoDevices, {modelId: id, devices: vids});
+    } catch (error) {
+        socket.emit(API.ReportVideoDevices, {modelId: id, devices: []});
+        console.error(error);
+        reportError(error);
+    }
+});
+
+socket.on(API.SetVideoDevice, async (msg: {modelId: number, deviceId: string}) => {
+    console.log(API.SetVideoDevice, msg.deviceId);
+    vidState.setStreamDevice(msg.deviceId);
+});
+
 function onMessage(key: string, callback: (msg: any) => void) {
     socket.on(key, callback);
 }

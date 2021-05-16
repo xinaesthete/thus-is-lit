@@ -79,10 +79,12 @@ class MediaLibrary {
         return this.filteredVideos[i];
     }
     /**
-     * Attempt to query the list of video inputs available for a given renderer.
+     * Attempt to query the list of video inputs available. If both GUI & renderer are on localhost,
+     * this might work. modelId & (Request|Report)VideoDevices may be used for remote control
+     * sooner or later
      * @returns mediaDevices of kind 'video'
      */
-    async getVideoStreamDevices(modelId: number) {
+    async getVideoStreamDevices(modelId?: number) {
         try {
             //https://stackoverflow.com/questions/60957829/navigator-mediadevices-is-undefined
             //requires secure context (including localhost). 
