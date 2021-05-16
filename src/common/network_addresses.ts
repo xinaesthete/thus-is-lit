@@ -16,22 +16,31 @@ export const rendererStarted = "/rendererStarted";
 //TODO SSL.
 
 /// some ugliness below.
-console.log('location.host: ' + globalThis.location?.host);
-//// this worked before because of proxy...
-const host = globalThis.location?.host;
-export let addr = `${globalThis.location?.hostname}:${apiPort}`;
+const location = globalThis.location;
+console.log('location.host: ' + location?.host);
+//setAddr was previously only called from server & other values left as init in clients
+//Now we want electron gui clients to be started on localhost for secure context,
+//but display QR codes to connect to remote on browsers in LAN.
+//we pass the 'remote' ('local external IP') as a search parameter to facilitate this.
+const searchParams = new URLSearchParams(location?.search);
+const hostName = searchParams.get('remote') ?? location?.hostname;
+if (hostName) setAddr(hostName, (import.meta as any).env?.DEV || false);
 //Protocol-relative '//' URLs?
-export let websocketURL = `ws://${addr}`;
-export let httpURL = `http://${addr}`;
-export let guiURL = `http://${host}/index.html`; //gui.html`;
-export let rendererURL = `http://${host}/renderer.html`;
-export let rendererApiURL = `http://${addr}${API.RequestNewRenderer}`;
+export let websocketURL: string;
+export let httpURL: string;
+export let remoteGuiURL: string;
+export let remoteRendererURL: string;
+export let localGuiURL: string;
+export let localRendererURL: string;
+export let rendererApiURL: string;
 export function setAddr(v: string, devMode: boolean) {
   httpPort = devMode ? httpPort : apiPort;
-  addr = v;
+  const addr = v;
   websocketURL = `ws://${addr}:${apiPort}`;
   httpURL = `http://${addr}:${apiPort}`;
-  guiURL = `http://${addr}:${httpPort}/index.html`; //gui.html`;
-  rendererURL = `http://${addr}:${httpPort}/renderer.html`;
+  remoteGuiURL = `http://${addr}:${httpPort}/index.html`; //gui.html`;
+  remoteRendererURL = `http://${addr}:${httpPort}/renderer.html`;
   rendererApiURL = `http://${addr}:${apiPort}${API.RequestNewRenderer}`;
+  localGuiURL = `http://localhost:${httpPort}/index.html?remote=${addr}`;
+  localRendererURL = `http://localhost:${httpPort}/renderer.html`;
 }////ungood

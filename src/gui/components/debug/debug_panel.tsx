@@ -1,7 +1,7 @@
 import React from 'react';
 import JsonView from './json_view';
 import QRCode from 'qrcode.react';
-import { guiURL, rendererApiURL } from '@common/network_addresses';
+import { remoteGuiURL, rendererApiURL } from '@common/network_addresses';
 import { Typography } from '@material-ui/core';
 import ConnectionStatus from './connection_status';
 
@@ -26,7 +26,7 @@ export default function DebugPanel() {
         <ConnectionStatus />
         <JsonView />
         <br />
-        <QR url={guiURL} name='GUI' />
+        <QR url={remoteGuiURL} name='GUI' />
         <QR url={rendererApiURL} name='renderer' />
         </>
     )

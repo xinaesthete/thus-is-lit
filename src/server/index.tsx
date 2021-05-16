@@ -4,7 +4,7 @@ import * as path from 'path'
 import {startServer} from './server_comms'
 import { getNextScreen } from './screen_config';
 import main_state from './main_state';
-import { guiURL } from '@common/network_addresses';
+import { localGuiURL } from '@common/network_addresses';
 
 startServer();
 
@@ -20,7 +20,9 @@ function createGUIWindow() {
             nodeIntegration: false
         }
     });
-    window.loadURL(guiURL);
+    //change so BrowserWindows are always on localhost (secure context, allow mediaDevices)
+    console.log('localGuiURL', localGuiURL);
+    window.loadURL(localGuiURL);
     main_state.mainWindow = window;
 
     //really slow to quit when devtools is up?

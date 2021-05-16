@@ -87,7 +87,7 @@ export function addRestAPI(expApp: express.Application) {
         establishRenderComms(id).then(()=>{
             console.log(`GET renderer ${id} comms established`);
         });
-        const url = consts.rendererURL + `?id=${id}`
+        const url = consts.remoteRendererURL + `?id=${id}`
         console.log(`GET ${API.RequestNewRenderer} redirecting to '${url}'`);
         res.redirect(url);
     });
@@ -135,7 +135,7 @@ export async function createRendererWindow(vidUrl?: string) {
     const promise = establishRenderComms(id);
 
     const vidArg = vidUrl ? '&vidUrl=' + encodeURI(vidUrl) : '';
-    await window.loadURL(`${consts.rendererURL}?id=${id}${vidArg}`);
+    await window.loadURL(`${consts.localRendererURL}?id=${id}${vidArg}`);
     
     
     return promise;
