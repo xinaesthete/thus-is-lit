@@ -1,5 +1,5 @@
 import { io } from 'socket.io-client'
-import { httpURL, websocketURL } from '@common/constants'
+import { httpURL, websocketURL } from '@common/network_addresses'
 import KaleidModel, { KaleidContextType } from '@common/KaleidModel';
 import { API } from '@common/socket_cmds';
 import { FileConfigPrefs } from '@common/media_model';

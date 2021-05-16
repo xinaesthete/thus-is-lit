@@ -1,6 +1,6 @@
 import { computed, makeObservable } from "mobx";
 import { observable, action } from "mobx";
-import { httpURL } from "@common/constants";
+import { httpURL } from "@common/network_addresses";
 import Fuse from 'fuse.js';
 import { VideoDescriptor, AbstractImageDecriptor, IVideoDescriptor } from "@common/media_model";
 import * as API from "./gui_comms";
@@ -77,6 +77,28 @@ class MediaLibrary {
     chooseRandom() {
         const i = Math.floor(Math.random()*this.filteredVideos.length);
         return this.filteredVideos[i];
+    }
+    /**
+     * Attempt to query the list of video inputs available for a given renderer.
+     * @returns mediaDevices of kind 'video'
+     */
+    async getVideoStreamDevices(modelId: number) {
+        try {
+            //https://stackoverflow.com/questions/60957829/navigator-mediadevices-is-undefined
+            //requires secure context (including localhost). 
+            //using remote devices, then there are design consequences anyway...
+            //(different mediaDevices, especially if renderer on remote)
+            //so actually it'd make sense for the renderer to be on localhost & report back 
+            //rather than having this be used from GUI.
+            await navigator.mediaDevices.getUserMedia({video: true});
+            const devices = await navigator.mediaDevices.enumerateDevices();
+            const vids: MediaDeviceInfo[] = devices.filter(d => d.kind.includes('video'));
+            console.log(vids.length, 'video devices');
+            return vids;
+        } catch (error) {
+            console.error(error);
+            return [];
+        }
     }
 }
 

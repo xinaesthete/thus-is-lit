@@ -1,7 +1,7 @@
 import React from 'react';
 import JsonView from './json_view';
 import QRCode from 'qrcode.react';
-import { guiURL, rendererApiURL } from '@common/constants';
+import { guiURL, rendererApiURL } from '@common/network_addresses';
 import { Typography } from '@material-ui/core';
 import ConnectionStatus from './connection_status';
 

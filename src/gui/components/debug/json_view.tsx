@@ -4,7 +4,7 @@ import TreeView from '@material-ui/lab/TreeView';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import TreeItem from '@material-ui/lab/TreeItem';
-import { httpURL } from '@common/constants';
+import { httpURL } from '@common/network_addresses';
 
 const useTreeLabelStyles = makeStyles((theme: Theme) => createStyles({
     labelRoot: {

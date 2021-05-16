@@ -2,7 +2,7 @@ import {app, screen, BrowserWindow} from 'electron'
 import express from 'express'
 import * as os from 'os'
 import KaleidModel from '@common/KaleidModel';
-import * as consts from '@common/constants'
+import * as consts from '@common/network_addresses'
 import main_state from './main_state';
 import { API } from '@common/socket_cmds';
 

@@ -16,7 +16,7 @@
  * 
  */
 
-import { rendererStarted, httpURL, websocketURL } from "@common/constants";
+import { rendererStarted, httpURL, websocketURL } from "@common/network_addresses";
 import KaleidModel from "@common/KaleidModel";
 import { API } from "@common/socket_cmds";
 import KaleidRenderer from "./kaleid_renderer";

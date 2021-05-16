@@ -4,7 +4,7 @@ import * as path from 'path'
 import {startServer} from './server_comms'
 import { getNextScreen } from './screen_config';
 import main_state from './main_state';
-import { guiURL } from '@common/constants';
+import { guiURL } from '@common/network_addresses';
 
 startServer();
 

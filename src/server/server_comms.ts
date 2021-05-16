@@ -6,7 +6,7 @@
 /// websocket comms for control changes...
 
 import express from 'express';
-import * as consts from '@common/constants';
+import * as consts from '@common/network_addresses';
 import * as screen_server from './screen_config';
 import initFileConfig, * as file_config  from './assets/file_config';
 import * as media_server from './assets/media_server';
