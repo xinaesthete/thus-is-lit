@@ -20,10 +20,10 @@ export interface LitConfig {
   livePreviews: boolean;
   enableVideoStreamInput: boolean;
 }
-/** as well as a list of kaleids, 
- * this is being extended to other general global app state.
+/** 
  * There is a <KaleidListProvider> in the root of the app, 
- * which can be accessed through 'useKaleidList()'
+ * which can be accessed through 'useKaleidList()', giving accesss to a ~global
+ * context of all 'kaleid' rendererers active in the app.
  * */
 export interface KaleidList {
   renderModels: KaleidContextType[];
@@ -44,7 +44,7 @@ export const useKaleidList = () => {
 }
 
 const config: LitConfig = makeAutoObservable({
-  livePreviews: false, enableVideoStreamInput: false
+  livePreviews: true, enableVideoStreamInput: true
 });
 
 export const useLitConfig = () => {
