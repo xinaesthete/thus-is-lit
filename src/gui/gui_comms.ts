@@ -152,7 +152,9 @@ export function sendVideoChange(url: string, modelId: number) {
 export function sendSetVideoDevice(deviceId: string, modelId: number){
     ws.emit(API.SetVideoDevice, {modelId: modelId, deviceId: deviceId});
 }
-
+export function sendRefreshVideoElement() {
+    ws.emit(API.RefreshVideoElement);
+}
 
 export function starVideo(url: string) {
     ws.emit(API.StarVideo, url);

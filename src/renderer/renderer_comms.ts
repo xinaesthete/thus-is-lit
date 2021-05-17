@@ -129,6 +129,10 @@ socket.on(API.SetVideoDevice, async (msg: {modelId: number, deviceId: string}) =
     vidState.setStreamDevice(msg.deviceId);
 });
 
+socket.on(API.RefreshVideoElement, () => {
+    vidState.refreshVidElement();
+});
+
 function onMessage(key: string, callback: (msg: any) => void) {
     socket.on(key, callback);
 }

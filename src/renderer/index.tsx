@@ -36,7 +36,9 @@ window.onresize = () => {
     //camera.aspect = window.innerWidth / window.innerHeight;
     KRenderer.resize(renderer.domElement.getBoundingClientRect());
 };
-
+registerKey('v', () => {
+  vid.refreshVidElement();
+});
 registerKey('r', () => {
   console.log('recording....');
   recordAndDownload(renderer.domElement, 15000);

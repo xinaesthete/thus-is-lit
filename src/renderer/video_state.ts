@@ -2,19 +2,42 @@ import * as THREE from 'three'
 import { AbstractImageDecriptor, FeedbackDescriptor, ImageFileDescriptor, 
     ImageType, ImRot, VideoDescriptor, VideoStreamDescriptor 
 } from '@common/media_model';
-
+type TexChangeListener = (newTex: THREE.Texture) => void;
 export default class VideoState {
     imageState: AbstractImageDecriptor;
     vidEl: HTMLVideoElement;
     _vidUrl: string;
     vidTex: THREE.Texture;
     activeTexture: THREE.Texture;
-    pendingVideoSwitch = false; //did this ever help? Make new element instead?
     feedbackBuffers: THREE.WebGLRenderTarget[] = [];
+    streamDeviceId?: string;
+    private changeListeners: TexChangeListener[] = [];
     constructor(initUrl = 'red.mp4') {
         this._vidUrl = initUrl;
         //XXX: I should remove vidEl when appropriate as well...
+        ///// (not just in newVidElement(), but at the moment we leak into DOM)
         //maybe deal with this differently in React vs not.
+        this.vidEl = document.createElement('video');
+        this.vidTex = new THREE.VideoTexture(this.vidEl);
+        this.activeTexture = this.vidTex;
+
+        this.refreshVidElement();
+
+        const s = new VideoDescriptor(this._vidUrl);
+        s.width = 1920;
+        s.height = 1080;
+        this.imageState = s; //satisfy TS that field is initialised
+        this.setImageState(s);
+        //for debugging.
+        (window as any).VID = this;
+    }
+    /** sometimes video gets stuck or into a bad state & this is a hack to fix it.
+     * Also used for initial init.
+     */
+    refreshVidElement() {
+        console.log('newVidElement');
+        const oldEl = this.vidEl;
+        oldEl.remove();
         this.vidEl = document.createElement('video');
         this.vidEl.crossOrigin = "anonymous";
         this.vidEl.style.display = 'none';
@@ -23,16 +46,17 @@ export default class VideoState {
         this.vidEl.muted = true;
         document.body.appendChild(this.vidEl);
         this.vidEl.src = this._vidUrl;
+        //looking at the THREE.VideoTexture code, video is used in closure in constructor
+        //so we definitely need a new instance to set different vidEl.
         this.vidTex = new THREE.VideoTexture(this.vidEl);
         setTextureParams(this.vidTex);
-        this.activeTexture = this.vidTex;
-        const s = new VideoDescriptor(this._vidUrl);
-        s.width = 1920;
-        s.height = 1080;
-        this.imageState = s; //satisfy TS that field is initialised
-        this.setImageState(s);
-        //for debugging.
-        (window as any).VID = this;
+        this.activeTexture = this.vidTex; //signal to user that this has happened
+        //I suppose we could mobx this instead...
+        this.changeListeners.forEach((f) => f(this.vidTex));
+    }
+    addTextureChangeListener(callback: TexChangeListener) {
+        this.changeListeners.push(callback);
+        console.log('added texture change listener, now have', this.changeListeners.length);
     }
     async setImageState(state: AbstractImageDecriptor) {
         switch (state.imgType) {
@@ -47,8 +71,11 @@ export default class VideoState {
         }
     }
     async setVideoState(state: VideoDescriptor) {
+        console.log('heavy setVideoState called', state.url);
         this.imageState = state;
-        // this.pendingVideoSwitch = true;
+        if (this.streamDeviceId) {
+            this.refreshVidElement();
+        }
         this.activeTexture = this.vidTex;
         const vidEl = this.vidEl;
         vidEl.muted = state.muted;
@@ -77,21 +104,29 @@ export default class VideoState {
      */
     set vidUrl(url: string) {
         this._vidUrl = url;
+        console.log('set vidUrl', url);
+        // this.vidEl.srcObject = null; //doesn't seem enough...
+        if (this.streamDeviceId) {
+            this.streamDeviceId = undefined;
+            this.refreshVidElement();
+        }
         this.vidEl.src = url;
-        // this.seek(0);
+        this.seek(0);
     }
     async setStreamDevice(deviceId: string) {
+        this.refreshVidElement();
         const vidEl = this.vidEl;
         try {
             //see https://webrtc.github.io/samples/src/content/devices/input-output/
             const stream = await navigator.mediaDevices.getUserMedia({video: {deviceId: {exact: deviceId}}});
             console.log(`setting stream id ${stream.id}, 1st video track: ${stream.getVideoTracks()[0].label}`);
             vidEl.srcObject = stream;
+            this.streamDeviceId = deviceId;
             vidEl.onloadedmetadata = () => vidEl.play();
-          } catch (err) {
+        } catch (err) {
             console.error(err);
-          }
-      }
+        }
+    }
     fitTexture = fitTexture;
 }
 

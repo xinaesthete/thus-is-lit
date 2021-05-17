@@ -1,4 +1,5 @@
-import { MenuItem, Select } from '@material-ui/core'
+import { IconButton, MenuItem, Select } from '@material-ui/core'
+import BugReportIcon from '@material-ui/icons/BugReport';
 import { action } from 'mobx';
 import { observer } from 'mobx-react';
 import React from 'react'
@@ -6,7 +7,7 @@ import { AbstractImageDecriptor, ImageType, VideoDescriptor, VideoStreamDescript
 
 import VideoController from './video_controller'
 import mediaLib from '@gui/medialib';
-import { sendSetVideoDevice } from '@gui/gui_comms';
+import { sendRefreshVideoElement, sendSetVideoDevice } from '@gui/gui_comms';
 import { useKaleid, useLitConfig } from '@gui/kaleid_context';
 
 interface AbsImgProps {
@@ -56,6 +57,9 @@ export default observer(function AbstractImageController(props: AbsImgProps) {
     });
     return (
         <>
+        <IconButton onClick={()=>sendRefreshVideoElement()}>
+            <BugReportIcon />
+        </IconButton>
         {props.image.imgType === ImageType.VideoFile ?
         (<VideoController video={props.image as VideoDescriptor} setVideo={setAsVideo} />)
         : (<VideoStreamChooser />)

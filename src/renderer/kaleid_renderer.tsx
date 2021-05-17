@@ -50,7 +50,14 @@ export default class KaleidRenderer implements IThree {
   mat: THREE.ShaderMaterial;
   static fs: string = fs;
   constructor(vid: VideoState, model?: KaleidModel) {
-    this.vid = vid;// || new VideoState();
+    this.vid = vid;
+    
+    const tex1Uniform = {value: vid.vidTex};
+    const texMatrix1Uniform = {value: vid.vidTex.matrix};
+    vid.addTextureChangeListener((tex) => {
+      tex1Uniform.value = tex;
+      texMatrix1Uniform.value = tex.matrix;
+    });
     ////---
     let w = window.innerWidth, h = window.innerHeight; //threact? should know about container element
 
@@ -58,8 +65,9 @@ export default class KaleidRenderer implements IThree {
       'ScreenAspect': {value: w/h},
       'ImageAspect': {value: 1920/1080},
       'UVLimit': {value: new Vector2(1920/2048, 1080/2048)},// vidTex.repeat},
-      'texture1': {value: vid.vidTex},
-      'textureMatrix1': {value: vid.vidTex.matrix},
+      /// need to make sure these are updated if there's a different vidTex
+      'texture1': tex1Uniform,
+      'textureMatrix1': texMatrix1Uniform,
     };
     if (model) {
       this.parms = params.makeGUI(model.tweakables, this.uniforms);
@@ -92,7 +100,7 @@ export default class KaleidRenderer implements IThree {
   t0 = Date.now();
   onUpdate: ()=>void = ()=>{};
   update(time: number) {
-    if (this.vid.pendingVideoSwitch) return;
+    // if (this.vid.pendingVideoSwitch) return;
     const vid = this.vid;
     const im = vid.imageState;
     const vw = im.width;

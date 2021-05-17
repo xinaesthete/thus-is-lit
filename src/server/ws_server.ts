@@ -94,6 +94,9 @@ export default function startWsServer(server: Server) {
                 console.log('starred: ', url);
             });
         });
+        socket.on(API.RefreshVideoElement, () => {
+            socket.broadcast.emit(API.RefreshVideoElement);
+        });
         socket.on(API.Fullscreen, (id: number) => {
             toggleRendererFullscreen(id);
         });
