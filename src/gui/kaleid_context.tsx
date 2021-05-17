@@ -43,16 +43,22 @@ export const useKaleidList = () => {
   return list;
 }
 
+const config: LitConfig = makeAutoObservable({
+  livePreviews: false, enableVideoStreamInput: false
+});
+
 export const useLitConfig = () => {
-  //could be refactored later
-  return useKaleidList().config;
+  //as it stands, could just export the config object,
+  //not much need to be a hook, can just be a global observable object.
+  //this could be refactored later
+  return config;
 }
 
+
 export const KaleidListProvider = observer(({...props}) => {
+  //this whole thing is re-running e.g. when changing tab in app, 
+  //meaning that we don't keep the same context that we had before.
   const [renderModels, setRenderModels] = React.useState([] as KaleidContextType[]);
-  const config: LitConfig = {
-    livePreviews: false, enableVideoStreamInput: false
-  }
   const listContext = makeAutoObservable({
     renderModels: renderModels, setRenderModels: setRenderModels, debugName: 'hello',
     addNewModel: (model: KaleidModel) => {
@@ -62,6 +68,7 @@ export const KaleidListProvider = observer(({...props}) => {
     config: config
   }, undefined, {deep: false, name: 'KaleidList'});
   React.useEffect(()=> {
+    ///careful, may be retriggering when not intended
     registerModelEvents(listContext);
   }, [listContext]);
   return (

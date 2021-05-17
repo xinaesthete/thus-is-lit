@@ -26,6 +26,7 @@ let kaleidList: KaleidList;
  * of this GUI instance.
  */
 export function registerModelEvents(kList: KaleidList) {
+    if (kList === kaleidList) return;
     console.log(`registering model events`);
     kaleidList = kList; // keeping this as module state & re-running useEffect
 }
