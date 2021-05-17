@@ -21,6 +21,7 @@ export default observer(function MutatorCell(props: {spec: Specimen}) {
     //such that these can properly reflect the shape of the renderer
     const kaleidContext = useKaleid();
     const activate = action(() => {
+        // console.log('calling activate in MutatorCell');
         props.spec.genes.forEach((p, t) => {
             t.value = p; //this should be better for not getting indices mixed up?
             //kaleid.tweakables[index].value = p;
@@ -28,14 +29,17 @@ export default observer(function MutatorCell(props: {spec: Specimen}) {
         props.spec.active = true;
         sendModel(kaleidContext.model);
     });
-    //add a 'weight' representation
+    //TODO: add a 'weight' representation & do some funky stuff with mutation
+    /////XXX: when I had {props.spec.weight} inside the <Button> it caused nasty glitches in the renderer
+    ////// WTF???? that was A NASTY GLITCH. A completely isolated JS context disrupted as a side-effect of
+    ////// ???? WHAT?????
     return (
         <GridListTile cols={1} className={classes.mutatorCell}>
             <KaleidComponent {...props} />
             <GridListTileBar actionIcon={
                 <Button onClick={activate} onMouseEnter={activate}
                 onMouseLeave={()=>props.spec.active=false}
-                >{props.spec.weight}</Button>
+                ></Button>
             }
             />
         </GridListTile>
