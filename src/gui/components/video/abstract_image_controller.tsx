@@ -17,6 +17,7 @@ interface AbsImgProps {
 /** List available video stream devices. currently inaccessible & not working. */
 function VideoStreamChooser({...props}) {
     const [devices, setDevices] = React.useState<MediaDeviceInfo[]>([]);
+    const [devId, setDevId] = React.useState('');
     const kaleid = useKaleid();
     React.useMemo(async () => {
         setDevices(await mediaLib.getVideoStreamDevices());
@@ -28,17 +29,17 @@ function VideoStreamChooser({...props}) {
             deviceId: d, imgType: ImageType.VideoStream, 
             width: 1920, height: 1080 //I should be able to skip these, actually...
         }
-        // props.setImage(descriptor);
         sendSetVideoDevice(d, kaleid.model.id);
+        kaleid.vidState.setStreamDevice(d);
+        // kaleid.model.imageSource = descriptor;
+        setDevId(d);
     });
     return (
         <>
-            <Select label="video device" value={props.image.deviceId} onChange={(ev) => {
+            <Select label="video device" value={devId} onChange={(ev) => {
                 chooseDevice(ev.target.value as string);
             }}>
-                {
-                    devices.map(d => (<MenuItem key={d.deviceId} value={d.deviceId}>{d.label}</MenuItem>))
-                }
+                {devices.map(d => (<MenuItem key={d.deviceId} value={d.deviceId}>{d.label}</MenuItem>))}
             </Select>
         </>
     )
