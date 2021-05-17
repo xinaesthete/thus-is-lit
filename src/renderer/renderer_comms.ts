@@ -142,7 +142,7 @@ function reportError (error: string) {
     socket.emit('error', {error: error});
 }
 
-registerKey('F11', () => {
+registerKey('f', () => {
     //actually, id may not be the right key
     //and if anything should be electron preload interface, it's this
     console.log('sending fullscreen message', socket.active);
