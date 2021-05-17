@@ -7,7 +7,7 @@ import { AbstractImageDecriptor, ImageType, VideoDescriptor, VideoStreamDescript
 import VideoController from './video_controller'
 import mediaLib from '@gui/medialib';
 import { sendSetVideoDevice } from '@gui/gui_comms';
-import { useKaleid } from '@gui/kaleid_context';
+import { useKaleid, useLitConfig } from '@gui/kaleid_context';
 
 interface AbsImgProps {
     image: AbstractImageDecriptor;
@@ -16,6 +16,10 @@ interface AbsImgProps {
 
 /** List available video stream devices. currently inaccessible & not working. */
 function VideoStreamChooser({...props}) {
+    const config = useLitConfig();
+    if (!config.enableVideoStreamInput) {
+        return <></>
+    }
     const [devices, setDevices] = React.useState<MediaDeviceInfo[]>([]);
     const [devId, setDevId] = React.useState('');
     const kaleid = useKaleid();

@@ -2,7 +2,7 @@ import KaleidModel from '@common/KaleidModel';
 import { Specimen } from '@common/mutator';
 import { Threact } from '@common/threact/threact';
 import { Numeric } from '@common/tweakables';
-import { useKaleid } from '@gui/kaleid_context'
+import { useKaleid, useLitConfig } from '@gui/kaleid_context'
 import { useStyles } from '@gui/theme';
 import { observer } from 'mobx-react';
 import React from 'react'
@@ -20,10 +20,15 @@ const SpecimenVersion = observer(function SpecimenVersion(props: {spec: Specimen
 
 
 export default observer(function KaleidComponent(props: { spec?: Specimen }) {
-    if (props.spec) return <SpecimenVersion spec={props.spec} />;
+    const config = useLitConfig();
     const classes = useStyles();
     const kaleid = useKaleid();
     const [kRender] = React.useState(new KaleidRenderer(kaleid.vidState, kaleid.model));
+    //after all hooks...
+    if (!config.livePreviews) {
+        return <> </>
+    }
+    if (props.spec) return <SpecimenVersion spec={props.spec} />;
     
     return <Threact gfx={kRender} className={classes.kaleidComponent} />
 })

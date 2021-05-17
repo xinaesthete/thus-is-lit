@@ -16,11 +16,21 @@ export const useKaleid = () => {
   return kaleid;
 }
 
+export interface LitConfig {
+  livePreviews: boolean;
+  enableVideoStreamInput: boolean;
+}
+/** as well as a list of kaleids, 
+ * this is being extended to other general global app state.
+ * There is a <KaleidListProvider> in the root of the app, 
+ * which can be accessed through 'useKaleidList()'
+ * */
 export interface KaleidList {
   renderModels: KaleidContextType[];
   setRenderModels: React.Dispatch<SetStateAction<KaleidContextType[]>>;
   addNewModel: (model: KaleidModel) => void;
   debugName: string;
+  config: LitConfig;
 }
 
 export const KaleidRendererListContext = React.createContext<KaleidList | null>(null);
@@ -33,14 +43,23 @@ export const useKaleidList = () => {
   return list;
 }
 
+export const useLitConfig = () => {
+  //could be refactored later
+  return useKaleidList().config;
+}
+
 export const KaleidListProvider = observer(({...props}) => {
   const [renderModels, setRenderModels] = React.useState([] as KaleidContextType[]);
+  const config: LitConfig = {
+    livePreviews: false, enableVideoStreamInput: false
+  }
   const listContext = makeAutoObservable({
     renderModels: renderModels, setRenderModels: setRenderModels, debugName: 'hello',
     addNewModel: (model: KaleidModel) => {
       const newModelContext = new KaleidContextType(model);
       setRenderModels([...renderModels, newModelContext]);
-    }
+    },
+    config: config
   }, undefined, {deep: false, name: 'KaleidList'});
   React.useEffect(()=> {
     registerModelEvents(listContext);
