@@ -39,7 +39,7 @@ export default observer(function MutatorCell(props: {spec: Specimen}) {
             <GridListTileBar actionIcon={
                 <Button onClick={activate} onMouseEnter={activate}
                 onMouseLeave={()=>props.spec.active=false}
-                ></Button>
+                >select</Button>
             }
             />
         </GridListTile>
