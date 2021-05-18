@@ -32,8 +32,11 @@ export const globalUniforms = {
 
 /** elements drawn to 'proxy' render targets & one big canvas vs 
  * making main canvas that owns WebGL invisible & drawing as image to each component's canvas.
+ * Seems as though Chrome, Safari and others have some optimisations in place that make 'canvas'
+ * work ok, but FireFox doesn't. Actually, it seems like performance in Firefox is pretty abysmal anyway
+ * maybe something else I've missed.
 */
-let compositeMode: 'canvas' | 'proxy' = 'canvas';
+let compositeMode: 'canvas' | 'proxy' = navigator.userAgent.includes('Firefox') ? 'proxy' : 'canvas';
 
 export const clearColor = new THREE.Color(0x000000);
 const startTime = Date.now();
