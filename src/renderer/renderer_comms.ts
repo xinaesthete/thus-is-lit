@@ -72,10 +72,15 @@ export async function init(r: KaleidRenderer) {
         //if we're (re)loading a particular model ID, it would be nice to get the old state back ASAP.
         //that's up to the server once the connection is registered.
 
-        onMessage("/fragCode", json => {
+        onMessage("/fragCode", msg => {
             //threact?
             console.log(`shader code changed...`);
-            KaleidRenderer.fs = json.code;
+            KaleidRenderer.fs = msg.code;
+            KaleidRenderer.previsFS = `#define PREVIS\n${msg.code}`;
+        });
+        registerKey('v', () => {
+            r.previs = !r.previs;
+            console.log('toggling previs shader', r.previs);
         });
         r.onUpdate = reportTime;
     }

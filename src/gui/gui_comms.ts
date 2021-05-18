@@ -103,6 +103,7 @@ ws.on('connected', () => {
 });
 ws.on(API.FragCode, (msg: any) => {
     KaleidRenderer.fs = msg.code as string;
+    KaleidRenderer.previsFS = `#define PREVIS\n${msg.code}`;
     console.log(`shader code changed...`);
 });
 

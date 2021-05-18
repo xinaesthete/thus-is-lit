@@ -50,6 +50,8 @@ export default class KaleidRenderer implements IThree {
   vid: VideoState;
   mat: THREE.ShaderMaterial;
   static fs: string = fs;
+  static previsFS: string = `#define PREVIS\n${fs}`;
+  previs = false;
   constructor(vid: VideoState, model?: KaleidModel) {
     this.vid = vid;
     
@@ -120,13 +122,14 @@ export default class KaleidRenderer implements IThree {
     const dt = time - this.t0;
     this.t0 = time;
     this.parms.update(dt);
-    if (this.mat.fragmentShader !== KaleidRenderer.fs) this.updateFragCode();
+    const shader = this.previs ? KaleidRenderer.previsFS : KaleidRenderer.fs;
+    if (this.mat.fragmentShader !== shader) this.updateFragCode();
   }
-  private updateFragCode() {
+  updateFragCode() {
     console.log(`updating shader code`);
     const mat = this.mat;
     mat.userData.oldFrag = mat.fragmentShader;
-    mat.fragmentShader = KaleidRenderer.fs;
+    mat.fragmentShader = this.previs ? KaleidRenderer.previsFS : KaleidRenderer.fs;
     mat.needsUpdate = true;
     //TODO: error checking / reporting, diff?
   }
