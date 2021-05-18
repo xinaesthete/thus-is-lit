@@ -38,6 +38,7 @@ const defaultTweakables = [ //threact?
   {name: "ImageCentre", value: new Vector2(0.5, 0), min: -1, max: 1, wrap: true, tags: ['geometry']},
   {name: "Centre", value: new Vector2(0., 0.), min: -1, max: 1, tags: ['geometry']},
   {name: "Vignette", value: new Vector2(0.1, 0.1), min: 0, max: 0.2, movement: fix},
+  {name: "outputMult", value: 1, min: 0, max: 1, movement: fix},
 ];
 
 

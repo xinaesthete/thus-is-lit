@@ -21,7 +21,7 @@ uniform float SaturationGain;
 uniform vec2 Centre;
 uniform vec2 ImageCentre;
 uniform vec2 Vignette;
-
+uniform float outputMult;
 varying vec4 vertColor;
 varying vec2 vertTexCoord;
 
@@ -216,5 +216,5 @@ void main() {
   feather *= smoothstep(0., Vignette.y, 0.5 - abs(0.5 - vertTexCoord.y));
   col.a = feather;
 
-  gl_FragColor = col;
+  gl_FragColor = col * outputMult;
 }
