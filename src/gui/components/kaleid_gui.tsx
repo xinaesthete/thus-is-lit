@@ -2,9 +2,7 @@ import { useKaleid } from '@gui/kaleid_context';
 import { observer } from 'mobx-react';
 import UniformGUI from './uniforms_gui';
 import React from 'react';
-import fs from './shaders/kaleid_gui.frag.glsl';
-import { IThree } from "@common/threact/threact";
-import { WebGLRenderer } from 'three';
+import KaleidComponent from './kaleid_component';
 
 // use same uniforms as regular kaleid... actually, let's use the same renderer,
 // but with a flag that lets it add a "#define PREVIS".
@@ -20,6 +18,7 @@ export default observer(() => {
   return (
     <>
       <UniformGUI />
+      <KaleidComponent previs={true} />
     </>
   )
 });

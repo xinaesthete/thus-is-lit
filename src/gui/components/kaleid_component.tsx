@@ -16,7 +16,7 @@ const SpecimenVersion = observer(function SpecimenVersion(props: {spec: Specimen
 });
 
 
-export default observer(function KaleidComponent(props: { spec?: Specimen }) {
+export default observer(function KaleidComponent(props: { spec?: Specimen, previs?: boolean }) {
     const config = useLitConfig();
     const classes = useStyles();
     const kaleid = useKaleid();
@@ -25,6 +25,11 @@ export default observer(function KaleidComponent(props: { spec?: Specimen }) {
         return <div style={{width: '100px', height: '50px', backgroundColor: 'red', opacity: '0.3'}}> </div>
     }
     if (props.spec) return <SpecimenVersion spec={props.spec} />;
-    const kRender = React.useMemo(()=> new KaleidRenderer(kaleid.vidState, kaleid.model), []);
+    const kRender = React.useMemo(()=> {
+        const k = new KaleidRenderer(kaleid.vidState, kaleid.model);
+        if (props.previs) k.previs = true;
+        k.parmsHack = true;
+        return k;
+    }, []);
     return <Threact gfx={kRender} className={classes.kaleidComponent} />
 })

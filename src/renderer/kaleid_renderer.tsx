@@ -52,9 +52,10 @@ export default class KaleidRenderer implements IThree {
   static fs: string = fs;
   static previsFS: string = `#define PREVIS\n${fs}`;
   previs = false;
+  parmsHack = false;
   constructor(vid: VideoState, model?: KaleidModel) {
     this.vid = vid;
-    
+    console.log(`renderer constructor`);
     const tex1Uniform = {value: vid.vidTex};
     const texMatrix1Uniform = {value: vid.vidTex.matrix};
     vid.addTextureChangeListener((tex) => {
@@ -121,6 +122,13 @@ export default class KaleidRenderer implements IThree {
   
     const dt = time - this.t0;
     this.t0 = time;
+    //what happens in here & why no updates in gui?
+    ///this.parms.parms each has a reference to uniforms with some old vals.
+    ///there's also this.parms.specs which seem to have our unused mobx vals.
+    ///such a mess. specs were only supposed to be there while refactoring apparently
+    if (this.parmsHack) {
+      this.setParmsFromArray(this.parms.specs.map(v => v.value));
+    }
     this.parms.update(dt);
     const shader = this.previs ? KaleidRenderer.previsFS : KaleidRenderer.fs;
     if (this.mat.fragmentShader !== shader) this.updateFragCode();

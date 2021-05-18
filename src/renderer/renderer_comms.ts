@@ -56,7 +56,7 @@ export async function init(r: KaleidRenderer) {
         const model: KaleidModel = {
             id: id,
             imageSource: r.vid.imageState,
-            tweakables: r.parms.specs,
+            tweakables: r.parms.specs, //???
         };
 
         const body = JSON.stringify(model);

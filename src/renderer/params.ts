@@ -98,13 +98,13 @@ export const makeGUI = (specs: Tweakable<Numeric>[], uniforms:Uniforms = {}) => 
 
 export class ParamGroup {
     parms: ShaderParam[] = [];
-    specs: Tweakable<Numeric>[]; //while refactoring comms...
+    specs: Tweakable<Numeric>[]; //while refactoring comms. Now what?
     lagTime: number = 1000;
     lagParam?: ShaderParam;
     constructor(specs: Tweakable<Numeric>[], uniforms:Uniforms = {}) {
         const parms = this.parms;
         // gui.add(this, 'lagTime', 0, 20000);
-        this.specs = specs;
+        this.specs = specs;//XXX.
         specs.forEach(s => {
             //uniforms[s.name] = {value: s.value}
             const v = s.value;
