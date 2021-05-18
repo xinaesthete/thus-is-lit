@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import Button from '@material-ui/core/Button';
 import { requestModelList, requestNewRenderer } from '@gui/gui_comms';
-import KaleidGUI from './render_gui_container';
+import RenderControlContainer from './render_gui_container';
 import { KaleidContext, useKaleidList } from '@gui/kaleid_context';
 import { observer } from 'mobx-react';
 import { useStyles } from '@gui/theme';
@@ -28,7 +28,7 @@ export default observer(function RendererControl() {
         </Button>
         {renderModels.map((m,i)=> (
             <KaleidContext.Provider key={m.model.id} value={m}>
-                <KaleidGUI />
+                <RenderControlContainer />
             </KaleidContext.Provider>
         ))}
         </>

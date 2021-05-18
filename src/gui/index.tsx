@@ -9,7 +9,7 @@ import theme, { useStyles } from './theme'
 import DebugPanel from './components/debug/debug_panel';
 import MediaBrowser from './components/media_browser';
 
-import RendererControl from './components/renderer_control'
+import RendererControl from './components/renderers_control'
 import { KaleidListProvider } from './kaleid_context';
 import { observer } from 'mobx-react';
 import { LogGuiProvider } from './components/log_gui';
