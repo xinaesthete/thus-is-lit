@@ -26,13 +26,13 @@ class MobxTweakable<T extends Numeric> implements Tweakable<T> {
         this.modelId = modelId;
         makeObservable(this, {value: observable});
     }
-    name?: string | undefined;
+    name?: string;
     value: T;
-    min?: number | undefined;
-    max?: number | undefined;
-    step?: number | undefined;
-    delta?: number | undefined;
-    movement?: MovementType | undefined;
+    min?: number;
+    max?: number;
+    step?: number;
+    delta?: number;
+    movement?: MovementType;
     modelId: number;
 }
 
@@ -62,20 +62,3 @@ export class ObservableKaleidModel implements KaleidModel {
     }
 }
 
-/** extra level of abstraction seems it may be unneeded, 
- * but this seems to allow vidState to react to change in GUI correctly, 
- * without the 'model' as sent to server etc needing to change */
-export class KaleidContextType {
-    model: ObservableKaleidModel;
-    vidState: VideoState;
-    constructor(init: KaleidModel) {
-        this.model = new ObservableKaleidModel(init);
-        this.vidState = new VideoState();
-        autorun(() => {
-            this.vidState.setImageState(this.model.imageSource);
-        }, {name: `KaleidContext #${this.model.id}`});
-        makeObservable(this.vidState, {
-            imageState: observable
-        }, {name: `KaleidContextObserver #${this.model.id}`});
-    }
-}

@@ -1,11 +1,11 @@
 import { io } from 'socket.io-client'
 import { httpURL, websocketURL } from '@common/network_addresses'
-import KaleidModel, { KaleidContextType } from '@common/KaleidModel';
+import KaleidModel from '@common/KaleidModel';
 import { API } from '@common/socket_cmds';
 import { FileConfigPrefs } from '@common/media_model';
 import KaleidRenderer from '../renderer/kaleid_renderer';
 import { ParamValue, Tweakable } from '@common/tweakables';
-import { KaleidList } from './kaleid_context';
+import { KaleidContextType, KaleidList } from './kaleid_context';
 import { action, computed, makeObservable } from 'mobx';
 import mediaLib from './medialib';
 

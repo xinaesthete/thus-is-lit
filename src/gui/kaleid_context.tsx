@@ -1,8 +1,29 @@
-import KaleidModel, { KaleidContextType } from '@common/KaleidModel';
-import { makeAutoObservable } from 'mobx';
+import KaleidModel, { ObservableKaleidModel } from '@common/KaleidModel';
+import { autorun, makeAutoObservable, makeObservable, observable } from 'mobx';
 import { observer } from 'mobx-react';
 import React, { SetStateAction } from 'react'
+import VideoState from '@renderer/video_state';
 import { registerModelEvents } from './gui_comms';
+import KaleidRenderer from '@renderer/kaleid_renderer';
+
+/** extra level of abstraction seems it may be unneeded, 
+ * but this seems to allow vidState to react to change in GUI correctly, 
+ * without the 'model' as sent to server etc needing to change */
+export class KaleidContextType {
+  model: ObservableKaleidModel;
+  vidState: VideoState;
+  constructor(init: KaleidModel) {
+      this.model = new ObservableKaleidModel(init);
+      this.vidState = new VideoState();
+      autorun(() => {
+          this.vidState.setImageState(this.model.imageSource);
+      }, {name: `KaleidContext #${this.model.id}`});
+      makeObservable(this.vidState, {
+          imageState: observable
+      }, {name: `KaleidContextObserver #${this.model.id}`});
+  }
+}
+
 
 export const KaleidContext = React.createContext<KaleidContextType>(
   //sorry, I should really have a mock defaultValue.
