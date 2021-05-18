@@ -1,15 +1,11 @@
 import React, { useEffect } from 'react'
 import Button from '@material-ui/core/Button';
-import MuiAlert from '@material-ui/lab/Alert';
 import { requestModelList, requestNewRenderer } from '@gui/gui_comms';
-import KaleidGUI from './kaleid_gui';
+import KaleidGUI from './render_gui_container';
 import { KaleidContext, useKaleidList } from '@gui/kaleid_context';
 import { observer } from 'mobx-react';
 import { useStyles } from '@gui/theme';
 
-function Alert(props: any) {
-    return <MuiAlert elevation={6} variant="filled" {...props} />
-}
 
 export default observer(function RendererControl() {
     const classes = useStyles();

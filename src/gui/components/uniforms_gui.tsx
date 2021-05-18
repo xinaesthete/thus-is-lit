@@ -1,23 +1,16 @@
 import { 
-    Accordion, AccordionSummary, AccordionDetails, Slider, Typography, Grid, Button
+    Slider, Typography, Grid
 } from '@material-ui/core'
-import ToggleButton from '@material-ui/lab/ToggleButton/ToggleButton' //broken in new version?
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import React from 'react'
 //maybe want to use material, or just plain-old vanilla dat.gui...
 //maybe revisit react-dat-gui with benefit of understanding React a bit better.
 //import DatGui, {DatNumber, DatString} from 'react-dat-gui'
-import {Uniforms, Numeric, Tweakable, isNum, vec2} from '@common/tweakables'
-import { AbstractImageDecriptor } from '@common/media_model'
+import {Numeric, Tweakable, isNum, vec2} from '@common/tweakables'
 import { useStyles } from '../theme'
-import AbstractImageController from './video/abstract_image_controller'
 import { observer } from 'mobx-react'
 import { action } from 'mobx'
-import MutatorGrid from './mutator/MutatorGrid'
 import { useKaleid } from '@gui/kaleid_context'
 import { sendParameterValue } from '@gui/gui_comms'
-import KaleidComponent from './kaleid_component'
-import { baseSpecimen } from '@common/mutator'
 
 interface SliderProp<T extends Numeric> extends Tweakable<T> {
     modelId: number;
@@ -113,60 +106,4 @@ const SliderBank = observer(() => {
     )
 });
 
-/** this is actually a fairly generic GUI for making a bunch of sliders for tweakable values.
- * Hopefully soon we'll reason about what different types of models we want,
- * and both how to make more explicitly designed GUIs for something like Kaleid, also what more
- * flexible dynamic models might look like.
- */
-const UniformGUI = observer(() => {
-    //also, https://mobx.js.org/react-optimizations.html
-    const classes = useStyles();
-    const kaleidContext = useKaleid();
-    const k = kaleidContext;
-    //trace(); //we *do* keep hitting reaction to top level of model changing, although we *don't* see this re-render.
-    // const deps = getDependencyTree(k.model, 'tweakables');
-    // console.log(JSON.stringify(deps, null, 2));
-    // const obs = getObserverTree(k.model, 'tweakables');
-    // console.log(JSON.stringify(obs, null, 2));
-
-    //const model = kaleidContext.model; //late dereferencing potentially saves unnecessary re-render
-
-    //--> ImageContext? What if there are multiple layers later?
-    // then the context interface can change. KaleidContext can be used in place, anyway.
-    const handleSetImage = action((newImg: AbstractImageDecriptor) => {
-        k.model.imageSource = newImg;
-    });
-
-    const [mutateMode, setMutator] = React.useState(false);
-    ///.....
-    //const tweaker = mutateMode ? <MutatorGrid /> : <SliderBank />;
-    const tweaker = React.useMemo(()=> {
-        if (mutateMode) return <MutatorGrid />;
-        return <SliderBank />;
-    }, [mutateMode]);
-    return (
-        <div className={classes.uniformsGui}>
-        <Accordion TransitionProps={{unmountOnExit: true, timeout: 50}}>
-            <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                aria-controls="panel{model.id}-content" 
-                id="panel{model.id}-header"
-            >
-                <Typography style={{paddingRight: '2em', alignSelf: 'center'}}>Renderer {k.model.id}:</Typography>
-                <KaleidComponent />
-            </AccordionSummary>
-            <AccordionDetails>
-            <div>
-                <AbstractImageController image={k.model.imageSource} setImage={handleSetImage} />
-                <Button onClick={()=>setMutator(!mutateMode)}>
-                    {mutateMode ? "mutator" : "sliders"}
-                </Button>
-                {tweaker}
-            </div>
-            </AccordionDetails>
-        </Accordion>
-        </div>
-    )
-});
-
-export default UniformGUI;
+export default SliderBank;
