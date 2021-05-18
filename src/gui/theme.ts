@@ -65,8 +65,8 @@ export const useStyles = makeStyles((theme: Theme) =>
     },
     slider: {
       // width: 350,
-      maxWidth: 300
-      // padding: theme.spacing(3)
+      maxWidth: 200,
+      padding: theme.spacing(1)
     },
     vidDropdown: {
       margin: theme.spacing(2),
