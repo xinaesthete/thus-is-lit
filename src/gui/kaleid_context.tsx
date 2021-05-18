@@ -44,7 +44,7 @@ export const useKaleidList = () => {
 }
 
 const config: LitConfig = makeAutoObservable({
-  livePreviews: true, enableVideoStreamInput: true
+  livePreviews: true, enableVideoStreamInput: false
 });
 
 export const useLitConfig = () => {
