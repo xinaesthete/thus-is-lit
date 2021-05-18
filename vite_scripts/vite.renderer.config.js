@@ -26,6 +26,7 @@ export default defineConfig({
     alias: {
       '@gui/': PACKAGE_ROOT + '/',
       '@common/': path.resolve(PACKAGE_ROOT, '../common') + '/',
+      '@renderer/': path.resolve(PACKAGE_ROOT, '../renderer') + '/',
       //https://github.com/mui-org/material-ui/issues/21377#issuecomment-798917033
       /// actually I could probably do without these now.
       '@material-ui/icons': '@material-ui/icons/esm',

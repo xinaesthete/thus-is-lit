@@ -16,7 +16,8 @@
         "noEmit": true,
         "paths": {
             "@gui/*": ["gui/*"],
-            "@common/*": ["common/*"]
+            "@common/*": ["common/*"],
+            "@renderer/*": ["renderer/*"],
         }
     },
 }
