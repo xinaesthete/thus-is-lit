@@ -10,19 +10,22 @@ let displays: Electron.Display[];
 
 app.on('ready', () => {
     displays = screen.getAllDisplays();
+    console.log(JSON.stringify(displays, null, 2));
     //at some point we may do something more with these listeners.
     //(sending info to gui...)
     screen.addListener('display-added', (event, newDisplay) => {
         displays = screen.getAllDisplays();
-    })
+        console.log('display added', newDisplay.id, JSON.stringify(newDisplay.bounds, null, 2));
+    });
     
     screen.addListener('display-removed', (event, removedDisplay) => {
         displays = screen.getAllDisplays();
-    })
+        console.log('display removed', removedDisplay.id, JSON.stringify(removedDisplay.bounds, null, 2));
+    });
     
     screen.addListener('display-metrics-changed', (event, display) => {
-    
-    })
+        console.log('display metrics changed', display.id, JSON.stringify(display.bounds, null, 2));
+    });
 });
 
 /// --- for now I'm bypassing anything to do with automatic screen assignment
