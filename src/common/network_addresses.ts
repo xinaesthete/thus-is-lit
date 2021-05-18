@@ -22,6 +22,8 @@ console.log('location.host: ' + location?.host);
 //Now we want electron gui clients to be started on localhost for secure context,
 //but display QR codes to connect to remote on browsers in LAN.
 //we pass the 'remote' ('local external IP') as a search parameter to facilitate this.
+//^^ we might consider moving this to some mobx state (LitConfig); localhost GUI would remain connected
+// QR code would update to reflect new value
 const searchParams = new URLSearchParams(location?.search);
 const hostName = searchParams.get('remote') ?? location?.hostname;
 //Protocol-relative '//' URLs?
