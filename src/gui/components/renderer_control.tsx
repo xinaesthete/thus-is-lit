@@ -2,8 +2,7 @@ import React, { useEffect } from 'react'
 import Button from '@material-ui/core/Button';
 import MuiAlert from '@material-ui/lab/Alert';
 import { requestModelList, requestNewRenderer } from '@gui/gui_comms';
-import { makeStyles, Theme } from '@material-ui/core';
-import KaleidGUI from './uniforms_gui';
+import KaleidGUI from './kaleid_gui';
 import { KaleidContext, useKaleidList } from '@gui/kaleid_context';
 import { observer } from 'mobx-react';
 import { useStyles } from '@gui/theme';

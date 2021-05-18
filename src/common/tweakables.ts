@@ -1,5 +1,4 @@
-import * as THREE from 'three'
-
+// changes here cause whole GUI to reload, renderer state lost - would be good to fix that.
 //implement other types when needed (less to refactor while figuring out design)
 export interface vec2 {x: number, y: number};
 export type Numeric = number | vec2; // | THREE.Vector3 | THREE.Vector4;

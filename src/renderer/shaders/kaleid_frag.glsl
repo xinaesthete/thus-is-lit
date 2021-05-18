@@ -27,6 +27,9 @@ varying vec2 vertTexCoord;
 
 #define PI 3.14159265359
 
+mat2 rotate2d(float a) {
+  return mat2(cos(a), -sin(a), sin(a), cos(a));
+}
 // 2d cartesian to polar coordinates
 vec2 car2pol(vec2 IN) { return vec2(length(IN), atan(IN.y, IN.x)); }
 // 2d polar to cartesian coordinates
@@ -134,7 +137,25 @@ void xmain() {
   uv = mirrorRepeat(uv, UVLimit + (0.5*UVLimit));
   gl_FragColor = texture2D(texture1, uv);
 }
-
+// #define PREVIS
+#ifdef PREVIS
+float shadeSeg(in vec2 p, in float angle) {
+  float a = abs(atan(p.y, p.x)-angle);
+  return smoothstep(angle, angle+0.001, a);
+}
+void main() {
+  vec2 uv = vertTexCoord;
+  vec2 dp = uv - 0.5*(ImageCentre + 1.);
+  dp = rotate2d(Angle) * dp;
+  dp.y /= ScreenAspect;
+  float d = shadeSeg(dp, segAng*0.5);
+  vec4 vidCol = texture2D(texture1, uv);
+  vec4 overlay = vidCol;
+  overlay.a = 1.;
+  float a = d;//smoothstep(0.03, 0.04, d);
+  gl_FragColor = mix(overlay, 0.6*vidCol, a);
+}
+#else
 void main() {
   //see https://gist.github.com/bartwttewaall/5a1168d04a07d52eaf0571f7990191c2 for setting up textureMatrix
   vec2 uv = vertTexCoord;
@@ -218,3 +239,4 @@ void main() {
 
   gl_FragColor = col * outputMult;
 }
+#endif

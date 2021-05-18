@@ -118,7 +118,7 @@ const SliderBank = observer(() => {
  * and both how to make more explicitly designed GUIs for something like Kaleid, also what more
  * flexible dynamic models might look like.
  */
-const KaleidGUI = observer(() => {
+const UniformGUI = observer(() => {
     //also, https://mobx.js.org/react-optimizations.html
     const classes = useStyles();
     const kaleidContext = useKaleid();
@@ -169,4 +169,4 @@ const KaleidGUI = observer(() => {
     )
 });
 
-export default KaleidGUI;
+export default UniformGUI;
