@@ -78,7 +78,7 @@ const VideoTileInner = ({...props}) => {
 
 export default observer(function MediaBrowser() {
     const classes = useStyles();
-    const maxItems = 4*6;
+    const maxItems = 4*4;
     const availableVideos = mediaLib.filteredVideos;
     const pageCount = Math.floor(availableVideos.length / maxItems);
     const [page, setPage] = React.useState(0);
