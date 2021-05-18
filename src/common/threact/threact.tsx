@@ -70,16 +70,20 @@ function resize() {
 }
 function animate(time: number) {
     requestAnimationFrame(animate);
-    renderer.domElement.style.transform = `translateY(${window.scrollY}px)`;
-    //renderer.domElement.style.transform = `translate(${window.scrollX}px, ${window.scrollY}px)`;
     globalUniforms.iTime.value = (Date.now()-startTime) / 1000; //XXX::: use time passed as arg
-    //TODO: don't always assume we need to render every frame, or every view every time we render.
-    views.forEach(v => v.updateLayout(time));
-    renderer.setClearColor(clearColor, 0);
-    renderer.autoClear = false;
-    renderer.setRenderTarget(null);
-    renderer.clear();
-    renderer.render(compositeScene, compositeCamera);
+    if (compositeMode === 'canvas') {
+        views.forEach(v => v.updateLayout(time));
+    } else {
+        renderer.domElement.style.transform = `translateY(${window.scrollY}px)`;
+        //renderer.domElement.style.transform = `translate(${window.scrollX}px, ${window.scrollY}px)`;
+        //TODO: don't always assume we need to render every frame, or every view every time we render.
+        views.forEach(v => v.updateLayout(time));
+        renderer.setClearColor(clearColor, 0);
+        renderer.autoClear = false;
+        renderer.setRenderTarget(null);
+        renderer.clear();
+        renderer.render(compositeScene, compositeCamera);
+    }
 }
 
 init();
