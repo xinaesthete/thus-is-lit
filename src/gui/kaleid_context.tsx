@@ -36,10 +36,6 @@ export const useKaleid = () => {
   return kaleid;
 }
 
-export interface LitConfig {
-  livePreviews: boolean;
-  enableVideoStreamInput: boolean;
-}
 /** 
  * There is a <KaleidListProvider> in the root of the app, 
  * which can be accessed through 'useKaleidList()', giving accesss to a ~global
@@ -50,7 +46,6 @@ export interface KaleidList {
   setRenderModels: React.Dispatch<SetStateAction<KaleidContextType[]>>;
   addNewModel: (model: KaleidModel) => void;
   debugName: string;
-  config: LitConfig;
 }
 
 export const KaleidRendererListContext = React.createContext<KaleidList | null>(null);
@@ -63,18 +58,24 @@ export const useKaleidList = () => {
   return list;
 }
 
-const config: LitConfig = makeAutoObservable({
-  livePreviews: true, enableVideoStreamInput: false
+const config = makeAutoObservable({
+  livePreviews: true, enableVideoStreamInput: false, enableSpecialWidgets: true
 });
+/** provide access to a global (within the context of a GUI browser window) set of 
+ * configuration options.
+ */
+export const useLitConfig = () => { //can't be an observer because it's not a component; does this matter?
+  //anything using this will tend to be an observer.
 
-export const useLitConfig = () => {
   //as it stands, could just export the config object,
   //not much need to be a hook, can just be a global observable object.
   //this could be refactored later
   return config;
 }
 
-
+/** provide access to a global list of all active renderers in the app, 
+ * along with interface for registering new.
+ */
 export const KaleidListProvider = observer(({...props}) => {
   //this whole thing is re-running e.g. when changing tab in app, 
   //meaning that we don't keep the same context that we had before.
@@ -89,6 +90,9 @@ export const KaleidListProvider = observer(({...props}) => {
   }, undefined, {deep: false, name: 'KaleidList'});
   React.useEffect(()=> {
     ///careful, may be retriggering when not intended
+    //-- at present, this is just re-establishing a module-scope variable
+    //   so although it may be called at unncessary times,
+    //   as long as there is only one of these contexts, it's harmless.
     registerModelEvents(listContext);
   }, [listContext]);
   return (

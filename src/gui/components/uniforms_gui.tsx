@@ -9,10 +9,11 @@ import {Numeric, Tweakable, isNum, vec2} from '@common/tweakables'
 import { useStyles } from '../theme'
 import { observer } from 'mobx-react'
 import { action } from 'mobx'
-import { useKaleid } from '@gui/kaleid_context'
+import { useKaleid, useLitConfig } from '@gui/kaleid_context'
 import { sendParameterValue } from '@gui/gui_comms'
+import KaleidImageCentre from './kaleid_imagecentre_widget'
 
-interface SliderProp<T extends Numeric> extends Tweakable<T> {
+export interface SliderProp<T extends Numeric> extends Tweakable<T> {
     modelId: number;
     // onChangeX: React.ChangeEventHandler<number>
     onChange: (event: React.ChangeEvent<{}>, newValue: T) => void
@@ -28,7 +29,7 @@ const defaultStep = (u: hasOptionalRange) => {
     const {max=1, min=0} = {...u};
     return (max - min) / 200.;
 }
-const TweakableSlider = observer(function TweakableSlider(u: SliderProp<Numeric>) {
+const TweakableSlider = observer(function _TweakableSlider(u: SliderProp<Numeric>) {
     ///AAARGGGH noooo... this isNum thing is bad & I seem to be having a bad time with TS generics just now.
     //isVec2() was flat-out useless???
     if (!isNum(u.value)) return <TweakableSliderPair {...(u as SliderProp<vec2>)} />;
@@ -39,10 +40,6 @@ const TweakableSlider = observer(function TweakableSlider(u: SliderProp<Numeric>
     
     return (
         <>
-            <Grid item xs={4} sm={3}>
-            <RowLabel name={name} />
-            </Grid>
-            <Grid item xs={8} sm={9}>
             <Slider className={classes.slider} name={name} min={min} max={max} value={value as number} step={step}
                 onChange={action((e, v) => {
                     //Slider onChange can define number[]
@@ -50,12 +47,11 @@ const TweakableSlider = observer(function TweakableSlider(u: SliderProp<Numeric>
                     onChange(e, v)
                 })} 
                 valueLabelDisplay="auto" />
-            </Grid>
         </>
     )
 });
 
-const TweakableSliderPair = observer(function TweakableSliderPair(u: SliderProp<vec2>) {
+const TweakableSliderPair = observer(function _TweakableSliderPair(u: SliderProp<vec2>) {
     const classes = useStyles();
     const { name='', min, max, value, step = defaultStep(u) } = u;
     //just enough state so that when any one slider changes, we can pass a vec2 to onChange
@@ -69,18 +65,32 @@ const TweakableSliderPair = observer(function TweakableSliderPair(u: SliderProp<
     }
     return (
         <>
-            <Grid item xs={4} sm={3}>
-                <RowLabel name={name} />
-            </Grid>
-            <Grid item xs={8} sm={9}>
             <Slider className={classes.slider} name={name} min={min} max={max} value={val.x} step={step} 
                 onChange={action(makeChange('x'))}
                 valueLabelDisplay="auto" />
             <Slider className={classes.slider} name={name} min={min} max={max} value={val.y} step={step} 
                 onChange={action(makeChange('y'))}
                 valueLabelDisplay="auto" />
-            </Grid>
         </>
+    )
+});
+
+const TweakableWidget = observer((u: SliderProp<Numeric>) => {
+    const useWidgets = useLitConfig();
+    const f = () => {
+        if (useWidgets && u.specialWidget) return <KaleidImageCentre {...u as SliderProp<vec2>} />
+        return <TweakableSlider {...u} />
+    }
+    const el = React.useMemo(f, [f, useWidgets]);
+    return (
+    <>
+            <Grid item xs={4} sm={3}>
+            <RowLabel name={u.name!} />
+            </Grid>
+            <Grid item xs={8} sm={9}>
+                {el}
+            </Grid>
+    </>
     )
 });
 
@@ -93,7 +103,7 @@ const SliderBank = observer(() => {
         <Grid container spacing={1}>
             {kaleidContext.model.tweakables.map((u, i) => {
                 return (
-                    <TweakableSlider key={u.name} {...u} modelId={kaleidContext.model.id}
+                    <TweakableWidget key={u.name} {...u} modelId={kaleidContext.model.id}
                     onChange={action((e, v) => { 
                         u.value = v;
                         //no need for a mobx reaction, straightforward side-effect

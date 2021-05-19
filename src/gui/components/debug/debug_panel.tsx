@@ -36,6 +36,10 @@ const FeatureSwitches = observer(() => {
             <Switch checked={config.enableVideoStreamInput} onChange={action((e)=>config.enableVideoStreamInput = e.target.checked)} />
         }
         label="Allow selection of video stream inputs"/>
+        <FormControlLabel control={
+            <Switch checked={config.enableSpecialWidgets} onChange={action((e)=>config.enableSpecialWidgets = e.target.checked)} />
+        }
+        label="Use 'special widgets' where specified"/>
         
     </FormGroup>);
 });

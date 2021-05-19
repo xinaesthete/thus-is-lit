@@ -6,7 +6,7 @@ import * as THREE from 'three'
 import * as params from './params'
 // import * as vid from './video_state'
 import VideoState from './video_state'
-import {MovementType, Numeric, Uniforms} from '@common/tweakables'
+import {MovementType, Numeric, Tweakable, Uniforms} from '@common/tweakables'
 import { ImageType } from '@common/media_model'
 import KaleidModel from "@common/KaleidModel";
 
@@ -19,8 +19,9 @@ const Vector2 = THREE.Vector2;
 
 //Note to self: adding 'threact?' comments where I need to consider design.
 const fix = MovementType.Fixed;
-const defaultTweakables = [ //threact?
+const defaultTweakables: Tweakable<Numeric>[] = [ //threact?
   {name: "LagTime", value: -10, min: -180, max: 20, tags: ['motion']}, //"midi pitch" log scale.
+  {name: "ImageCentre", value: new Vector2(0.5, 0), min: -1, max: 1, wrap: true, tags: ['geometry'], specialWidget: true},
   {name: "Leaves", value: 3, min: 1, max: 8, step: 1, tags: ['geometry']},
   {name: "Angle", value: 1.05, min: -Math.PI, max: Math.PI, wrap: true, tags: ['geometry']},
   {name: "AngleGain", value: 0.5, min: 0, max: 1, tags: ['geometry']},
@@ -35,7 +36,6 @@ const defaultTweakables = [ //threact?
   {name: "ContrastPostBias", value: 0.5, min: 0, max: 1, tags: ['colour']},
   {name: "SaturationBias", value: 0.5, min: 0, max: 1, tags: ['colour']},
   {name: "SaturationGain", value: 0.5, min: 0, max: 1, tags: ['colour']},
-  {name: "ImageCentre", value: new Vector2(0.5, 0), min: -1, max: 1, wrap: true, tags: ['geometry']},
   {name: "Centre", value: new Vector2(0., 0.), min: -1, max: 1, tags: ['geometry']},
   {name: "Vignette", value: new Vector2(0.1, 0.1), min: 0, max: 0.2, movement: fix},
   {name: "outputMult", value: 1, min: 0, max: 1, movement: fix},
@@ -45,6 +45,7 @@ const defaultTweakables = [ //threact?
 export default class KaleidRenderer implements IThree {
   scene = new THREE.Scene();
   camera = new THREE.OrthographicCamera(0, 1, 1, 0, 0, 10);
+  parmsHack = false;
   parms: params.ParamGroup;
   uniforms: Uniforms;
   vid: VideoState;
@@ -52,7 +53,6 @@ export default class KaleidRenderer implements IThree {
   static fs: string = fs;
   static previsFS: string = `#define PREVIS\n${fs}`;
   previs = false;
-  parmsHack = false;
   constructor(vid: VideoState, model?: KaleidModel) {
     this.vid = vid;
     console.log(`renderer constructor`);

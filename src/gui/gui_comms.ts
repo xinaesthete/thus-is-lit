@@ -27,7 +27,7 @@ let kaleidList: KaleidList;
  */
 export function registerModelEvents(kList: KaleidList) {
     if (kList === kaleidList) return;
-    console.log(`registering model events`);
+    console.log(`registering model events to a different KaleidList`);
     kaleidList = kList; // keeping this as module state & re-running useEffect
 }
 
