@@ -137,67 +137,51 @@ void xmain() {
   uv = mirrorRepeat(uv, UVLimit + (0.5*UVLimit));
   gl_FragColor = texture2D(texture1, uv);
 }
-// #define PREVIS
-#ifdef PREVIS
+
 float shadeSeg(in vec2 p, in float angle) {
-  float a = abs(atan(p.y, p.x)-angle);
+  float a = abs(0.5*angle+atan(p.y, p.x)-0.5*angle);
   return smoothstep(angle, angle+0.001, a);
 }
-void main() {
+vec4 previs_main() {
   vec2 uv = vertTexCoord;
   vec2 dp = uv - 0.5*(ImageCentre + 1.);
+  dp.x *= ScreenAspect;
   dp = rotate2d(Angle) * dp;
-  dp.y /= ScreenAspect;
-  float d = shadeSeg(dp, segAng*0.5);
+  float d = shadeSeg(dp, segAng*0.25);
   vec4 vidCol = texture2D(texture1, uv);
   vec4 overlay = vidCol;
   overlay.a = 1.;
+  //overlay.rgb = mix(hsv2rgb(vec3(dp.x, 0.5, dp.y)), vidCol.rgb, 0.5);
   float a = d;//smoothstep(0.03, 0.04, d);
-  gl_FragColor = mix(overlay, 0.6*vidCol, a);
+  return mix(overlay, 0.6*vidCol, a);
 }
-#else
-void main() {
+vec4 k_main() {
   //see https://gist.github.com/bartwttewaall/5a1168d04a07d52eaf0571f7990191c2 for setting up textureMatrix
   vec2 uv = vertTexCoord;
-  //uv = (textureMatrix1* vec3(uv, 1.)).xy; // / UVLimit;
   vec2 normalAspectUV = correctAspect(vertTexCoord.xy);
   uv -= 0.5;
-  //not correcting for aspect in the right way here
-  //polar coordinates should relate to ScreenAspect, but have nothing to do with ImageAspect.
-  //'correctAspect' applies texture matrix.
-  // uv = correctAspect(uv);
   uv.x *= ScreenAspect;
   
-  vec2 c = Centre; //maybe change this so 0 is in the middle.
-  //c.x *= ScreenAspect;
-  ////c.y /= ScreenAspect;
+  vec2 c = Centre;
   
   vec2 polar = car2pol(uv - c);
   vec2 polarDry = polar;
   float pSign = sign(polar.y);
-  // polar.y *= pSign; //out, damn seam. (but want simple OutAngle etc back)
-  // polar.y += PI;
   polar.y += OutAngle * segAng;
   polar.y += Angle2 * segAng;
   float leavesI = floor(Leaves);
   float leavesFr = fract(Leaves);
   
-  // polar.y -= leavesFr*OutAngle*segAng; //I'd like to be able to scribble with a pencil on my debug gfx...
   polar.y = mod(polar.y+PI, 2.*PI);
   polar.y -= PI;
   
-  // what I'd really like is to seamlessly transition to visually stepping through each transformation.
-  // or for a teacher to be able to inject debug vis into a students code to point out their problem...
   float leaf = polar.y / segAng; ///....
-  // leaf -= leavesFr/(PI);
   float leafI = ceil(leaf);
   float fr = fract(leaf);
   fr = gain(fr, AngleGain);
   float rfr = fr > 0.5 ? 1. - fr : fr;
-  // polar.y = Angle + (rfr+OutAngle) * segAng; //makes OutAngle behave like Angle
   polar.y = Angle + rfr * segAng;
   polar.y -= Angle2 * segAng;
-  //polar.y *= pSign; //ineffective?
 
   ///consider something more interesting here...
   polar.x *= Zoom;
@@ -210,7 +194,6 @@ void main() {
   //FFS... all the mathematical rigour of a chimp brandishing a compass...
   vec2 _uvLim = vec2(1., mix(UVLimit.y, UVLimit.x, min(floor(ImageAspect), 1.)));
   uv2 = mirrorRepeat(uv2, _uvLim);
-  // uv2 = mirrorRepeat(uv2, UVLimit+vec2(0.0, 0.01));
   
   vec4 col = texture2D(texture1, uv2);
   vec3 colHSV = rgb2hsv(col.rgb);
@@ -218,13 +201,11 @@ void main() {
   colHSV.z = bias(colHSV.z, ContrastPreBias);
   colHSV.z = bias(gain(colHSV.z, ContrastGain), ContrastPostBias);
   
-  #define _DEBUG
+  #define DEBUG
   #ifdef DEBUG
   vec3 dbg = vec3(0.);
   dbg.x = colHSV.x = 0.;
   float thresh = 0.002/polarDry.x;
-  // float a = MozGain*debugNear(polarDry.y, PI, thresh);
-  // float a = MozGain*debugNear(mod(0.1*thresh*sin(400.*polarDry.x)+polarDry.y+(OutAngle*segAng), segAng/2.), 0., thresh);
   float a = MozGain*debugMod(polarDry.y+(OutAngle*segAng), segAng/2., thresh);
   dbg.y = a;  //abs(f-g)*10.;
   dbg.z = max(a, leafI/Leaves);// max(a, rfr);//polar.y / (2.*PI);
@@ -237,6 +218,13 @@ void main() {
   feather *= smoothstep(0., Vignette.y, 0.5 - abs(0.5 - vertTexCoord.y));
   col.a = feather;
 
-  gl_FragColor = col * outputMult;
+  return col * outputMult;
 }
-#endif
+
+void main() {
+  #ifdef PREVIS
+    gl_FragColor = previs_main();
+  #else
+    gl_FragColor = k_main();
+  #endif
+}
