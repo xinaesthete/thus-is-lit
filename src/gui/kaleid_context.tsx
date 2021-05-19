@@ -4,7 +4,6 @@ import { observer } from 'mobx-react';
 import React, { SetStateAction } from 'react'
 import VideoState from '@renderer/video_state';
 import { registerModelEvents } from './gui_comms';
-import KaleidRenderer from '@renderer/kaleid_renderer';
 
 /** extra level of abstraction seems it may be unneeded, 
  * but this seems to allow vidState to react to change in GUI correctly, 
