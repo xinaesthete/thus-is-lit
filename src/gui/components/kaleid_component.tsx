@@ -1,5 +1,5 @@
 import { Specimen } from '@common/mutator';
-import { Threact } from '@common/threact/threact';
+import { DomAttributes, Threact } from '@common/threact/threact';
 import { useKaleid, useLitConfig } from '@gui/kaleid_context'
 import { useStyles } from '@gui/theme';
 import { observer } from 'mobx-react';
@@ -26,7 +26,7 @@ const SpecimenVersion = observer(function SpecimenVersion(props: {spec: Specimen
  * to help with debugging, but is also hoped to form the basis of a better GUI with
  * direct visual manipulation)
  */
-export default observer(function KaleidComponent(props: { spec?: Specimen, previs?: boolean }) {
+export default observer(function KaleidComponent(props: { spec?: Specimen, previs?: boolean } & DomAttributes) {
     const config = useLitConfig();
     const classes = useStyles();
     const kaleid = useKaleid();
@@ -41,6 +41,8 @@ export default observer(function KaleidComponent(props: { spec?: Specimen, previ
         k.parmsHack = true;
         return k;
     };
-    const kRender = React.useMemo(makeRenderer, [makeRenderer]);
-    return <Threact gfx={kRender} className={classes.kaleidComponent} />
+    const kRender = React.useMemo(makeRenderer, [makeRenderer]); //<<< happening a lot
+    //"Warning: Received `true` for a non-boolean attribute `previs`."
+    const {previs, spec, ...dom} = props;
+    return <Threact gfx={kRender} className={classes.kaleidComponent} domAttributes={dom} />
 });

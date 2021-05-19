@@ -16,7 +16,8 @@ import KaleidImageCentre from './kaleid_imagecentre_widget'
 export interface SliderProp<T extends Numeric> extends Tweakable<T> {
     modelId: number;
     // onChangeX: React.ChangeEventHandler<number>
-    onChange: (event: React.ChangeEvent<{}>, newValue: T) => void
+    // onChange: (event: React.ChangeEvent<{}>, newValue: T) => void
+    onChange: (newValue: T) => void
 }
 
 
@@ -44,7 +45,7 @@ const TweakableSlider = observer(function _TweakableSlider(u: SliderProp<Numeric
                 onChange={action((e, v) => {
                     //Slider onChange can define number[]
                     if (typeof v !== 'number') return;
-                    onChange(e, v)
+                    onChange(v);
                 })} 
                 valueLabelDisplay="auto" />
         </>
@@ -61,7 +62,7 @@ const TweakableSliderPair = observer(function _TweakableSliderPair(u: SliderProp
         const newVal = {...val};
         newVal[k] = newComponentValue;
         setVal(newVal);
-        u.onChange(event, newVal);
+        u.onChange(newVal);
     }
     return (
         <>
@@ -104,7 +105,7 @@ const SliderBank = observer(() => {
             {kaleidContext.model.tweakables.map((u, i) => {
                 return (
                     <TweakableWidget key={u.name} {...u} modelId={kaleidContext.model.id}
-                    onChange={action((e, v) => { 
+                    onChange={action((v) => {
                         u.value = v;
                         //no need for a mobx reaction, straightforward side-effect
                         sendParameterValue(u, kaleidContext.model.id);

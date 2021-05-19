@@ -101,10 +101,12 @@ export interface IThree {
     disposeThree(): void;
 }
 
+export interface DomAttributes extends React.DOMAttributes<HTMLCanvasElement> {}
 
 export interface IThreact {
     gfx: IThree;
     className?: string;
+    domAttributes?: DomAttributes;
     //reactChildren?: React.Component[]; //React components already have children.
 }
 
@@ -235,6 +237,6 @@ export class Threact extends React.Component<IThreact, any> {
         ctx.drawImage(renderer.domElement, 0, 0);
     }
     render() {
-        return <canvas className={this.state.className} ref={(mount) => this.mount = mount as HTMLCanvasElement} />
+        return <canvas {...this.props.domAttributes} className={this.state.className} ref={(mount) => this.mount = mount as HTMLCanvasElement} />
     }
 }
