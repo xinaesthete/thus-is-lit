@@ -6,7 +6,7 @@ import * as THREE from 'three'
 import * as params from './params'
 // import * as vid from './video_state'
 import VideoState, { TexChangeListener } from './video_state'
-import {MovementType, Numeric, Tweakable, Uniforms} from '@common/tweakables'
+import {isNum, MovementType, Numeric, Tweakable, Uniforms} from '@common/tweakables'
 import { ImageType } from '@common/media_model'
 import KaleidModel from "@common/KaleidModel";
 
@@ -101,7 +101,9 @@ export default class KaleidRenderer implements IThree {
     vals.forEach((p, index) => {
       const t = this.parms.parms[index].val; //oof
       t.lagTime = 0.01;//xxx
-      t.targVal = p;
+      //be careful about keeping the same object reference
+      if (isNum(p)) t.targVal = p;
+      else Object.assign(t.targVal, p);
     });
   }
   t0 = Date.now();
