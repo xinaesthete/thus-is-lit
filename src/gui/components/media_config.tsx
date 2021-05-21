@@ -14,9 +14,8 @@ import { observer } from 'mobx-react'
 import { requestFileDialog } from '../gui_comms';
 import { useStyles } from '@gui/theme';
 
-const MediaConfig = observer( function MediaConfig() {
+const MediaConfig = function MediaConfig() {
   const [open, setOpen] = React.useState(false);
-  //keep state of path local, so if we cancel it doesn't change anything.
   const [path, setPath] = React.useState(mediaLib.mainAssetPath!);
   const classes = useStyles();
 
@@ -37,12 +36,12 @@ const MediaConfig = observer( function MediaConfig() {
     const result = await requestFileDialog();
     if (result === undefined) return;
     setPath(result);
-    handleSubmit();
+    // handleSubmit(); //for some reason this doesn't work.
   }
 
   return (
     <div className={classes.mediaConfigHeader}>
-      <IconButton aria-label="media-config" onClick={handleClickOpen} ><SettingsIcon /></IconButton>
+      <IconButton aria-label="media-config" onClick={handleClickOpen} ><FolderIcon /></IconButton>
       <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
         <DialogTitle id="form-dialog-title">Where are your files?</DialogTitle>
         <DialogContent>
@@ -56,7 +55,7 @@ const MediaConfig = observer( function MediaConfig() {
             id="name"
             label="main asset path"
             type="path"
-            defaultValue={path}
+            value={path}
             onChange={e=>setPath(e.target.value)}
             fullWidth
           />
@@ -73,6 +72,6 @@ const MediaConfig = observer( function MediaConfig() {
       <TextField label="filter" onChange={(e) => mediaLib.stringFilter(e.target.value)} />
     </div>
   );
-});
+};
 
 export default MediaConfig;
