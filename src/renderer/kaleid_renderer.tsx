@@ -5,7 +5,7 @@ import fs from './shaders/kaleid_frag.glsl'
 import * as THREE from 'three'
 import * as params from './params'
 // import * as vid from './video_state'
-import VideoState from './video_state'
+import VideoState, { TexChangeListener } from './video_state'
 import {MovementType, Numeric, Tweakable, Uniforms} from '@common/tweakables'
 import { ImageType } from '@common/media_model'
 import KaleidModel from "@common/KaleidModel";
@@ -53,15 +53,18 @@ export default class KaleidRenderer implements IThree {
   static fs: string = fs;
   static previsFS: string = `#define PREVIS\n${fs}`;
   previs = false;
+  texListener: TexChangeListener;
   constructor(vid: VideoState, model?: KaleidModel) {
     this.vid = vid;
     console.log(`renderer constructor`);
     const tex1Uniform = {value: vid.vidTex};
     const texMatrix1Uniform = {value: vid.vidTex.matrix};
-    vid.addTextureChangeListener((tex) => {
+    this.texListener = (tex) => {
       tex1Uniform.value = tex;
       texMatrix1Uniform.value = tex.matrix;
-    });
+    };
+    //oopsy... this was leaking. now moved to initThree / disposeThree
+    //vid.addTextureChangeListener(this.texListener);
     ////---
     let w = window.innerWidth, h = window.innerHeight; //threact? should know about container element
 
@@ -97,10 +100,6 @@ export default class KaleidRenderer implements IThree {
       t.targVal = p;
     });
   }
-  initThree(dom: HTMLElement) {
-    //doing most stuff in constructor, pending review of Threact design.
-    this.resize(dom.getBoundingClientRect());
-  }
   t0 = Date.now();
   onUpdate: ()=>void = ()=>{};
   update(time: number) {
@@ -131,6 +130,7 @@ export default class KaleidRenderer implements IThree {
     }
     this.parms.update(dt);
     const shader = this.previs ? KaleidRenderer.previsFS : KaleidRenderer.fs;
+    ///WOAH THERE!!! this is happening a lot.
     if (this.mat.fragmentShader !== shader) this.updateFragCode();
   }
   updateFragCode() {
@@ -160,5 +160,19 @@ export default class KaleidRenderer implements IThree {
     this.uniforms.ScreenAspect.value = w/h;
     //XXX: camera...
   }
-  disposeThree() {}
+  /** in threact, this will be called on `componentWillUnmount()`
+   * but we should be careful of object lifecycle not behaving as anticipated,
+   * THIS MAY NOT BE FINAL OBJECT DISPOSAL. 
+   * 
+   * Not totally sure of design, but a hypothesis:
+   * "Whatever happens here should correspond to an opposite in initThree"
+   */
+  disposeThree() {
+    this.vid.removeTextureChangeListener(this.texListener);
+  }
+  initThree(dom: HTMLElement) {
+    //doing most stuff in constructor, pending review of Threact design.
+    this.vid.addTextureChangeListener(this.texListener);
+    this.resize(dom.getBoundingClientRect());
+  }
 }

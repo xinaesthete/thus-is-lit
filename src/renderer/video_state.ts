@@ -2,7 +2,7 @@ import * as THREE from 'three'
 import { AbstractImageDecriptor, FeedbackDescriptor, ImageFileDescriptor, 
     ImageType, ImRot, VideoDescriptor, VideoStreamDescriptor 
 } from '@common/media_model';
-type TexChangeListener = (newTex: THREE.Texture) => void;
+export type TexChangeListener = (newTex: THREE.Texture) => void;
 export default class VideoState {
     imageState: AbstractImageDecriptor;
     vidEl: HTMLVideoElement;
@@ -57,6 +57,12 @@ export default class VideoState {
     addTextureChangeListener(callback: TexChangeListener) {
         this.changeListeners.push(callback);
         console.log('added texture change listener, now have', this.changeListeners.length);
+    }
+    removeTextureChangeListener(callback: TexChangeListener) {
+        const i = this.changeListeners.indexOf(callback);
+        if (i === -1) throw new Error('unbalanced call to removeTextureChangeListener?');
+        this.changeListeners.splice(i, 1);
+        console.log('removeTextureChangeListener, now have ', this.changeListeners.length);
     }
     async setImageState(state: AbstractImageDecriptor) {
         switch (state.imgType) {

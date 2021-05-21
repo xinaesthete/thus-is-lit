@@ -130,6 +130,7 @@ export class Threact extends React.Component<IThreact, any> {
     color = 0x202020;
     private lastW = 0;
     private lastH = 0;
+    disposed = false;
     constructor(props: any) {
         super(props);
         this.state = {
@@ -147,14 +148,18 @@ export class Threact extends React.Component<IThreact, any> {
         //may be more optimal for it to render into main, but this is premature optimization and may be less debug-friendly.
         compositeScene.add(this.composite);
         views.add(this);
+        this.disposed = false;
         this.props.gfx.initThree(this.mount!);
     }
     componentWillUnmount() {
         compositeScene.remove(this.composite);
         views.delete(this);
+        this.disposed = true;
+        this.props.gfx.disposeThree(); //is this a safe bet? should be symmetric with `componentDidMount()`?
     }
     updateLayout(time: number) {
         if (!this.mount) return;
+        if (this.disposed) throw "still renderering after dispose";
         //nb: it could be possible to use something other than bounding rect, in cases with odd CSS transform.
         //but that's a bit of a tangent. Not sure if there's a simple way to e.g. get a matrix representing arbitrary transform
         const rect = this.mount.getBoundingClientRect(); //"Forced Reflow is likely a performance bottleneck"
