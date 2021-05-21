@@ -201,7 +201,7 @@ vec4 k_main() {
   colHSV.z = bias(colHSV.z, ContrastPreBias);
   colHSV.z = bias(gain(colHSV.z, ContrastGain), ContrastPostBias);
   
-  #define DEBUG
+  #define _DEBUG
   #ifdef DEBUG
   vec3 dbg = vec3(0.);
   dbg.x = colHSV.x = 0.;
