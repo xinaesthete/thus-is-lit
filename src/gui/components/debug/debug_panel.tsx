@@ -41,6 +41,10 @@ const FeatureSwitches = observer(() => {
             <Switch checked={config.enableSpecialWidgets} onChange={action((e)=>config.enableSpecialWidgets = e.target.checked)} />
         }
         label="Use 'special widgets' where specified"/>
+        <FormControlLabel control={
+            <Switch checked={config.paramsHack} onChange={action((e)=>config.paramsHack = e.target.checked)} />
+        }
+        label="params hack"/>
         
     </FormGroup>);
 });

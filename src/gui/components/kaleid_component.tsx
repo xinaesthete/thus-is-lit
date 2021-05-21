@@ -41,16 +41,16 @@ export default observer(function KaleidComponent(props: { spec?: Specimen, previ
         return <div style={{width: '100px', height: '50px', backgroundColor: 'red', opacity: '0.3'}}> </div>
     }
     if (props.spec) return <SpecimenVersion spec={props.spec} />;
-    const makeRenderer = ()=> {
+    const getRenderer = ()=> {
         const k = kaleid.getRenderer(key); //new KaleidRenderer(kaleid.vidState, kaleid.model);
         if (props.previs) k.previs = true;
-        // k.parmsHack = true; //not helping any more... get rid.
+        k.parmsHack = config.paramsHack;
         return k;
     };
     useAnimationFrame(()=> {
         //kRender.
     }); //could be useful (but threact already has its own logic).
 
-    const kRender = React.useMemo(makeRenderer, [key]);
+    const kRender = React.useMemo(getRenderer, [key, config.paramsHack]);
     return <Threact gfx={kRender} className={classes.kaleidComponent} domAttributes={dom} />
 });

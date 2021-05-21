@@ -43,7 +43,7 @@ export class ObservableKaleidModel implements KaleidModel {
     constructor(init: KaleidModel) {
         this.imageSource = { width: -1, height: -1, imgType: ImageType.Null };
         Object.assign(this, init);
-        this.tweakables = init.tweakables.map(t => new MobxTweakable(t, init.id));
+        this.tweakables = init.tweakables.map(t => new MobxTweakable(t, init.id)); //losing connection? (see paramsHack...)
         //"Only plain object, array, Map, Set, function, generator function are convertible. Class instances and others are untouched."
         makeObservable(this, {
             imageSource: observable,
