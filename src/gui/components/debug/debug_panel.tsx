@@ -1,5 +1,6 @@
 import React from 'react';
 import JsonView from './json_view';
+//Warning: componentWillReceiveProps has been renamed, and is not recommended for use.
 import QRCode from 'qrcode.react';
 import { remoteGuiURL, rendererApiURL } from '@common/network_addresses';
 import { Typography, Switch, FormGroup, FormControlLabel } from '@material-ui/core';

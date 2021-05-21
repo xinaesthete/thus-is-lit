@@ -471,6 +471,7 @@ export default async function fixWebmDuration(blob: Blob, duration: number) {
           }
         } catch (ex) {
           // ignore
+          console.error('error preparing WebmFile... ignoring', ex);
         }
         //callback(blob); //no callback, changed to async
         resolve(blob);

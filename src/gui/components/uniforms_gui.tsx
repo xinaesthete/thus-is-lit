@@ -23,7 +23,7 @@ export interface SliderProp<T extends Numeric> extends Tweakable<T> {
 
 function RowLabel(props: {name: string}) {
     const classes = useStyles();
-    return <Typography className={classes.root}>{props.name}</Typography>
+    return <Typography style={{textAlign: "right"}}>{props.name}</Typography>
 }
 interface hasOptionalRange {min?: number, max?: number}
 const defaultStep = (u: hasOptionalRange) => {
