@@ -1,9 +1,9 @@
 import { 
-    Slider, Typography, Grid, IconButton
+    Slider, Typography, Grid, IconButton,
 } from '@material-ui/core'
 import RotateLeftIcon from '@material-ui/icons/RotateLeft';
 import React from 'react'
-import { Donut } from 'react-dial-knob'
+import MovementControl from './movement_control'
 //maybe want to use material, or just plain-old vanilla dat.gui...
 //maybe revisit react-dat-gui with benefit of understanding React a bit better.
 //import DatGui, {DatNumber, DatString} from 'react-dat-gui'
@@ -77,33 +77,6 @@ const TweakableSliderPair = observer(function _TweakableSliderPair(u: SliderProp
     )
 });
 
-const LagOffsetControl = observer((u: Tweakable<Numeric>) => {
-    //maybe if things like this were inside a 'speed dial'?
-    //--- lagOffset ok, but really other kinds of movement are what I want. ---
-    const {lagOffset=0, name=''} = u;
-    const k = useKaleid();
-    if (lagOffset === undefined) return <></>
-    return <Donut
-        value={lagOffset} min={-60} max={60} step={1} diameter={15} 
-        onValueChange={action((v)=>{
-            //u.lagOffset = t;
-            const t = k.model.tweakables.find(t => t.name === u.name);
-            if (t) {
-                t.lagOffset = v;
-                sendParameterValue(t, k.model.id);
-            }
-            })}
-    />
-    return <Slider name={name + 'lag'} min={-60} max={60} value={lagOffset} step={1} onChange={action((ev, v) => {
-        if (typeof v !== 'number') return;
-        // u.lagOffset = v;
-        const t = k.model.tweakables.find(t => t.name === u.name);
-        if (t) {
-            t.lagOffset = v;
-            sendParameterValue(t, k.model.id);
-        }
-    })} />
-});
 
 const TweakableWidget = observer((u: SliderProp<Numeric>) => {
     const useWidgets = useLitConfig();
@@ -116,7 +89,7 @@ const TweakableWidget = observer((u: SliderProp<Numeric>) => {
     <>
             <Grid item xs={4} sm={3}>
             <RowLabel name={u.name!} />
-            <LagOffsetControl {...u} />
+            <MovementControl {...u} />
             </Grid>
             <Grid item xs={8} sm={9}>
                 <IconButton style={{padding: 0}}

@@ -19,13 +19,16 @@ const Vector2 = THREE.Vector2;
 
 //Note to self: adding 'threact?' comments where I need to consider design.
 const fix = MovementType.Fixed;
+const rot = MovementType.AngleShift;
 const defaultTweakables: Tweakable<Numeric>[] = [ //threact?
   {name: "LagTime", value: -10, min: -180, max: 20, tags: ['motion']}, //"midi pitch" log scale.
   {name: "ImageCentre", value: new Vector2(0.5, 0), min: -1, max: 1, wrap: true, tags: ['geometry'], specialWidget: true},
   {name: "Leaves", value: 3, min: 1, max: 8, step: 1, tags: ['geometry']},
-  {name: "Angle", value: 1.05, min: -Math.PI, max: Math.PI, wrap: true, tags: ['geometry'], default: 0},
+  {name: "Angle", value: 1.05, min: -Math.PI, max: Math.PI, wrap: true, tags: ['geometry'], 
+    default: 0, movement: rot, movementSpeedOffset: 0.1
+  },
   {name: "AngleGain", value: 0.5, min: 0, max: 1, tags: ['geometry']},
-  {name: "Angle2", value: 0, min: -1, max: 1, tags: ['geometry']},
+  {name: "Angle2", value: 0, min: -1, max: 1, tags: ['geometry'], movement: rot},
   {name: "OutAngle", value: 0, min: -1, max: 1, wrap: true, tags: ['geometry']},
   {name: "Zoom", value: 1.3, min: 0, max: 10, tags: ['geometry']},
   {name: "KaleidMix", value: 1, min: 0, max: 1, step: 1, movement: fix},

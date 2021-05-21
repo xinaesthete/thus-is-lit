@@ -15,10 +15,11 @@ export type Numeric = number | vec2; // | THREE.Vector3 | THREE.Vector4;
 //shaped oscillation
 // see also THREE.KeyframeTrack et al
 
+/// If I were in Rust, I'd have different enum types with associated properties
 export enum MovementType {
     //consider adding more options as above, for now want a way of conveying that some uniforms
     //are fixed part of system, e.g. only internal to renderer rather than part of model.
-    Fixed, Modulatable 
+    Fixed, Modulatable, AngleShift, Sin, 
 }
 
 //add an optional neutral value to reset to? (eg gain = 0.5)
@@ -31,20 +32,20 @@ export interface Tweakable<T extends Numeric> {
     step?: number,
     delta?: number,
     wrap?: boolean,
-    movement?: MovementType,
     tags?: string[],
     specialWidget?: boolean,
     /** this value will be added to (at time of writing) that of an overall lag.
      * Using 'midi pitch' scale, so a value of +12 will be twice as fast...
      */
-    lagOffset?: number
+    movementSpeedOffset?: number
+    movement?: MovementType,
     //scale?: (T) => T //change to be similar to MuiSlider? but that has a different idea about relation to min&max?
     //also if I want to send functions for eval across wire, I need to be careful about trust... and anyway, I'm not using this yet.
 }
 
-/** enough information to transmit slider change (plus tagging on lagOffset to save extra routes) */
+/** enough information to transmit slider change (plus tagging on movementSpeedOffset to save extra routes) */
 export interface ParamValue<T> {
-    value: T, modelId: number, key: string | number, lagOffset?: number
+    value: T, modelId: number, key: string | number, movementSpeedOffset?: number
 }
 
 export type Uniforms = Record<string, Tweakable<any>>;

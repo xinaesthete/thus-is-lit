@@ -69,6 +69,28 @@ class LagVec2 implements Lagger<vec2> {
     }
 }
 
+/** Lagger interface isn't necessarily right for this
+ * but there's probably ways this could all be simpler anway.
+ */
+class AngleRotater implements Lagger<number> {
+    lagTime: number;
+    targVal: number;
+    curVal: number;
+    v: Tweakable<number>;
+    constructor(v: Tweakable<number>) {
+        this.v = v;
+        this.lagTime = 0;
+        this.targVal = 0;
+        this.curVal = 0;
+    }
+    update(dt: number) {
+        //this.curVal = this.curVal + this.v.movementSpeedOffset!*dt; //like this? or...
+        this.curVal = this.curVal + this.targVal*(dt/(10000)); //more this?
+
+        return this.curVal;
+    }
+}
+
 function getLagger(v: Numeric, lagTime: number): Lagger<Numeric> {
     if (isNum(v)) {
         return new LagNum(v, lagTime);
@@ -78,6 +100,13 @@ function getLagger(v: Numeric, lagTime: number): Lagger<Numeric> {
     //}
 }
 
+function getMotionDriver(v: Tweakable<Numeric>): Lagger<Numeric> {
+    if (v.movement === MovementType.AngleShift) {
+        return new AngleRotater(v as Tweakable<number>);
+    } else {
+        return getLagger(v.value, 10000);
+    }
+}
 
 export let paramState: ParamGroup;
 
@@ -88,8 +117,11 @@ export let paramState: ParamGroup;
  */
 export const makeGUI = (specs: Tweakable<Numeric>[], uniforms:Uniforms = {}) => {
     Object.keys(uniforms).forEach(k => uniforms[k].movement = MovementType.Fixed);
-    //I don't (yet) use movement parameter, but if I do then I don't want to overwrite specs = Modulatable
-    specs.forEach(s => s.movement = MovementType.Modulatable);
+    //I don't (yet) use movement parameter, but if I do then I don't want to overwrite specs = Modulatable 
+    //// (changing this so it's a less fixed thing)
+    specs.forEach(s => {
+        if (s.movement === undefined) s.movement = MovementType.Modulatable;
+    });
     const parms = new ParamGroup(specs, uniforms);
     paramState = parms;
     return parms;
@@ -110,7 +142,7 @@ export class ParamGroup {
             const v = s.value;
             if (v === undefined) return;
             if (typeof v === "number") {
-                const p = new ShaderParam(uniforms, s.name!, v, s.min, s.max, s.lagOffset);
+                const p = new ShaderParam(uniforms, s);
                 parms.push(p);
                 if (s.name === 'LagTime') {
                     //Should I make this observable (mobx?)
@@ -121,10 +153,10 @@ export class ParamGroup {
             } else { //if (isVec2(v)) {
                 //make the initial value v passed to ShaderParam contain the 'target' values
                 //to be updated by the GUI, while the actual values passed to uniform will be encapsulated
-                //oops... we pass s.lagOffset by value, so need to be sure it'll make sense when we need it
+                //oops... we pass s.movementSpeedOffset by value, so need to be sure it'll make sense when we need it
                 ////Really need to sort out this whole ShaderParam / Tweakable / Uniforms nonsense.
                 //(seems ok though)
-                const p = new ShaderParam(uniforms, s.name!, v, s.min, s.max, s.lagOffset);
+                const p = new ShaderParam(uniforms, s);
                 parms.push(p);
             }
         });
@@ -151,9 +183,9 @@ export class ParamGroup {
         const k = newValue.key;
         const p = typeof k === 'string' ? this.parms.find(p => p.name === k) : this.parms[k];
         if (!p) return;
-        if (newValue.lagOffset !== undefined) {
-            console.log('value set with lagOffset', newValue.lagOffset, k);
-            p.lagOffset = newValue.lagOffset;
+        if (newValue.movementSpeedOffset !== undefined) {
+            console.log('value set with movementSpeedOffset', newValue.movementSpeedOffset, k);
+            p.movementSpeedOffset = newValue.movementSpeedOffset;
         }
         if (isNum(t.value)) {
             p.val.targVal = t.value;
@@ -173,8 +205,8 @@ export class ParamGroup {
         }
         this.parms.forEach(p=>{
             ///lag harmony...
-            if (p.lagOffset) {
-                p.val.lagTime =  this.lagTime / Math.pow(2, p.lagOffset/12);
+            if (p.movementSpeedOffset) {
+                p.val.lagTime =  this.lagTime / Math.pow(2, p.movementSpeedOffset/12);
             } else {
                 p.val.lagTime = this.lagTime;
             }
@@ -183,24 +215,37 @@ export class ParamGroup {
     }
 }
 
+/**
+ * Not entirely clear the role of this vs Tweakable.
+ * 
+ * 
+ * This has reference to overall uniforms object (not used?) as well as 'uniformObj'
+ * which is an actual thing to be sent to a shader. Tweakable doesn't necessarily have anything
+ * to do with shaders (although at the moment that's the only thing there is).
+ * 
+ * 
+ * This also keeps the motion related state
+ */
 export class ShaderParam {
     val: Lagger<Numeric>;
     name: string;
     min: number;
     max: number;
-    lagOffset: number;
+    movementSpeedOffset: number;
     uniforms: any; //the structure of which this is a member: ** mutating this should cause graphics to change ***
     uniformObj: any; //TODO: type
-    constructor(uniforms: any, name: string, init: Numeric = 0.5, min= 0, max= 1, lagOffset = 0) {
+    /** Why not just pass the whole Tweakable, and keep a reference to it for good measure? */
+    constructor(uniforms: any, spec: Tweakable<Numeric>) {
+        const {name='', min=0, max=1, movementSpeedOffset=0, value } = spec;
         this.uniforms = uniforms;
         // if (this.uniforms[name]) this.uniformObj = this.uniforms[name];
         // else 
-        this.uniformObj = this.uniforms[name] = { value: init };
+        this.uniformObj = this.uniforms[name!] = { value: value };
         this.name = name;
         this.min = min;
         this.max = max;
-        this.lagOffset = lagOffset;
-        this.val = getLagger(init, 10000); //new LagNumeric<Numeric>(init, lagTime);
+        this.movementSpeedOffset = movementSpeedOffset;
+        this.val = getMotionDriver(spec); //new LagNumeric<Numeric>(init, lagTime);
     }
     update(dt: number) {
         this.uniformObj.value = this.val.update(dt);
