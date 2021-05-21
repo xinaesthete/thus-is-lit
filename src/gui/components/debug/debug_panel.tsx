@@ -6,7 +6,7 @@ import { remoteGuiURL, rendererApiURL } from '@common/network_addresses';
 import { Typography, Switch, FormGroup, FormControlLabel } from '@material-ui/core';
 import ConnectionStatus from './connection_status';
 import { observer } from 'mobx-react';
-import { useLitConfig } from '@gui/kaleid_context';
+import { useKaleidList, useLitConfig } from '@gui/kaleid_context';
 import { action } from 'mobx';
 
 
@@ -45,12 +45,32 @@ const FeatureSwitches = observer(() => {
     </FormGroup>);
 });
 
+const RenderDebug = observer(() => {
+    const kList = useKaleidList();
+    
+    const view = React.useMemo(() => {
+        return kList.renderModels.map(k => {
+            
+            return (
+                <></>
+            );
+        });
+    }, [kList]);
+
+    return (
+        <>
+        {view}
+        </>
+    )
+});
+
 export default function DebugPanel() {
     return (
         <>
         <FeatureSwitches />
         <ConnectionStatus />
         <JsonView />
+        <RenderDebug />
         <br />
         <QR url={remoteGuiURL} name='GUI' />
         <QR url={rendererApiURL} name='renderer' />

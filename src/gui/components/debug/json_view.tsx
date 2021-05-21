@@ -5,6 +5,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import TreeItem from '@material-ui/lab/TreeItem';
 import { httpURL } from '@common/network_addresses';
+import { observer } from 'mobx-react';
 
 const useTreeLabelStyles = makeStyles((theme: Theme) => createStyles({
     labelRoot: {
@@ -15,9 +16,16 @@ const useTreeLabelStyles = makeStyles((theme: Theme) => createStyles({
         fontWeight: 'inherit',
         flexGrow: 1
     }
-}))
+}));
+interface JsonViewProps {
+    data: any;
+}
 
+export const JsonViewGeneric = observer((props: JsonViewProps) => {
+    return <JsonView />
+});
 
+/** refactor this to take different data sources? */
 export default function JsonView() {
     const classes = useTreeLabelStyles();
     const [data, setData] = useState({waiting: '...'});
@@ -67,13 +75,14 @@ export default function JsonView() {
             </TreeItem>
         )
     };
+    const tree = React.useMemo(()=>renderTree(data, 'host state'), [data]);
         
     return (
         <>
         <Button onClick={update}>refresh JSON</Button>
         <TreeView defaultCollapseIcon={<ExpandMoreIcon />}
             defaultExpandIcon={<ChevronRightIcon />}>
-        {renderTree(data, 'host state')}
+        {tree}
         </TreeView>
         {/* <pre>{data}</pre> */}
         </>
