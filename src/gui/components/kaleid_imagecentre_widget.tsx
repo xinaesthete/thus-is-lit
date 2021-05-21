@@ -24,7 +24,7 @@ export default observer((u: SliderProp<vec2>) => {
   };
   return (
   <>
-  <KaleidComponent previs={true} 
+  <KaleidComponent previs={true} name="image centre widget"
   onClick={dom.onClick} 
   onMouseDown={(ev)=>{
     setMouseDown(true);

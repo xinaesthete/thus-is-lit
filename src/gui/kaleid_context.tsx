@@ -4,6 +4,7 @@ import { observer } from 'mobx-react';
 import React, { SetStateAction } from 'react'
 import VideoState from '@renderer/video_state';
 import { registerModelEvents } from './gui_comms';
+import KaleidRenderer from '@renderer/kaleid_renderer';
 
 /** extra level of abstraction seems it may be unneeded, 
  * but this seems to allow vidState to react to change in GUI correctly, 
@@ -21,6 +22,22 @@ export class KaleidContextType {
           imageState: observable
       }, {name: `KaleidContextObserver #${this.model.id}`});
   }
+  renderers: Map<string, KaleidRenderer> = new Map();
+  getRenderer(key: string) {
+    if (this.renderers.has(key)) {
+      console.log('reusing renderer for ref', key);
+      return this.renderers.get(key)!;
+    }
+    console.log(`making new KaleidRenderer for ref`, key);
+    const r = new KaleidRenderer(this.vidState, this.model);
+    //leaky... I should take care of items dropped from vDOM
+    this.renderers.set(key, r);
+    return r;
+  }
+  freeRenderer(key: string) {
+    const r = this.renderers.delete(key);
+    if (!r) throw `couldn't find renderer '${key}' to free.`
+  }
 }
 
 
@@ -37,8 +54,8 @@ export const useKaleid = () => {
 }
 
 /** 
- * There is a <KaleidListProvider> in the root of the app, 
- * which can be accessed through 'useKaleidList()', giving accesss to a ~global
+ * There is a `<KaleidListProvider>` in the root of the app, 
+ * which can be accessed through `useKaleidList()`, giving accesss to a ~global
  * context of all 'kaleid' rendererers active in the app.
  * */
 export interface KaleidList {

@@ -2,12 +2,12 @@ import {
   Accordion, AccordionSummary, AccordionDetails, Typography, Button
 } from '@material-ui/core'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
-import React from 'react'
+import React, { Profiler } from 'react'
 import { AbstractImageDecriptor } from '@common/media_model'
 import { useStyles } from '../theme'
 import AbstractImageController from './video/abstract_image_controller'
 import { observer } from 'mobx-react'
-import { action } from 'mobx'
+import { action, trace } from 'mobx'
 import MutatorGrid from './mutator/MutatorGrid'
 import { useKaleid } from '@gui/kaleid_context'
 import KaleidComponent from './kaleid_component'
@@ -44,8 +44,8 @@ export default observer(() => {
               id="panel{model.id}-header"
           >
               <Typography style={{paddingRight: '2em', alignSelf: 'center'}}>Renderer {k.model.id}:</Typography>
-              <KaleidComponent />
-              <KaleidComponent previs={true} />
+              <KaleidComponent name="header preview"/>
+              <KaleidComponent name="header previs" previs={true} />
           </AccordionSummary>
           <AccordionDetails>
           <div>

@@ -1,6 +1,7 @@
 import { Specimen } from '@common/mutator';
 import { DomAttributes, Threact } from '@common/threact/threact';
 import { useKaleid, useLitConfig } from '@gui/kaleid_context'
+import { useAnimationFrame } from '@gui/react_animate';
 import { useStyles } from '@gui/theme';
 import { observer } from 'mobx-react';
 import React from 'react'
@@ -9,7 +10,11 @@ import KaleidRenderer from '../../renderer/kaleid_renderer';
 const SpecimenVersion = observer(function SpecimenVersion(props: {spec: Specimen}) {
     const classes = useStyles();
     const kaleid = useKaleid();
-    const kRender = React.useMemo(()=> new KaleidRenderer(kaleid.vidState, kaleid.model), []);
+    const key = 'spec' + props.spec.id;
+    const kRender = React.useMemo(()=> {
+        return kaleid.getRenderer(key);
+    }, []);
+
     kRender.setParmsFromArray([...props.spec.genes.values()]);
     console.log('react kaleid_component render');
     return <Threact gfx={kRender} className={classes.kaleidComponent} />
@@ -17,32 +22,35 @@ const SpecimenVersion = observer(function SpecimenVersion(props: {spec: Specimen
 
 /**
  * Render kaleidoscope graphics within the GUI.
- * If `spec` is provided, it'll be used to apply apply parameter values to model 
- * in current `useKaleid()` context before rendering.
  * **WARNING: the logic of this is not necessarily particularly sound at the moment and 
- * subject to review.**
- * If `previs` is `true`, it'll set a flag in the shader to render a visualisation of
- * where the kaleidoscope parameters point in the image (this is currently being used
- * to help with debugging, but is also hoped to form the basis of a better GUI with
- * direct visual manipulation)
+ * subject to review. If useLitConfig().livePreviews is false, rendering will be skipped.**
+ * @param props.name used as a key for asssociating component with a `KaleidRenderer`
+ * @param props.spec flag to apply apply parameter values to model 
+ * in current `useKaleid()` context before rendering.
+ * @param props.previs set a flag in the shader to render a visualisation of
+ * where the kaleidoscope parameters point in the image. This can be used for direct manipulation with GUI.
+ * @param props.onClick any DomAttributes (ie, any event handlers etc) will be passed on to the backing `<canvas>`
  */
-export default observer(function KaleidComponent(props: { spec?: Specimen, previs?: boolean } & DomAttributes) {
+export default observer(function KaleidComponent(props: { spec?: Specimen, previs?: boolean, name?: string } & DomAttributes) {
     const config = useLitConfig();
     const classes = useStyles();
     const kaleid = useKaleid();
+    const {previs, spec, name: key = '', ...dom} = props; //destructure anything that shouldn't be in dom before passing down.
     
     if (!config.livePreviews) {
         return <div style={{width: '100px', height: '50px', backgroundColor: 'red', opacity: '0.3'}}> </div>
     }
     if (props.spec) return <SpecimenVersion spec={props.spec} />;
     const makeRenderer = ()=> {
-        const k = new KaleidRenderer(kaleid.vidState, kaleid.model);
+        const k = kaleid.getRenderer(key); //new KaleidRenderer(kaleid.vidState, kaleid.model);
         if (props.previs) k.previs = true;
-        k.parmsHack = true;
+        // k.parmsHack = true; //not helping any more... get rid.
         return k;
     };
-    const kRender = React.useMemo(makeRenderer, [makeRenderer]); //<<< happening a lot
-    //"Warning: Received `true` for a non-boolean attribute `previs`."
-    const {previs, spec, ...dom} = props;
+    useAnimationFrame(()=> {
+        //kRender.
+    }); //could be useful (but threact already has its own logic).
+
+    const kRender = React.useMemo(makeRenderer, [key]);
     return <Threact gfx={kRender} className={classes.kaleidComponent} domAttributes={dom} />
 });

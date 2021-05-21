@@ -8,15 +8,17 @@ import {MovementType, Numeric, Tweakable, vec2} from './tweakables'
 export type GeneDef = Tweakable<Numeric>;
 export type Genome = Map<GeneDef, Numeric>;
 
+let nextId = 0;
 export interface Specimen {
     genes: Genome;
     /** high value = good. */
     weight: number;
     active: boolean;
+    id: number;
 }
 
 function specimen(genes: Genome) {
-    const s: Specimen = makeAutoObservable({ genes: genes, weight: 1, active: false});
+    const s: Specimen = makeAutoObservable({ genes: genes, weight: 1, active: false, id: nextId++});
     return s;
 }
 
