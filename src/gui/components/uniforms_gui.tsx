@@ -109,9 +109,10 @@ const SliderBank = observer(() => {
                         if (isNum(v)) u.value = v;
                         else {
                             // if u.value had a setter, we wouldn't need this branch
-                            const val = u.value as vec2;
-                            val.x = v.x;
-                            val.y = v.y;
+                            Object.assign(u.value, v);
+                            // const val = u.value as vec2;
+                            // val.x = v.x;
+                            // val.y = v.y;
                         }
                         //no need for a mobx reaction, straightforward side-effect
                         sendParameterValue(u, kaleidContext.model.id);
