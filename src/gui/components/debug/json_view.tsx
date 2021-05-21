@@ -44,7 +44,11 @@ export const HostView = observer(() => {
         </>
     )
 });
-
+/** Show a tree-view of any given `data` under a root-node `name`.
+ * Originally for JSON, but would be nice to able to represent things like `Map`.
+ * It would be good to have some more proper serialization (serializr?), 
+ * which won't live here. Might try to revisit `Map`.
+ */
 const JsonViewGeneric = observer(function JsonViewGeneric_(props: JsonViewProps) {
     const classes = useTreeLabelStyles();
 
@@ -71,12 +75,15 @@ const JsonViewGeneric = observer(function JsonViewGeneric_(props: JsonViewProps)
             </div>
     );
     const renderTree = (node: any, k: string) => {
+        
         return (
             <TreeItem key={i} nodeId={"_" + i++} label={hasChildren(node) ? k : renderLeaf(node, k)}>
             {
                 //note Object.keys of string returns indices / stackoverflow
                 //also, this traverses the whole tree, maybe when things get complex we should be a bit more lazy.
-                hasChildren(node) ? Object.keys(node).map((key) => renderTree(node[key], key)) : ''
+                hasChildren(node) ? 
+                //node instanceof Map ? [...(node as Map<any, any>).entries()].map((map_k, map_v) => renderTree(map_v, map_k.toString())) :
+                Object.keys(node).map((key) => renderTree(node[key], key)) : ''
             }
             </TreeItem>
         )

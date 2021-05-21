@@ -1,6 +1,5 @@
 import { DomAttributes } from '@common/threact/threact';
 import { vec2 } from '@common/tweakables';
-import { useKaleid } from '@gui/kaleid_context';
 import { action } from 'mobx';
 import { observer } from 'mobx-react';
 import React from 'react';
@@ -19,17 +18,17 @@ export default observer((u: SliderProp<vec2>) => {
       const rect = ev.currentTarget.getBoundingClientRect();
       const x = 2 * (ev.clientX-rect.left) / ev.currentTarget.offsetWidth - 1;
       const y = -2 * (ev.clientY-rect.top) / ev.currentTarget.offsetHeight + 1;
-      u.onChange({x, y});  
+      u.onChange({x, y});
     })
   };
   return (
   <>
   <KaleidComponent previs={true} name="image centre widget"
   onClick={dom.onClick} 
-  onMouseDown={(ev)=>{
+  onMouseDown={()=>{
     setMouseDown(true);
-  }} onMouseUp={(ev) => {
-    setMouseDown(false);
+  }} onMouseUp={() => {
+    setMouseDown(false); //TODO: handle mouseUp not on component.
   }} 
   onMouseMove={(ev)=>{
     if (mouseDown) dom.onClick!(ev);
