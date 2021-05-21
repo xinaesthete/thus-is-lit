@@ -1,5 +1,5 @@
 import React from 'react';
-import JsonView from './json_view';
+import JsonView, {HostView} from './json_view';
 //Warning: componentWillReceiveProps has been renamed, and is not recommended for use.
 import QRCode from 'qrcode.react';
 import { remoteGuiURL, rendererApiURL } from '@common/network_addresses';
@@ -49,12 +49,7 @@ const RenderDebug = observer(() => {
     const kList = useKaleidList();
     
     const view = React.useMemo(() => {
-        return kList.renderModels.map(k => {
-            
-            return (
-                <></>
-            );
-        });
+        return <JsonView data={kList} name="local 'useKaleidList()' state." />
     }, [kList]);
 
     return (
@@ -69,7 +64,7 @@ export default function DebugPanel() {
         <>
         <FeatureSwitches />
         <ConnectionStatus />
-        <JsonView />
+        <HostView />
         <RenderDebug />
         <br />
         <QR url={remoteGuiURL} name='GUI' />

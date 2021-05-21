@@ -19,15 +19,10 @@ const useTreeLabelStyles = makeStyles((theme: Theme) => createStyles({
 }));
 interface JsonViewProps {
     data: any;
+    name: string;
 }
 
-export const JsonViewGeneric = observer((props: JsonViewProps) => {
-    return <JsonView />
-});
-
-/** refactor this to take different data sources? */
-export default function JsonView() {
-    const classes = useTreeLabelStyles();
+export const HostView = observer(() => {
     const [data, setData] = useState({waiting: '...'});
     const [updateTime, setUpdateTime] = useState(Date.now());
     
@@ -41,6 +36,17 @@ export default function JsonView() {
     useEffect(()=> {
         if (Date.now()-updateTime > 1000) update()
     });
+
+    return (
+        <>
+        <Button onClick={update}>refresh JSON</Button>
+        <JsonViewGeneric data={data} name="host state" />
+        </>
+    )
+});
+
+const JsonViewGeneric = observer(function JsonViewGeneric_(props: JsonViewProps) {
+    const classes = useTreeLabelStyles();
 
     let i=0;
     //https://www.marklogic.com/blog/recursively-transform-json/
@@ -75,11 +81,10 @@ export default function JsonView() {
             </TreeItem>
         )
     };
-    const tree = React.useMemo(()=>renderTree(data, 'host state'), [data]);
-        
+    const tree = React.useMemo(()=>renderTree(props.data, props.name), [props.data]);
+
     return (
         <>
-        <Button onClick={update}>refresh JSON</Button>
         <TreeView defaultCollapseIcon={<ExpandMoreIcon />}
             defaultExpandIcon={<ChevronRightIcon />}>
         {tree}
@@ -87,4 +92,5 @@ export default function JsonView() {
         {/* <pre>{data}</pre> */}
         </>
     )
-}
+});
+export default JsonViewGeneric;
