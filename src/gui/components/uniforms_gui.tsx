@@ -1,6 +1,7 @@
 import { 
-    Slider, Typography, Grid
+    Slider, Typography, Grid, IconButton
 } from '@material-ui/core'
+import RotateLeftIcon from '@material-ui/icons/RotateLeft';
 import React from 'react'
 //maybe want to use material, or just plain-old vanilla dat.gui...
 //maybe revisit react-dat-gui with benefit of understanding React a bit better.
@@ -22,7 +23,6 @@ export interface SliderProp<T extends Numeric> extends Tweakable<T> {
 
 
 function RowLabel(props: {name: string}) {
-    const classes = useStyles();
     return <Typography style={{textAlign: "right"}}>{props.name}</Typography>
 }
 interface hasOptionalRange {min?: number, max?: number}
@@ -89,6 +89,10 @@ const TweakableWidget = observer((u: SliderProp<Numeric>) => {
             <RowLabel name={u.name!} />
             </Grid>
             <Grid item xs={8} sm={9}>
+                <IconButton style={{padding: 0}}
+                onClick={()=>{if (u.default !== undefined) u.onChange(u.default);}}>
+                    <RotateLeftIcon />
+                </IconButton>
                 {el}
             </Grid>
     </>

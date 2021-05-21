@@ -23,12 +23,12 @@ const defaultTweakables: Tweakable<Numeric>[] = [ //threact?
   {name: "LagTime", value: -10, min: -180, max: 20, tags: ['motion']}, //"midi pitch" log scale.
   {name: "ImageCentre", value: new Vector2(0.5, 0), min: -1, max: 1, wrap: true, tags: ['geometry'], specialWidget: true},
   {name: "Leaves", value: 3, min: 1, max: 8, step: 1, tags: ['geometry']},
-  {name: "Angle", value: 1.05, min: -Math.PI, max: Math.PI, wrap: true, tags: ['geometry']},
+  {name: "Angle", value: 1.05, min: -Math.PI, max: Math.PI, wrap: true, tags: ['geometry'], default: 0},
   {name: "AngleGain", value: 0.5, min: 0, max: 1, tags: ['geometry']},
   {name: "Angle2", value: 0, min: -1, max: 1, tags: ['geometry']},
   {name: "OutAngle", value: 0, min: -1, max: 1, wrap: true, tags: ['geometry']},
   {name: "Zoom", value: 1.3, min: 0, max: 10, tags: ['geometry']},
-  {name: "KaleidMix", value: 0.999, min: 0, max: 1, step: 1, movement: fix},
+  {name: "KaleidMix", value: 1, min: 0, max: 1, step: 1, movement: fix},
   {name: "Mozaic", value: 4, min: 1, max: 40, tags: ['geometry']}, //log scale...
   {name: "MozGain", value: .5, min: 0, max: 1, tags: ['geometry']},
   {name: "ContrastPreBias", value: 0.5, min: 0, max: 1, tags: ['colour']},
@@ -39,7 +39,11 @@ const defaultTweakables: Tweakable<Numeric>[] = [ //threact?
   {name: "Centre", value: new Vector2(0., 0.), min: -1, max: 1, tags: ['geometry']},
   {name: "Vignette", value: new Vector2(0.1, 0.1), min: 0, max: 0.2, movement: fix},
   {name: "outputMult", value: 1, min: 0, max: 1, movement: fix},
-];
+].map((t: Tweakable<Numeric>) => {
+  if (t.default === undefined) t.default = t.value;
+  else console.log('default specified', t.name, t.default);
+  return t;
+});
 
 
 export default class KaleidRenderer implements IThree {

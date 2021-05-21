@@ -25,6 +25,7 @@ export enum MovementType {
 export interface Tweakable<T extends Numeric> {
     name?: string,
     value: T, //in concrete uses this may be @observable (and set with an @action)
+    default?: T,
     min?: number,
     max?: number,
     step?: number,
