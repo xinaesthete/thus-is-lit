@@ -41,6 +41,6 @@ registerKey('v', () => {
 });
 registerKey('r', () => {
   console.log('recording....');
-  recordAndDownload(renderer.domElement, 10000);
+  recordAndDownload(renderer.domElement, 1000 * 60 * 3);
 });
 export default "exporting from /src/renderer/index so that src/gui/renderIndexShim has something to import...";
