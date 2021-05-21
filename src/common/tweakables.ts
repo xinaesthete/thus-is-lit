@@ -33,14 +33,18 @@ export interface Tweakable<T extends Numeric> {
     wrap?: boolean,
     movement?: MovementType,
     tags?: string[],
-    specialWidget?: boolean
+    specialWidget?: boolean,
+    /** this value will be added to (at time of writing) that of an overall lag.
+     * Using 'midi pitch' scale, so a value of +12 will be twice as fast...
+     */
+    lagOffset?: number
     //scale?: (T) => T //change to be similar to MuiSlider? but that has a different idea about relation to min&max?
     //also if I want to send functions for eval across wire, I need to be careful about trust... and anyway, I'm not using this yet.
 }
 
-/** enough information to transmit slider change */
+/** enough information to transmit slider change (plus tagging on lagOffset to save extra routes) */
 export interface ParamValue<T> {
-    value: T, modelId: number, key: string | number
+    value: T, modelId: number, key: string | number, lagOffset?: number
 }
 
 export type Uniforms = Record<string, Tweakable<any>>;

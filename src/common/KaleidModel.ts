@@ -21,8 +21,10 @@ class MobxTweakable<T extends Numeric> implements Tweakable<T> {
     constructor(init: Tweakable<T>, modelId: number) {
         Object.assign(this, init);
         this.value = init.value;
+        if (init.lagOffset === undefined) this.lagOffset = 0;
+        else this.lagOffset = init.lagOffset;
         this.modelId = modelId;
-        makeObservable(this, {value: observable});
+        makeObservable(this, {value: observable, lagOffset: observable});
     }
     name?: string;
     value: T;
@@ -31,6 +33,7 @@ class MobxTweakable<T extends Numeric> implements Tweakable<T> {
     step?: number;
     delta?: number;
     movement?: MovementType;
+    lagOffset: number;
     modelId: number;
 }
 

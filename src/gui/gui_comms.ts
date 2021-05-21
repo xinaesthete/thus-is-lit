@@ -144,7 +144,7 @@ export function sendModel(model: KaleidModel) {
 }
 
 export function sendParameterValue(parm: Tweakable<any>, modelId: number) {
-    const msg: ParamValue<any> = {value: parm.value, modelId: modelId, key: parm.name!};
+    const msg: ParamValue<any> = {value: parm.value, modelId: modelId, key: parm.name!, lagOffset: parm.lagOffset};
     ws.emit(API.SetParm, msg);
 }
 export function sendVideoChange(url: string, modelId: number) {

@@ -110,7 +110,7 @@ export class ParamGroup {
             const v = s.value;
             if (v === undefined) return;
             if (typeof v === "number") {
-                const p = new ShaderParam(uniforms, s.name!, v, s.min, s.max);
+                const p = new ShaderParam(uniforms, s.name!, v, s.min, s.max, s.lagOffset);
                 parms.push(p);
                 if (s.name === 'LagTime') {
                     //Should I make this observable (mobx?)
@@ -121,7 +121,10 @@ export class ParamGroup {
             } else { //if (isVec2(v)) {
                 //make the initial value v passed to ShaderParam contain the 'target' values
                 //to be updated by the GUI, while the actual values passed to uniform will be encapsulated
-                const p = new ShaderParam(uniforms, s.name!, v, s.min, s.max);
+                //oops... we pass s.lagOffset by value, so need to be sure it'll make sense when we need it
+                ////Really need to sort out this whole ShaderParam / Tweakable / Uniforms nonsense.
+                //(seems ok though)
+                const p = new ShaderParam(uniforms, s.name!, v, s.min, s.max, s.lagOffset);
                 parms.push(p);
             }
         });
@@ -148,6 +151,10 @@ export class ParamGroup {
         const k = newValue.key;
         const p = typeof k === 'string' ? this.parms.find(p => p.name === k) : this.parms[k];
         if (!p) return;
+        if (newValue.lagOffset !== undefined) {
+            console.log('value set with lagOffset', newValue.lagOffset, k);
+            p.lagOffset = newValue.lagOffset;
+        }
         if (isNum(t.value)) {
             p.val.targVal = t.value;
         } else {
@@ -165,7 +172,12 @@ export class ParamGroup {
             this.lagTime = 1000 / hz;
         }
         this.parms.forEach(p=>{
-            p.val.lagTime = this.lagTime;
+            ///lag harmony...
+            if (p.lagOffset) {
+                p.val.lagTime =  this.lagTime / Math.pow(2, p.lagOffset/12);
+            } else {
+                p.val.lagTime = this.lagTime;
+            }
             p.update(dt);
         });
     }
@@ -176,9 +188,10 @@ export class ShaderParam {
     name: string;
     min: number;
     max: number;
+    lagOffset: number;
     uniforms: any; //the structure of which this is a member: ** mutating this should cause graphics to change ***
     uniformObj: any; //TODO: type
-    constructor(uniforms: any, name: string, init: Numeric = 0.5, min= 0, max= 1, lagTime = 10000) {
+    constructor(uniforms: any, name: string, init: Numeric = 0.5, min= 0, max= 1, lagOffset = 0) {
         this.uniforms = uniforms;
         // if (this.uniforms[name]) this.uniformObj = this.uniforms[name];
         // else 
@@ -186,7 +199,8 @@ export class ShaderParam {
         this.name = name;
         this.min = min;
         this.max = max;
-        this.val = getLagger(init, lagTime); //new LagNumeric<Numeric>(init, lagTime);
+        this.lagOffset = lagOffset;
+        this.val = getLagger(init, 10000); //new LagNumeric<Numeric>(init, lagTime);
     }
     update(dt: number) {
         this.uniformObj.value = this.val.update(dt);
