@@ -196,7 +196,7 @@ vec4 k_main() {
   uv2 = mozaic(uv2, sqrt(Mozaic), MozGain);
 
   //FFS... all the mathematical rigour of a chimp brandishing a compass...
-  //(is wrong at the moment?)
+  //(this is wrong at the moment?)
   vec2 _uvLim = vec2(1., mix(UVLimit.y, UVLimit.x, min(floor(ImageAspect), 1.)));
   uv2 = mirrorRepeat(uv2, _uvLim);
   

@@ -1,8 +1,8 @@
 import 'source-map-support/register' //evanw delivers yet again
-import { app, BrowserWindow } from 'electron'
+import { app, BrowserWindow, shell } from 'electron'
 import * as path from 'path'
 import {startServer} from './server_comms'
-import { getNextScreen } from './screen_config';
+import { getNextScreen, isMac } from './screen_config';
 import main_state from './main_state';
 import { localGuiURL } from '@common/network_addresses';
 
@@ -34,5 +34,8 @@ function createGUIWindow() {
 
 app.on("ready", async () => {
     //https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS/Errors/CORSMissingAllowOrigin
+    //change this to use default browser on mac because of video glitch bug.
     createGUIWindow();
+    //if (isMac()) 
+    shell.openExternal(localGuiURL);
 });

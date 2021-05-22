@@ -49,6 +49,9 @@ function getNextBounds() {
 export function isWindows() {
     return os.platform() === 'win32';
 }
+export function isMac() {
+    return os.platform() === 'darwin';
+}
 // ----
 
 //moved from server_comms.
