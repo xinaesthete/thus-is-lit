@@ -41,7 +41,8 @@ const defaultTweakables: Tweakable<Numeric>[] = [ //threact?
   {name: "SaturationGain", value: 0.5, min: 0, max: 1, tags: ['colour']},
   {name: "Centre", value: new Vector2(0., 0.), min: -1, max: 1, tags: ['geometry']},
   {name: "Vignette", value: new Vector2(0.1, 0.1), min: 0, max: 0.2, movement: fix},
-  {name: "outputMult", value: 1, min: 0, max: 1, movement: fix},
+  {name: "OutputMult", value: 1, min: 0, max: 1, movement: fix},
+  {name: "DebugMix", value: 1, min: 0, max: 1, movement: fix},
 ].map((t: Tweakable<Numeric>) => {
   if (t.default === undefined) t.default = t.value;
   else console.log('default specified', t.name, t.default);
@@ -160,6 +161,7 @@ export default class KaleidRenderer implements IThree {
       // renderer.setRenderTarget(rt);
       // renderer.render(plainScene, camera);
     } else {
+      //TODO: check for shader error, send it to GUI.
       renderer.render(this.scene, this.camera);
     }
   }

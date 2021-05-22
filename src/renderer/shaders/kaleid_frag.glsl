@@ -21,7 +21,8 @@ uniform float SaturationGain;
 uniform vec2 Centre;
 uniform vec2 ImageCentre;
 uniform vec2 Vignette;
-uniform float outputMult;
+uniform float OutputMult;
+uniform float DebugMix;
 varying vec4 vertColor;
 varying vec2 vertTexCoord;
 
@@ -144,9 +145,11 @@ float shadeSeg(in vec2 p, in float angle) {
 }
 vec4 previs_main() {
   vec2 uv = vertTexCoord;
-  vec2 dp = uv - 0.5*(ImageCentre + 1.);
+  // vec2 dp = uv - 0.5*(ImageCentre + 1.);
+  vec2 dp = uv - ImageCentre;
   dp.x *= ScreenAspect;
   dp = rotate2d(Angle) * dp;
+  
   float d = shadeSeg(dp, segAng*0.25);
   vec4 vidCol = texture2D(texture1, uv);
   vec4 overlay = vidCol;
@@ -176,6 +179,7 @@ vec4 k_main() {
   polar.y -= PI;
   
   float leaf = polar.y / segAng; ///....
+  leaf += 1.5;
   float leafI = ceil(leaf);
   float fr = fract(leaf);
   fr = gain(fr, AngleGain);
@@ -192,6 +196,7 @@ vec4 k_main() {
   uv2 = mozaic(uv2, sqrt(Mozaic), MozGain);
 
   //FFS... all the mathematical rigour of a chimp brandishing a compass...
+  //(is wrong at the moment?)
   vec2 _uvLim = vec2(1., mix(UVLimit.y, UVLimit.x, min(floor(ImageAspect), 1.)));
   uv2 = mirrorRepeat(uv2, _uvLim);
   
@@ -201,15 +206,16 @@ vec4 k_main() {
   colHSV.z = bias(colHSV.z, ContrastPreBias);
   colHSV.z = bias(gain(colHSV.z, ContrastGain), ContrastPostBias);
   
-  #define _DEBUG
+  #define DEBUG
   #ifdef DEBUG
   vec3 dbg = vec3(0.);
-  dbg.x = colHSV.x = 0.;
   float thresh = 0.002/polarDry.x;
-  float a = MozGain*debugMod(polarDry.y+(OutAngle*segAng), segAng/2., thresh);
-  dbg.y = a;  //abs(f-g)*10.;
+  float a = MozGain*debugMod(polarDry.y+((Angle2+OutAngle)*segAng), segAng/2., thresh);
+  dbg.y = colHSV.y;  //abs(f-g)*10.;
   dbg.z = max(a, leafI/Leaves);// max(a, rfr);//polar.y / (2.*PI);
-  colHSV = mix(dbg, colHSV, SaturationGain);
+  dbg.x = dbg.z;
+  dbg.z = dbg.z > 1. ? 0. : dbg.z;
+  colHSV = mix(colHSV, dbg, DebugMix);
   #endif
   
   col.rgb = hsv2rgb(colHSV);
@@ -218,7 +224,7 @@ vec4 k_main() {
   feather *= smoothstep(0., Vignette.y, 0.5 - abs(0.5 - vertTexCoord.y));
   col.a = feather;
 
-  return col * outputMult;
+  return col * OutputMult;
 }
 
 void main() {
