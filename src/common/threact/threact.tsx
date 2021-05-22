@@ -101,7 +101,7 @@ export interface IThree {
     disposeThree(): void;
 }
 
-export interface DomAttributes extends React.DOMAttributes<HTMLCanvasElement> {}
+export interface DomAttributes extends React.HTMLAttributes<HTMLCanvasElement> {}
 
 export interface IThreact {
     gfx: IThree;

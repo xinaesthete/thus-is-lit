@@ -40,7 +40,8 @@ export default class VideoState {
         oldEl.remove();
         this.vidEl = document.createElement('video');
         this.vidEl.crossOrigin = "anonymous";
-        this.vidEl.style.display = 'none';
+        // this.vidEl.style.display = 'none';
+        this.vidEl.style.opacity = '0';//seems to help with freezing video on windows.
         this.vidEl.loop = true;
         this.vidEl.autoplay = true;
         this.vidEl.muted = true;
