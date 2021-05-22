@@ -23,12 +23,15 @@ export default observer((u: SliderProp<vec2>) => {
       const x = (ev.clientX-rect.left) / ev.currentTarget.offsetWidth;
       const y = 1 - (ev.clientY-rect.top) / ev.currentTarget.offsetHeight;
       u.onChange({x, y});
-    })
+    }),
+    style: {
+      width: '600px', height: '340px'
+    }
   };
   return (
   <>
-  <KaleidComponent previs={true} name="image centre widget"
-  onClick={dom.onClick} 
+  <KaleidComponent previs={true} name="image centre widget" 
+  {...dom}
   onMouseDown={()=>{
     setMouseDown(true);
   }} onMouseUp={() => {
