@@ -35,6 +35,7 @@ class MobxTweakable<T extends Numeric> implements Tweakable<T> {
     movement?: MovementType;
     movementSpeedOffset: number;
     modelId: number;
+    specialWidget?: boolean;
 }
 
 

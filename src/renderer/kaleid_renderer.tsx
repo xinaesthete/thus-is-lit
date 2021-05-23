@@ -25,7 +25,7 @@ const defaultTweakables: Tweakable<Numeric>[] = [ //threact?
   {name: "ImageCentre", value: new Vector2(0.5, 0), min: -1, max: 1, wrap: true, tags: ['geometry'], specialWidget: true},
   {name: "Leaves", value: 3, min: 1, max: 8, step: 1, tags: ['geometry']},
   {name: "Angle", value: 1.05, min: -Math.PI, max: Math.PI, wrap: true, tags: ['geometry'], 
-    default: 0, movement: rot, movementSpeedOffset: 0.1
+    default: 0, movement: rot, movementSpeedOffset: 0.
   },
   {name: "AngleGain", value: 0.5, min: 0, max: 1, tags: ['geometry']},
   {name: "Angle2", value: 0, min: -1, max: 1, tags: ['geometry'], movement: rot},
