@@ -23,13 +23,25 @@ const QR: React.FC<{url: string, name: string}> = ({...props}) => {
         </>
     )
 };
+interface TogglerProp {object: Record<string, boolean>, prop: string}
+const Toggler = observer(({object, prop}: TogglerProp) => {
+    return <FormControlLabel control={
+        <Switch checked={object[prop]} onChange={action((e)=>object[prop] = e.target.checked)} />
+    }
+    label={prop}/>
+});
 
 const FeatureSwitches = observer(() => {
     const config = useLitConfig();
-    
+    const record = config as Record<string, boolean>;
+    const switches = React.useMemo(
+        ()=>Object.getOwnPropertyNames(config).map(propName => <Toggler object={record} prop={propName} />),
+        [config]
+    )
     return (
     <FormGroup>
-        <FormControlLabel control={
+        {switches}
+        {/* <FormControlLabel control={
             <Switch checked={config.livePreviews} onChange={action((e)=>config.livePreviews = e.target.checked)} />
         }
         label="Embedded graphics in GUI"/>
@@ -44,7 +56,7 @@ const FeatureSwitches = observer(() => {
         <FormControlLabel control={
             <Switch checked={config.paramsHack} onChange={action((e)=>config.paramsHack = e.target.checked)} />
         }
-        label="params hack"/>
+        label="params hack"/> */}
         
     </FormGroup>);
 });
