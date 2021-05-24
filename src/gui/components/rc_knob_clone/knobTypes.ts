@@ -1,0 +1,37 @@
+import { Numeric } from "@common/tweakables";
+import { SliderProp } from "../uniforms_gui";
+
+
+export interface KnobPath {
+  percentage?: number,
+  angleOffset?: number,
+  angleRange?: number,
+  arcWidth?: number,
+  radius?: number,
+  center?: number,
+  angleBased?: boolean;
+  sensitivity?: number;
+}
+
+export interface KnobProps extends KnobPath {
+  parm: SliderProp<Numeric>;
+  onValueChange?: (v: number) => void;
+}
+
+export interface KnobInteractionPos extends KnobProps {
+  /** x coordinate at start of interaction? */
+  startX?: number;
+  startY?: number;
+  /** x coordinate now */
+  pageX: number;
+  pageY: number;
+  startPercentage: number; //also, we can do something different for XY w/vec2.
+  angleBased?: boolean;
+  wrap?: boolean;
+}
+
+export interface PercentageOfRange {
+  min: number;
+  max: number;
+  percentage: number;
+}

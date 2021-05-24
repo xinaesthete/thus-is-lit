@@ -14,6 +14,7 @@ import { action } from 'mobx'
 import { useKaleid, useLitConfig } from '@gui/kaleid_context'
 import { sendParameterValue } from '@gui/gui_comms'
 import KaleidImageCentre from './kaleid_imagecentre_widget'
+import KnobPanel from './knob_panel';
 
 export interface SliderProp<T extends Numeric> extends Tweakable<T> {
     modelId: number;
@@ -27,7 +28,7 @@ function RowLabel(props: {name: string}) {
     return <Typography style={{textAlign: "right"}}>{props.name}</Typography>
 }
 interface hasOptionalRange {min?: number, max?: number}
-const defaultStep = (u: hasOptionalRange) => {
+export const defaultStep = (u: hasOptionalRange) => {
     const {max=1, min=0} = {...u};
     return (max - min) / 200.;
 }
@@ -89,7 +90,7 @@ const TweakableWidget = observer((u: SliderProp<Numeric>) => {
     <>
             <Grid item xs={4} sm={3}>
             <RowLabel name={u.name!} />
-            <MovementControl {...u} />
+            {/* <MovementControl {...u} /> */}
             </Grid>
             <Grid item xs={8} sm={9}>
                 <IconButton style={{padding: 0}}
@@ -103,7 +104,9 @@ const TweakableWidget = observer((u: SliderProp<Numeric>) => {
 });
 
 const SliderBank = observer(() => {
+    const config = useLitConfig();
     const kaleidContext = useKaleid();
+    if (config.newGui) return <KnobPanel />;
     //const model = kaleidContext.model; //dereference late (see 'mobx react optimizations')
     //TODO: don't use array indices as keys. (actually ok at the time of writing as they're not changing)
     //--- if I implement a 'filter' then indices are liable to change, depending on how the filter works.
