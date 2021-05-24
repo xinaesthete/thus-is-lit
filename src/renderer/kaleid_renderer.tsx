@@ -34,6 +34,9 @@ const defaultTweakables: Tweakable<Numeric>[] = [ //threact?
   {name: "KaleidMix", value: 1, min: 0, max: 1, step: 1, movement: fix},
   {name: "Mozaic", value: 4, min: 1, max: 40, tags: ['geometry']}, //log scale...
   {name: "MozGain", value: .5, min: 0, max: 1, tags: ['geometry']},
+  {name: "HueShift", value: 0., min: 0, max: 1, wrap: true, tags: ['colour'], movement: fix},
+  // {name: "HueSteps", value: 3., min: 1, max: 10, tags: ['colour']},
+  // {name: "HueStepShape", value: 0., min: -2, max: 2, tags: ['colour']},
   {name: "ContrastPreBias", value: 0.5, min: 0, max: 1, tags: ['colour']},
   {name: "ContrastGain", value: 0.5, min: 0, max: 1, tags: ['colour']},
   {name: "ContrastPostBias", value: 0.5, min: 0, max: 1, tags: ['colour']},

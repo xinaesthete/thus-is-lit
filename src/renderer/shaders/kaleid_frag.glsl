@@ -18,6 +18,9 @@ uniform float ContrastPreBias;
 uniform float ContrastGain;
 uniform float SaturationBias;
 uniform float SaturationGain;
+uniform float HueShift;
+uniform float HueSteps;
+uniform float HueStepShape;
 uniform vec2 Centre;
 uniform vec2 ImageCentre;
 uniform vec2 Vignette;
@@ -202,6 +205,12 @@ vec4 k_main() {
   
   vec4 col = texture2D(texture1, uv2);
   vec3 colHSV = rgb2hsv(col.rgb);
+  #ifdef HUE_EXPERIMENT
+  //might be interesting with feedback, would need tuning in any case.
+  colHSV.x = quant(colHSV.x, HueSteps, HueStepShape);
+  #endif
+  colHSV.x = mod(1. + colHSV.x + HueShift, 1.);//should be no-op as long as HueShift == 0
+  
   colHSV.y = bias(gain(colHSV.y, SaturationGain), SaturationBias);
   colHSV.z = bias(colHSV.z, ContrastPreBias);
   colHSV.z = bias(gain(colHSV.z, ContrastGain), ContrastPostBias);
