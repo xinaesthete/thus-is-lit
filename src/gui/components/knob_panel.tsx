@@ -32,7 +32,7 @@ const TweakableKnob = observer(function _TweakableSlider(u: SliderProp<Numeric>)
   const angleBased = false;
   return (
     <>
-      <Knob {...u as SliderProp<number>} size={40} angleBased={angleBased} />
+      <Knob {...u as SliderProp<number>} size={40} angleBased={angleBased} sensitivity={0.3} />
       <Typography variant="caption">{u.name}</Typography>
     </>
   )

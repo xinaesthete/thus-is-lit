@@ -75,6 +75,7 @@ export default ({
     angleOffset,
     angleRange,
     angleBased,
+    sensitivity,
     size,
     steps = undefined,
     snap = false,
@@ -92,6 +93,7 @@ export default ({
             angleOffset,
             angleRange,
             angleBased,
+            sensitivity,
             //as per PR for issue #19 in original repo.
             percentage: initialValue ? (initialValue - min) / (max - min) : 0,
             value: initialValue || 0,

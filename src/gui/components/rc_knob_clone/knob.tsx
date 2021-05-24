@@ -62,7 +62,7 @@ const Arc = ({ background, color, ...props }: ArcProps) => {
 /** Would be good to make something that would work as a reusable module outside
  * this context... but for now, we already have a type with the kinds of properties we want. 
 */
-const Knob = ({ size, angleBased, ...props }: KnobProps) => { 
+const Knob = ({ size, angleBased, sensitivity, ...props }: KnobProps) => { 
   //SVG element 
   //mouse behaves a bit like a slider (simpler to program & MUCH easier to use)
   //(actually not completely simpler to program - needed to add something to remember initial % val)
@@ -80,7 +80,7 @@ const Knob = ({ size, angleBased, ...props }: KnobProps) => {
   } = useUpdate({
     //...parm as SliderProp<number>,
     size,
-    angleBased,
+    angleBased, sensitivity,
     angleOffset, angleRange,
     ...props
   });

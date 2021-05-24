@@ -17,8 +17,17 @@ export interface KnobArcProps {
 export interface KnobProps extends SliderProp<number> {
   //parm: SliderProp<Numeric>;
   size: number;
+  /** if true, computes value based on where the mouse is positioned around the arc of the component.
+   * If false, value is computed based on relative y-coordinate (ie, drag up&down like a slider).
+   */
   angleBased?: boolean;
+  /** When not `angleBased`, how sensitive should the knob be? If this is 1, the range of motion to 
+   * move through the entire range will be equal to `size`, if it's 0.5 the mouse has to move twice as far etc.
+  */
   sensitivity?: number;
+  /** nb, SliderProp already had an onChange, there is probably not much point in having both. **At the time of writing,
+   * `onChange` does not get called automatically but this does**.
+   */
   onValueChange?: (v: number) => void;
 }
 
