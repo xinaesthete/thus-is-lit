@@ -20,7 +20,7 @@ const s: SliderProp<number> = makeAutoObservable({
 export default observer(() => {
   const [val, setVal] = React.useState(0.1);
   const onChange = (v: number) => {
-    setVal(v);
+    // setVal(v);
     console.log(v);
   }
   return (

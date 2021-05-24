@@ -20,7 +20,7 @@ const onStart = state => ({
     ...state,
     isActive: true,
     ...getStartXY(state),
-    startPercentage: state.percentage, //2?!
+    startPercentage: state.percentage,
     radius: state.size/2 //pjt hack
 })
 
@@ -31,6 +31,7 @@ const onMove = ({ state, action, onChange }) => {
     })
     let value = getValueFromPercentage({ ...state, percentage })
 
+    ///?? always bad, or bad because of my reaction outside??
     onChange(value); //failing to destructure further down...
     //never gets to return because React throws an error.
     //seems I have an invalid hook call somewhere (maybe in my KnobTest).
@@ -73,6 +74,7 @@ export default ({
     value: initialValue,
     angleOffset,
     angleRange,
+    angleBased,
     size,
     steps = undefined,
     snap = false,
@@ -89,7 +91,9 @@ export default ({
             max,
             angleOffset,
             angleRange,
-            percentage: initialValue ? (max - min) / initialValue : 0,
+            angleBased,
+            //as per PR for issue #19 in original repo.
+            percentage: initialValue ? (initialValue - min) / (max - min) : 0,
             value: initialValue || 0,
             svg,
             container,

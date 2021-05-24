@@ -18,3 +18,19 @@ body {
   margin: 0px;
   border: 0px solid black;
 }
+
+video {
+  position: fixed;
+}
+.knob_group_panel {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: left;
+}
+.knob_box {
+  border: 1px solid #333;
+  width: 100px;
+  height: 100px;
+  margin: auto;
+  vertical-align: middle;
+}

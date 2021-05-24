@@ -21,7 +21,7 @@ const calcPath = ({
   angleRange = 360,
   arcWidth = 4,
   radius: outerRadius,
-  center = 50,
+  center,
 }: KnobArcProps) => {
   const angle = angleRange * Math.min(percentage, 0.9999);
   const startAngle = angleOffset - 90
@@ -62,7 +62,7 @@ const Arc = ({ background, color, ...props }: ArcProps) => {
 /** Would be good to make something that would work as a reusable module outside
  * this context... but for now, we already have a type with the kinds of properties we want. 
 */
-const Knob = ({ size, ...props }: KnobProps) => { 
+const Knob = ({ size, angleBased, ...props }: KnobProps) => { 
   //SVG element 
   //mouse behaves a bit like a slider (simpler to program & MUCH easier to use)
   //(actually not completely simpler to program - needed to add something to remember initial % val)
@@ -80,16 +80,17 @@ const Knob = ({ size, ...props }: KnobProps) => {
   } = useUpdate({
     //...parm as SliderProp<number>,
     size,
+    angleBased,
     angleOffset, angleRange,
     ...props
   });
   const arcProps: KnobArcProps = {
-    percentage, radius: size/2, arcWidth: 5, center: size/2, angleRange, angleOffset
+    percentage, radius: size/2, arcWidth: 5, center: size/2, angleRange, angleOffset,
   }
   return (
     <div
       ref={container}
-      style={{outline: 'none', width: size, height: size}}
+      style={{outline: 'none', width: size, height: size, position: 'relative', margin: 'auto'}}
       onKeyDown={onKeyDown}
       // onWheel={onScroll}
       onMouseDown={onStart}

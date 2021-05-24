@@ -3,12 +3,12 @@ import { SliderProp } from "../uniforms_gui";
 
 
 export interface KnobArcProps {
-  percentage?: number,
-  angleOffset?: number,
-  angleRange?: number,
-  arcWidth?: number,
+  percentage: number,
+  angleOffset: number,
+  angleRange: number,
+  arcWidth: number,
   radius: number,
-  center?: number,
+  center: number,
 }
 
 /** yet another place where we define an interface for something with a min/max/value etc.
