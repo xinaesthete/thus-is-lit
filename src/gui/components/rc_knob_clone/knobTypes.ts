@@ -2,23 +2,27 @@ import { Numeric } from "@common/tweakables";
 import { SliderProp } from "../uniforms_gui";
 
 
-export interface KnobPath {
+export interface KnobArcProps {
   percentage?: number,
   angleOffset?: number,
   angleRange?: number,
   arcWidth?: number,
   radius: number,
   center?: number,
-  angleBased?: boolean;
-  sensitivity?: number;
 }
 
-export interface KnobProps extends KnobPath {
-  parm: SliderProp<Numeric>;
+/** yet another place where we define an interface for something with a min/max/value etc.
+ * this time, it's for rc_knob_clone...
+ */
+export interface KnobProps extends SliderProp<number> {
+  //parm: SliderProp<Numeric>;
+  size: number;
+  angleBased?: boolean;
+  sensitivity?: number;
   onValueChange?: (v: number) => void;
 }
 
-export interface KnobInteractionPos extends KnobProps {
+export interface KnobInteractionPos extends KnobProps, KnobArcProps {
   /** x coordinate at start of interaction? */
   startX?: number;
   startY?: number;

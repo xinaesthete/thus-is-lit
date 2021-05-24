@@ -8,16 +8,27 @@ import { makeAutoObservable } from 'mobx';
 const s: SliderProp<number> = makeAutoObservable({
   name: 'test',
   modelId: 0,
-  value: 0.5,
+  value: 0.2,
+  min: 0, max: 1,
   onChange: (v) => {
+    console.log('setting KnobTest', s.value, v);
     s.value = v;
   }
 });
 
 export default observer(() => {
-  
-
+  const [val, setVal] = React.useState(0.1);
+  const onChange = (v: number) => {
+    setVal(v);
+    console.log(v);
+  }
   return (
-    <Knob parm={s as SliderProp<Numeric>} radius={15} arcWidth={6} center={50} />
+    <>
+    <Knob 
+      value={val} min={0} max={1} size={50} onChange={onChange} onValueChange={onChange} 
+      modelId={-1}
+    />
+    <Knob {...s} size={30} onValueChange={s.onChange} />
+    </>
   )
-})
+});

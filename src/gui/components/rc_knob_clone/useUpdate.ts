@@ -15,10 +15,13 @@ import {
     onScroll,
 } from './eventHandling'
 
+// how can we preventDefault?
 const onStart = state => ({
     ...state,
     isActive: true,
     ...getStartXY(state),
+    startPercentage: state.percentage, //2?!
+    radius: state.size/2 //pjt hack
 })
 
 const onMove = ({ state, action, onChange }) => {
@@ -28,7 +31,9 @@ const onMove = ({ state, action, onChange }) => {
     })
     let value = getValueFromPercentage({ ...state, percentage })
 
-    onChange(value)
+    onChange(value); //failing to destructure further down...
+    //never gets to return because React throws an error.
+    //seems I have an invalid hook call somewhere (maybe in my KnobTest).
     return {
         ...state,
         percentage,
@@ -63,18 +68,19 @@ const reducer = onChange => (state, action) => {
 }
 
 export default ({
-    min,
-    max,
-    initialValue,
+    min=0,
+    max=1,
+    value: initialValue,
     angleOffset = 0,
     angleRange = 360,
     size,
-    steps,
-    snap,
+    steps = undefined,
+    snap = false,
     onChange,
 }) => {
-    const svg = useRef()
-    const container = useRef()
+    console.log('useUpdate');
+    const svg = useRef<SVGSVGElement>(null);
+    const container = useRef<HTMLDivElement>(null);
     const [{ percentage, value, angle, isActive }, dispatch] = useReducer(
         reducer(onChange),
         {

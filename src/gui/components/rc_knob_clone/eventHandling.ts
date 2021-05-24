@@ -8,6 +8,7 @@ const DIRECTIONS = {
 };
 
 export const onMouseMoveStart = dispatch => e => {
+  e.preventDefault(); //missing in original, seems like a bug.
   return dispatch({ ...e, type: 'START' });
 };
 
@@ -24,10 +25,10 @@ export const onKeyDown = dispatch => e => {
   }
 };
 export const onScroll = dispatch => e => {
-  const direction =
-    e.deltaX < 0 || e.deltaY > 0 ? 1 : e.deltaX > 0 || e.deltaY < 0 ? -1 : 0
+  const direction = e.deltaX < 0 || e.deltaY > 0 ? 1 : e.deltaX > 0 || e.deltaY < 0 ? -1 : 0;
 
-  e.preventDefault()
+  //"Unable to preventDefault inside passive event listener invocation."
+  // e.preventDefault();
   dispatch({
     type: 'STEPS',
     direction,
@@ -39,7 +40,9 @@ const removeEventFromBody = (name, fn) => {
   document.body.removeEventListener(name, fn)
 };
 export const handleEventListener = ({ dispatch, isActive }) => () => {
-  const onMove = ({ pageX, pageY }) => {
+  const onMove = (e: any) => {
+    e.preventDefault(); //is this working? seems inconsistent.
+    const {pageX, pageY} = e;
     return dispatch({ pageX, pageY, type: 'MOVE' })
   }
   const onStop = () => dispatch({ type: 'STOP' })

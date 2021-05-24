@@ -1,7 +1,7 @@
 //import { Tweakable } from '@common/tweakables';
 import React from 'react';
 import theme from '@gui/theme';
-import { KnobPath, KnobProps } from './knobTypes';
+import { KnobArcProps, KnobProps } from './knobTypes';
 import useUpdate from './useUpdate';
 import { getPercentageFromValue } from './utils';
 import { SliderProp } from '../uniforms_gui';
@@ -15,15 +15,15 @@ const pointOnCircle = (center: number, radius: number, angle: number) => ({
 })
 const degTorad = (deg: number) => (Math.PI * deg) / 180
 const calcPath = ({
-  //TODO: sort out defaults.
+  //TODO: sort out type logic size vs radius etc.
   percentage = 0.75,
   angleOffset = 0,
   angleRange = 360,
   arcWidth = 4,
   radius: outerRadius,
   center = 50,
-}: KnobPath) => {
-  const angle = angleRange * percentage
+}: KnobArcProps) => {
+  const angle = angleRange * Math.min(percentage, 0.9999);
   const startAngle = angleOffset - 90
   const innerRadius = outerRadius - arcWidth
   const startAngleDegree = degTorad(startAngle)
@@ -42,14 +42,14 @@ const calcPath = ({
     } L${p1.x},${p1.y}`
 }
 
-interface ArcProps extends KnobPath { background: string, color: string };
+interface ArcProps extends KnobArcProps { background: string, color: string };
 const Arc = ({ background, color, ...props }: ArcProps) => {
 
   return (
     <g>
       {background && (
         <path
-          d={calcPath({ ...props, percentage: 0.9999 })}
+          d={calcPath({ ...props, percentage: 1 })}
           style={{ fill: background }}
         />
       )}
@@ -62,7 +62,7 @@ const Arc = ({ background, color, ...props }: ArcProps) => {
 /** Would be good to make something that would work as a reusable module outside
  * this context... but for now, we already have a type with the kinds of properties we want. 
 */
-const Knob = ({ ...props }: KnobProps) => {
+const Knob = ({ size, ...props }: KnobProps) => { 
   //SVG element 
   //mouse behaves a bit like a slider (simpler to program & MUCH easier to use)
   //(actually not completely simpler to program - needed to add something to remember initial % val)
@@ -71,13 +71,29 @@ const Knob = ({ ...props }: KnobProps) => {
   
   const background = theme.palette.background.paper;
   const color = theme.palette.primary.main;
-  props.percentage = getPercentageFromValue(props.parm as SliderProp<number>)
+
+  const { //TODO: reconcile representation of percentage, value etc.
+    percentage, value, onStart, svg, container, onKeyDown, onScroll,
+  } = useUpdate({
+    //...parm as SliderProp<number>,
+    size,
+    ...props
+  });
+  const arcProps: KnobArcProps = {
+    percentage, radius: size/2, arcWidth: 5, center: size/2
+  }
   return (
-    <>
-      <svg>
-        <Arc background={background} color={color} {...props} />
+    <div
+      ref={container}
+      style={{outline: 'none', width: size, height: size}}
+      onKeyDown={onKeyDown}
+      // onWheel={onScroll}
+      onMouseDown={onStart}
+    >
+      <svg width={size} height={size} ref={svg}>
+        <Arc background={background} color={color} {...arcProps} />
       </svg>
-    </>
+    </div>
   )
 }
 

@@ -48,7 +48,7 @@ const TweakableKnob = observer(function _TweakableSlider(u: SliderProp<Numeric>)
   
   return (
       <>
-          <Knob parm={u} radius={40} />
+          <Knob {...u as SliderProp<number>} size={20} />
       </>
   )
 });
