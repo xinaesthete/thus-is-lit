@@ -114,7 +114,6 @@ const SliderBank = observer(() => {
         <Grid container spacing={1}>
             {kaleidContext.model.tweakables.map((u, i) => {
                 return (
-                    <>
                     <TweakableWidget key={u.name} {...u} modelId={kaleidContext.model.id}
                     onChange={action((v) => {
                         if (isNum(v)) u.value = v;
@@ -129,7 +128,6 @@ const SliderBank = observer(() => {
                         sendParameterValue(u, kaleidContext.model.id);
                     })}
                     />
-                    </>
                 )
             })}
         </Grid>
