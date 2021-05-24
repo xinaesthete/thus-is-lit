@@ -56,7 +56,10 @@ export const getPercentageFromValue = ({ min = 0, max = 1, value }: SliderProp<n
   (value - min) / (max - min);
 
 
-export const getStartXY = ({ container, size, percentage }: any) => ({
-  startX: Math.floor(container.current.offsetLeft) + size / 2,
-  startY: Math.floor(container.current.offsetTop) + size / 2,
-});
+export const getStartXY = ({ container, size, percentage }: any) => {
+  const rect = container.current.getBoundingClientRect() as DOMRect;
+  return {
+    startX: Math.floor(rect.left) + size / 2,
+    startY: Math.floor(rect.top) + size / 2,
+  }
+};
