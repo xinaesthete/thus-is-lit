@@ -1,10 +1,11 @@
 // @ts-nocheck
+/** map cursor keyCodes to +ve / -ve */
 const DIRECTIONS = {
   37: -1,
   38: 1,
   39: 1,
   40: -1,
-}
+};
 
 export const onMouseMoveStart = dispatch => e => {
   return dispatch({ ...e, type: 'START' });

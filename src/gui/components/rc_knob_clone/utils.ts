@@ -29,7 +29,7 @@ export const caclulatePercentage = ({
     }
   } else {
     // we need to know what the value was at the start of the interaction (as a percentage)
-    
+    return startPercentage + (x/radius)*sensitivity
   }
 };
 
@@ -47,14 +47,15 @@ export const findClosest = (values: number[], value: number) => {
   return result;
 };
 
-export const getValueFromPercentage = ({ min, max, percentage }: PercentageOfRange) => {
+export const getValueFromPercentage = ({ min, max, percentage }: PercentageOfRange) =>
   min + (max - min) * percentage;
-};
-export const getPercentageFromValue = ({ min = 0, max = 1, value }: SliderProp<number>) => {
-  (value - min) / (max - min);
-};
 
-export const getStartXY = ({ container, size }: any) => ({
+export const getPercentageFromValue = ({ min = 0, max = 1, value }: SliderProp<number>) =>
+  (value - min) / (max - min);
+
+
+export const getStartXY = ({ container, size, percentage }: any) => ({
   startX: Math.floor(container.current.offsetLeft) + size / 2,
   startY: Math.floor(container.current.offsetTop) + size / 2,
+  startPercentage: percentage
 });

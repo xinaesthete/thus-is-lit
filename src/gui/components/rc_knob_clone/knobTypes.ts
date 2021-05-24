@@ -7,7 +7,7 @@ export interface KnobPath {
   angleOffset?: number,
   angleRange?: number,
   arcWidth?: number,
-  radius?: number,
+  radius: number,
   center?: number,
   angleBased?: boolean;
   sensitivity?: number;
@@ -25,6 +25,11 @@ export interface KnobInteractionPos extends KnobProps {
   /** x coordinate now */
   pageX: number;
   pageY: number;
+  /** the value (as a percentage) of the knob when the interaction was started
+   * such that we can compute a relative change now.
+   * This was not part of original rc-knob, which always computed an absolute value 
+   * based on angle.
+   */
   startPercentage: number; //also, we can do something different for XY w/vec2.
   angleBased?: boolean;
   wrap?: boolean;
