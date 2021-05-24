@@ -72,15 +72,19 @@ const Knob = ({ size, ...props }: KnobProps) => {
   const background = theme.palette.background.paper;
   const color = theme.palette.primary.main;
 
+  const angleRange = props.wrap ? 360 : 270;
+  const angleOffset = props.wrap ? 0 : 180+45;
+
   const { //TODO: reconcile representation of percentage, value etc.
     percentage, value, onStart, svg, container, onKeyDown, onScroll,
   } = useUpdate({
     //...parm as SliderProp<number>,
     size,
+    angleOffset, angleRange,
     ...props
   });
   const arcProps: KnobArcProps = {
-    percentage, radius: size/2, arcWidth: 5, center: size/2
+    percentage, radius: size/2, arcWidth: 5, center: size/2, angleRange, angleOffset
   }
   return (
     <div

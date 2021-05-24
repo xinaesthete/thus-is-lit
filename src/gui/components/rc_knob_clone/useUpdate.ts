@@ -71,14 +71,14 @@ export default ({
     min=0,
     max=1,
     value: initialValue,
-    angleOffset = 0,
-    angleRange = 360,
+    angleOffset,
+    angleRange,
     size,
     steps = undefined,
     snap = false,
+    wrap = false,
     onChange,
 }) => {
-    console.log('useUpdate');
     const svg = useRef<SVGSVGElement>(null);
     const container = useRef<HTMLDivElement>(null);
     const [{ percentage, value, angle, isActive }, dispatch] = useReducer(
@@ -94,6 +94,7 @@ export default ({
             svg,
             container,
             size,
+            wrap
         }
     )
 

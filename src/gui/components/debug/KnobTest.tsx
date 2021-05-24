@@ -10,6 +10,7 @@ const s: SliderProp<number> = makeAutoObservable({
   modelId: 0,
   value: 0.2,
   min: 0, max: 1,
+  wrap: true,
   onChange: (v) => {
     console.log('setting KnobTest', s.value, v);
     s.value = v;

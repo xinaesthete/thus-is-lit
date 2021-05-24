@@ -30,8 +30,8 @@ export const caclulatePercentage = ({
   } else {
     // we need to know what the value was at the start of the interaction (as a percentage)
     // it'd be nice to alter sensitivity as a function of x, but then we also need to consider previous value
-    const v = clamp(0, 1, startPercentage + (y/radius)*sensitivity);
-    return v;
+    const v = startPercentage + (y/radius)*sensitivity;
+    return wrap ? (v+1) % 1 : clamp(0, 1, v);
   }
 };
 
