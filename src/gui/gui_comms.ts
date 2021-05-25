@@ -35,10 +35,10 @@ export function registerModelEvents(kList: KaleidList) {
 /**send a message to the server asking for a renderer to be created.
  * Server broadcasts info about new model when ready (to be picked up elsewhere).
 */
-export async function requestNewRenderer(vidUrl?: string) {
+export async function requestNewRenderer(vidUrl?: string, presentation?: boolean) {
     console.log(`requesting newRenderer...`);
     if (!vidUrl) vidUrl = mediaLib.chooseRandom();
-    ws.emit(API.RequestNewRenderer, vidUrl);
+    ws.emit(API.RequestNewRenderer, vidUrl, presentation);
 }
 
 export async function requestFileConfigPrefs() {

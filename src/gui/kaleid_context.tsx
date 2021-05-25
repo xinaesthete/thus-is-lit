@@ -77,7 +77,7 @@ export const useKaleidList = () => {
 
 const config = makeAutoObservable({
   livePreviews: true, enableVideoStreamInput: false, enableSpecialWidgets: true, paramsHack: true,
-  newGui: false
+  newGui: false, presentation: true
 });
 /** provide access to a global (within the context of a GUI browser window) set of 
  * configuration options.

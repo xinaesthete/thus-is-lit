@@ -46,6 +46,10 @@ function getNextBounds() {
     const { x, y, width, height } = screen.bounds;
     return {x: x+col*width/2, y: y+row*height/2, width: width/2, height: height/2};
 }
+function getPresentationScreen() {
+    const fullscreen = true;
+    return {fullscreen, ...displays[1].bounds};
+}
 export function isWindows() {
     return os.platform() === 'win32';
 }
@@ -107,13 +111,13 @@ export function toggleRendererFullscreen(id: number) {
     const display = screen.getDisplayMatching(win.getBounds());
     win.setSimpleFullScreen(!win.simpleFullScreen);
 }
-export async function createRendererWindow(vidUrl?: string) {
+export async function createRendererWindow(vidUrl?: string, presentation?: boolean) {
     const id = nextRendererID++;
     //TODO: configure based on saved setup etc.
     //relay info about available screens back to gui.
     // const screen = getNextScreen(); //TODO: review auto screen-assignment
     // const frame = !isWindows();
-    const bounds = getNextBounds();
+    const bounds = presentation ? getPresentationScreen() : getNextBounds();
     console.log(`creating renderer, bounds: ${JSON.stringify(bounds)}`);
 
     const window = new BrowserWindow({

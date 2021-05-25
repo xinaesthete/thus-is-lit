@@ -39,8 +39,8 @@ export default function startWsServer(server: Server) {
         socket.on(API.ReportTime, (msg: {id: number, time: number}) => {
             playbackTimes.set(msg.id, msg.time);
         });
-        socket.on(API.RequestNewRenderer, async (vidUrl?: string) => {
-            const m = await createRendererWindow(vidUrl); 
+        socket.on(API.RequestNewRenderer, async (vidUrl?: string, presentation?: boolean) => {
+            const m = await createRendererWindow(vidUrl, presentation); 
             wsServer.emit(API.RendererAdded, m);
         });
         socket.on(API.RegisterRenderer, (json: {id: number})=>{
@@ -86,7 +86,12 @@ export default function startWsServer(server: Server) {
         socket.on(API.Error, (json: {error: string})=> {
             main_state.lastError = json.error;
         });
-        socket.on(API.StarVideo, (url: string) => {
+        socket.on(API.StarVideo, (url: string, modelId: number) => {
+            // save the state of the model modelId to a sidecar file by the video.
+            //const realFileName
+            main_state.currentModels.get(modelId)
+
+
             // in future I want to have something like a catalog db
             // and maybe I was thinking about putting it along with other bits of state I want to save in a more formal way
             // but NOW I want to be able to have a quick & dirty way to make a note of clips that I want to use.
