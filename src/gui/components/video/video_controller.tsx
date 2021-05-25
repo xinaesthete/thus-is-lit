@@ -10,7 +10,7 @@ import { useStyles } from '../../theme'
 import { observer } from 'mobx-react'
 import mediaLib from '../../medialib'
 import { action } from 'mobx'
-import { Button } from '@material-ui/core'
+import { Button, Slider } from '@material-ui/core'
 import { sendVideoChange } from '@gui/gui_comms'
 import { useKaleid } from '@gui/kaleid_context'
 
@@ -18,6 +18,17 @@ export interface VProps {
   video: VideoDescriptor;
   setVideo: (newVid: VideoDescriptor)=>void
 }
+
+/** control playback rate. For some reason stops working after switching video. */
+const PlaybackRate = observer(({video}: {video: VideoDescriptor}) => {
+  // const kaleid = useKaleid();
+  // const vid = React.useMemo(()=>kaleid.model.imageSource as VideoDescriptor, [kaleid.model.imageSource]);
+  // const vid = kaleid.model.imageSource as VideoDescriptor;
+  return (
+    <Slider aria-label="Playback rate" value={video.playbackRate} min={0.1} max={2.} step={0.1}
+    onChange={action((e, v) => video.playbackRate = v as number)} />
+  )
+});
 
 const MuteToggle = observer(function MuteToggle(props: VProps) {
   const classes = useStyles();
@@ -63,6 +74,7 @@ export default observer(function VideoController(props: VProps) {
       <ChooseVideo video={video} setURL={setName} />
       <MuteToggle video={video} setVideo={setVideo} />
       <PauseToggle video={video} setVideo={setVideo} />
+      {/* <PlaybackRate video={video} /> */}
     </>
   )
 });
