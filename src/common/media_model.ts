@@ -65,6 +65,9 @@ export class VideoDescriptor extends VideoPlayState implements IVideoDescriptor 
         super();
         this.url = url;
         Object.assign(this, data);
+        // makeObservable(this, {
+        //     url: observable //there might be a time when I want this.
+        // });
     }
 }
 

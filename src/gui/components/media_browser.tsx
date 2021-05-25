@@ -6,7 +6,7 @@ import { Pagination } from '@material-ui/lab'
 import { observer } from 'mobx-react'
 import mediaLib, { shortName } from '../medialib'
 import { useStyles } from '../theme'
-import { useKaleidList } from '@gui/kaleid_context'
+import { useKaleidList, useLitConfig } from '@gui/kaleid_context'
 import { requestNewRenderer, sendVideoChange, starVideo } from '@gui/gui_comms'
 import { VideoDescriptor } from '@common/media_model'
 import { action } from 'mobx'
@@ -29,20 +29,22 @@ const VidAssigner = observer((props: VidAssignerProps) => {
     const { renderModels } = useKaleidList();
     const logger = useLogGui();
     const classes = useStyles();
+    const config = useLitConfig();
     return (
         <div className={classes.vidAssigner}>
         {renderModels.map((m, i) => {
-            //console.log(i);
             return <Button variant="contained" size="small" color="primary" style={{opacity: 0.6}} key={i} onClick={async () => {
                 logger.log(`${shortName(url)} -> #${m.model.id}`);
-                //TODO change the interface so this is *fast* (and more consistent)
-                sendVideoChange(url, m.model.id);
+                //if (!config.skipAwaitVidDescriptor) 
+                // sendVideoChange(url, m.model.id);
+                
+                //would be handy to have a 'bug' button here as well.
                 const desc = await mediaLib.getDescriptorAsync(url) as VideoDescriptor;
-                action(()=>m.model.imageSource = desc);
+                action(()=>m.model.imageSource = desc)(); //<---- note that we have to execute the action()()
             }}>{m.model.id}</Button>
         })}
         <Button variant="contained" size="small" color="primary" style={{opacity: 0.6}} onClick={(async () => {
-            requestNewRenderer(url);
+            requestNewRenderer(url, config.presentation);
         })} name='new renderer output'>+</Button>
         </div>
     )
