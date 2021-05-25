@@ -15,7 +15,7 @@ interface AbsImgProps {
     setImage: (newImage: AbstractImageDecriptor)=>void
 }
 
-/** List available video stream devices. currently inaccessible & not working. */
+/** List available video stream devices. */
 function VideoStreamChooser({...props}) {
     const config = useLitConfig();
     if (!config.enableVideoStreamInput) {

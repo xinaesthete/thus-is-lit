@@ -4,6 +4,7 @@ import { httpURL } from "@common/network_addresses";
 import Fuse from 'fuse.js';
 import { VideoDescriptor, AbstractImageDecriptor, IVideoDescriptor } from "@common/media_model";
 import * as API from "./gui_comms";
+import { config } from "./kaleid_context";
 
 class MediaLibrary {
     mainAssetPath: string = "";
@@ -46,6 +47,9 @@ class MediaLibrary {
     }
     async getDescriptorAsync(url: string) {
         if (this.imageDescriptors.has(url)) return this.imageDescriptors.get(url);
+        if (config.skipAwaitVidDescriptor) {
+            return new VideoDescriptor(url);
+        }
         const res = await fetch(`${httpURL}/videoDescriptor/${url}`);
         const info: IVideoDescriptor = await res.json();
         const desc = new VideoDescriptor(url, info);

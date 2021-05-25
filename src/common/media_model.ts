@@ -44,6 +44,7 @@ export class VideoPlayState {
     muted = true;
     paused = false;
     volume = 1;
+    playbackRate = 1;
     constructor(){
         makeObservable(this, {
             muted: observable, paused: observable, volume: observable

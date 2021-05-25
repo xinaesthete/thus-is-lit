@@ -48,6 +48,11 @@ export default class VideoState {
         this.vidEl.muted = true;
         document.body.appendChild(this.vidEl);
         this.vidEl.src = this._vidUrl;
+        this.vidEl.onloadedmetadata = () => {
+            this.imageState.width = this.vidEl.videoWidth;
+            this.imageState.height = this.vidEl.videoHeight;
+        }
+
         //looking at the THREE.VideoTexture code, video is used in closure in constructor
         //so we definitely need a new instance to set different vidEl.
         this.vidTex = new THREE.VideoTexture(this.vidEl);
@@ -88,8 +93,9 @@ export default class VideoState {
         const vidEl = this.vidEl;
         vidEl.muted = state.muted;
         vidEl.volume = state.volume;
+        vidEl.playbackRate = state.playbackRate; //TODO gui
         this._vidUrl = vidEl.src = state.url;
-        await state.paused ? vidEl.pause() : vidEl.play();
+        await state.paused ? vidEl.pause() : vidEl.play(); //check...
     }
     seek(time: number) {
         const vid = this.vidEl;
