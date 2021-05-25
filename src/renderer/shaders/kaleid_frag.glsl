@@ -205,6 +205,7 @@ vec4 k_main() {
   
   vec4 col = texture2D(texture1, uv2);
   vec3 colHSV = rgb2hsv(col.rgb);
+  #define _HUE_EXPERIMENT
   #ifdef HUE_EXPERIMENT
   //might be interesting with feedback, would need tuning in any case.
   colHSV.x = quant(colHSV.x, HueSteps, HueStepShape);
