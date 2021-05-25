@@ -2,7 +2,7 @@ import { io } from 'socket.io-client'
 import { httpURL, websocketURL } from '@common/network_addresses'
 import KaleidModel from '@common/KaleidModel';
 import { API } from '@common/socket_cmds';
-import { FileConfigPrefs } from '@common/media_model';
+import { FileConfigPrefs, VideoDescriptor } from '@common/media_model';
 import KaleidRenderer from '../renderer/kaleid_renderer';
 import { ParamValue, Tweakable } from '@common/tweakables';
 import { globalKaleids, KaleidContextType } from './kaleid_context';
@@ -132,8 +132,12 @@ export function sendParameterValue(parm: Tweakable<any>, modelId: number) {
     const msg: ParamValue<any> = {value: parm.value, modelId: modelId, key: parm.name!, movementSpeedOffset: parm.movementSpeedOffset};
     ws.emit(API.SetParm, msg);
 }
+/** simpler lightweight way of just sending changed URL (especially when the only other option was complete `sendModel()`) */
 export function sendVideoChange(url: string, modelId: number) {
     ws.emit(API.SetVideoFilename, {url: url, modelId: modelId});
+}
+export function sendVideoState(playState: VideoDescriptor, modelId: number) {
+    ws.emit(API.SetVideoPlaybackState, {playState, modelId});
 }
 export function sendSetVideoDevice(deviceId: string, modelId: number){
     ws.emit(API.SetVideoDevice, {modelId: modelId, deviceId: deviceId});

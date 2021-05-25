@@ -24,7 +24,10 @@ const MuteToggle = observer(function MuteToggle(props: VProps) {
   return (
     <>
       <Button className={classes.vidCtrlButton} 
-        onClick={action(()=>props.video.muted = !props.video.muted)}>
+        onClick={action(()=>{
+          props.video.muted = !props.video.muted;
+          //props.setVideo(props.video); //shouldn't be needed.
+        })}>
         { props.video.muted ? <VolumeOff /> : <VolumeUp /> }
       </Button>
     </>
@@ -49,7 +52,8 @@ export default observer(function VideoController(props: VProps) {
   const kaleid = useKaleid();
   const setName = async (name: string) => {
     console.log(`[video_controller] setName ${name}`);
-    sendVideoChange(name, kaleid.model.id);
+    // sendVideoChange(name, kaleid.model.id); //should happen as a reaction to setVideo
+    ////
     const desc = await mediaLib.getDescriptorAsync(name) as VideoDescriptor;
     setVideo(desc);
   }

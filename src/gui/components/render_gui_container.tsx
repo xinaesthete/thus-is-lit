@@ -27,7 +27,9 @@ export default observer(() => {
   //--> ImageContext? What if there are multiple layers later?
   // then the context interface can change. KaleidContext can be used in place, anyway.
   const handleSetImage = action((newImg: AbstractImageDecriptor) => {
-      k.model.imageSource = newImg;
+      //console.log(`handleSetImage`);
+      k.model.imageSource = newImg; //still needed to trigger reaction
+      //(although could be done via context deep in the hierarchy)
   });
 
   const [mutateMode, setMutator] = React.useState(false);

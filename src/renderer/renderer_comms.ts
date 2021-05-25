@@ -26,6 +26,7 @@ import VideoState from "./video_state";
 import { io } from 'socket.io-client'
 import { ParamValue } from "@common/tweakables";
 import registerKey from "./renderer_keys";
+import { VideoDescriptor } from "@common/media_model";
 
 let socket = io(websocketURL);// new WebSocket(websocketURL);
 
@@ -113,6 +114,10 @@ socket.on(API.SetVideoFilename, (msg: {url: string, modelId: number}) => {
     if (msg.modelId !== id) return;
     vidState.vidUrl = msg.url;
 });
+socket.on(API.SetVideoPlaybackState, (msg: {playState: VideoDescriptor, modelId: number}) => {
+    if (msg.modelId !== id) return;
+    vidState.setVideoState(msg.playState);
+});
 
 socket.on(API.RequestVideoDevices, async (modelId: number) => {
     if (modelId !== id) return;
@@ -144,6 +149,7 @@ function onMessage(key: string, callback: (msg: any) => void) {
 
 function reportTime() {
     if (!vidState) return;
+    //consider adding Date.now() so we can attempt to sync.
     socket.emit(API.ReportTime, {time: vidState.vidEl.currentTime, id: id});
 };
 

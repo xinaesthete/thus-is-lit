@@ -15,6 +15,7 @@ export enum API {
     SetParm = "/set_parm", RequestNewRenderer = "/request_new_renderer", RendererAdded = "/renderer_added",
     RegisterRenderer = "/register_renderer", RegisterController = "/register_controller",
     SetVideoFilename = "/vid_file", ReportTime = "/report_time", SeekTime = "/seek_time",
+    SetVideoPlaybackState = "/setVidState",
     StarVideo = "/star_video", Fullscreen = "/fullscreen", 
     RequestVideoDevices = "/requestVideoDevices", ReportVideoDevices = "/reportVideoDevices",
     SetVideoDevice = "/setVideoDevice", RefreshVideoElement = "/refreshVideoElement"

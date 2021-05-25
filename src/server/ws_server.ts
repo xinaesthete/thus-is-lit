@@ -83,6 +83,10 @@ export default function startWsServer(server: Server) {
             //somewhat works, but need more coherence in various ways...
             socket.broadcast.emit(API.SetVideoFilename, msg);
         });
+        socket.on(API.SetVideoPlaybackState, (msg: {url: string, modelId: number}) => {
+            //somewhat works, but need more coherence in various ways...
+            socket.broadcast.emit(API.SetVideoPlaybackState, msg);
+        });
         socket.on(API.Error, (json: {error: string})=> {
             main_state.lastError = json.error;
         });

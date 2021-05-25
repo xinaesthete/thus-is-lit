@@ -84,7 +84,7 @@ export default class VideoState {
         }
     }
     async setVideoState(state: VideoDescriptor) {
-        console.log('heavy setVideoState called', state.url);
+        console.log('full setVideoState called', state.url);
         this.imageState = state;
         if (this.streamDeviceId) {
             this.refreshVidElement();
@@ -94,8 +94,13 @@ export default class VideoState {
         vidEl.muted = state.muted;
         vidEl.volume = state.volume;
         vidEl.playbackRate = state.playbackRate; //TODO gui
-        this._vidUrl = vidEl.src = state.url;
-        await state.paused ? vidEl.pause() : vidEl.play(); //check...
+        if (vidEl.src !== state.url || this._vidUrl !== state.url) {
+            //well worth not setting vidEl.src if we don't need to.
+            this._vidUrl = vidEl.src = state.url;
+        }
+        if (vidEl.paused !== state.paused) {
+            await state.paused ? vidEl.pause() : vidEl.play();
+        }
     }
     seek(time: number) {
         const vid = this.vidEl;

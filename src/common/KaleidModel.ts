@@ -5,8 +5,9 @@
 // With the current very-static form of Kaleid renderer, could be good to make this a straightforward
 // reflection of that (serving also a guide to what generated).
 
-import { observable, makeObservable } from 'mobx'
-import { AbstractImageDecriptor, ImageType } from "./media_model";
+import { sendVideoState } from '@gui/gui_comms';
+import { observable, makeObservable, autorun } from 'mobx'
+import { AbstractImageDecriptor, ImageType, VideoDescriptor } from "./media_model";
 import { MovementType, Numeric, Tweakable } from "./tweakables";
 
 export default interface KaleidModel {
@@ -45,22 +46,18 @@ export class ObservableKaleidModel implements KaleidModel {
     imageSource: AbstractImageDecriptor;
     tweakables: MobxTweakable<Numeric>[];
     constructor(init: KaleidModel) {
-        this.imageSource = { width: -1, height: -1, imgType: ImageType.Null };
+        this.imageSource = { width: -1, height: -1, imgType: ImageType.Null }; //will be changed by Object.assign.
         Object.assign(this, init);
         this.tweakables = init.tweakables.map(t => new MobxTweakable(t, init.id)); //losing connection? (see paramsHack...)
         //"Only plain object, array, Map, Set, function, generator function are convertible. Class instances and others are untouched."
         makeObservable(this, {
             imageSource: observable,
             // tweakables: observable,
+        }, {deep: true});
+        autorun(() => {
+            // console.log('autorun KaleidModel, sending sendVideoState...');
+            sendVideoState(this.imageSource as VideoDescriptor, this.id);
         });
-        // //for now...
-        // reaction(
-        //     ()=>{
-        //         return this.imageSource
-        //     }, () => {
-        //         sendModel(this);
-        //     },
-        // )
     }
 }
 
