@@ -10,7 +10,6 @@ import DebugPanel from './components/debug/debug_panel';
 import MediaBrowser from './components/media_browser';
 
 import RendererControl from './components/renderers_control'
-import { KaleidListProvider } from './kaleid_context';
 import { observer } from 'mobx-react';
 import { LogGuiProvider } from './components/log_gui';
 
@@ -45,11 +44,9 @@ const App = observer(function App() {
             </Tabs>
           </AppBar>
           <LogGuiProvider>
-            <KaleidListProvider>
-              <Container className={classes.content} maxWidth={false}>
-                <div role="tabpanel" >{el}</div>
-              </Container>
-            </KaleidListProvider>
+            <Container className={classes.content} maxWidth={false}>
+              <div role="tabpanel" >{el}</div>
+            </Container>
           </LogGuiProvider>
         </div>
       </ThemeProvider>

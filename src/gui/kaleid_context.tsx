@@ -1,9 +1,8 @@
 import KaleidModel, { ObservableKaleidModel } from '@common/KaleidModel';
-import { autorun, makeAutoObservable, makeObservable, observable } from 'mobx';
-import { observer } from 'mobx-react';
-import React, { SetStateAction } from 'react'
+import { action, autorun, makeAutoObservable, makeObservable, observable } from 'mobx';
+import React from 'react'
 import VideoState from '@renderer/video_state';
-import { registerModelEvents } from './gui_comms';
+//import { registerModelEvents } from './gui_comms';
 import KaleidRenderer from '@renderer/kaleid_renderer';
 
 /** extra level of abstraction seems it may be unneeded, 
@@ -54,30 +53,40 @@ export const useKaleid = () => {
 }
 
 /** 
- * There is a `<KaleidListProvider>` in the root of the app, 
- * which can be accessed through `useKaleidList()`, giving accesss to a ~global
+ * There was a `<KaleidListProvider>` in the root of the app, 
+ * accessed through `useKaleidList()`, giving accesss to a ~global
  * context of all 'kaleid' rendererers active in the app.
- * */
-export interface KaleidList {
+ * We no longer use Context (or any hooks really) for that.
+ **/
+interface KaleidList {
   renderModels: KaleidContextType[];
-  setRenderModels: React.Dispatch<SetStateAction<KaleidContextType[]>>;
+  setRenderModels: (newModels: KaleidContextType[]) => void; //React.Dispatch<SetStateAction<KaleidContextType[]>>;
   addNewModel: (model: KaleidModel) => void;
-  debugName: string;
 }
 
-export const KaleidRendererListContext = React.createContext<KaleidList | null>(null);
+export const globalKaleids: KaleidList = makeAutoObservable<KaleidList>({
+  renderModels: [], 
+  setRenderModels: action((newModels) => globalKaleids.renderModels = newModels),
+  addNewModel: action(model => {
+    const l = globalKaleids.renderModels;
+    globalKaleids.renderModels = [...l, new KaleidContextType(model)];
+  })
+}, undefined, {deep: false, name: 'KaleidList'});
+// const KaleidRendererListContext = React.createContext<KaleidList | null>(null);
 
 export const useKaleidList = () => {
-  const list = React.useContext(KaleidRendererListContext);
-  if (!list) {
-    throw new Error('useKaleidList must be used within provider');
-  }
-  return list;
+  return globalKaleids;
 }
 
-const config = makeAutoObservable({
+
+/** Global (within the context of a GUI browser window) configuration options (mobx observable).
+ * Currently there's little difference between using this directly vs in a `useLitConfig()` hook.
+ * Hook probably pointless, so one or other may go away at some point.
+ */
+export const config = makeAutoObservable({
+  presentation: false,
   livePreviews: true, enableVideoStreamInput: false, enableSpecialWidgets: true, paramsHack: true,
-  newGui: false, presentation: true
+  newGui: false, skipAwaitVidDescriptor: true
 });
 /** provide access to a global (within the context of a GUI browser window) set of 
  * configuration options.
@@ -90,32 +99,3 @@ export const useLitConfig = () => { //can't be an observer because it's not a co
   //this could be refactored later
   return config;
 }
-
-/** provide access to a global list of all active renderers in the app, 
- * along with interface for registering new.
- */
-export const KaleidListProvider = observer(({...props}) => {
-  //this whole thing is re-running e.g. when changing tab in app, 
-  //meaning that we don't keep the same context that we had before.
-  const [renderModels, setRenderModels] = React.useState([] as KaleidContextType[]);
-  const listContext = makeAutoObservable({
-    renderModels: renderModels, setRenderModels: setRenderModels, debugName: 'hello',
-    addNewModel: (model: KaleidModel) => {
-      const newModelContext = new KaleidContextType(model);
-      setRenderModels([...renderModels, newModelContext]);
-    },
-    config: config
-  }, undefined, {deep: false, name: 'KaleidList'});
-  React.useEffect(()=> {
-    ///careful, may be retriggering when not intended
-    //-- at present, this is just re-establishing a module-scope variable
-    //   so although it may be called at unncessary times,
-    //   as long as there is only one of these contexts, it's harmless.
-    registerModelEvents(listContext);
-  }, [listContext]);
-  return (
-    <KaleidRendererListContext.Provider value={listContext}>
-      {props.children}
-    </KaleidRendererListContext.Provider>
-  )
-});

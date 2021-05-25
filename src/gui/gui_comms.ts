@@ -5,7 +5,7 @@ import { API } from '@common/socket_cmds';
 import { FileConfigPrefs } from '@common/media_model';
 import KaleidRenderer from '../renderer/kaleid_renderer';
 import { ParamValue, Tweakable } from '@common/tweakables';
-import { KaleidContextType, KaleidList } from './kaleid_context';
+import { globalKaleids, KaleidContextType } from './kaleid_context';
 import { action, computed, makeObservable } from 'mobx';
 import mediaLib from './medialib';
 
@@ -14,22 +14,7 @@ import mediaLib from './medialib';
 
 const ws = io(websocketURL);//new WebSocket(websocketURL);
 
-//at the moment, all of our models are stored in an array
-//which is in component KaleidListProvider.
-//this is a local copy of that; we assume there will only be one etc.
-let kaleidList: KaleidList;
-/**
- * Register events received over websocket to effect the state of the given
- * KaleidList.
- * Called once in KaleidListProvider such that emitted events
- * about the state of models will be encorporated into the context
- * of this GUI instance.
- */
-export function registerModelEvents(kList: KaleidList) {
-    if (kList === kaleidList) return;
-    console.log(`registering model events to a different KaleidList`);
-    kaleidList = kList; // keeping this as module state & re-running useEffect
-}
+const kaleidList = globalKaleids;
 
 
 /**send a message to the server asking for a renderer to be created.
