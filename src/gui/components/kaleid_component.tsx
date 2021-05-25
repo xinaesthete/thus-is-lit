@@ -42,7 +42,7 @@ export default observer(function KaleidComponent(props: { spec?: Specimen, previ
     }
     if (props.spec) return <SpecimenVersion spec={props.spec} />;
     const getRenderer = ()=> {
-        const k = kaleid.getRenderer(key); //new KaleidRenderer(kaleid.vidState, kaleid.model);
+        const k = kaleid.getRenderer(key);
         if (props.previs) k.previs = true;
         k.parmsHack = config.paramsHack;
         return k;
