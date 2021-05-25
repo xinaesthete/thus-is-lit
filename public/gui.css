@@ -19,8 +19,9 @@ body {
   border: 0px solid black;
 }
 
-video {
+.videoTexSource {
   position: fixed;
+  opacity: 0;
 }
 .knob_group_panel {
   display: flex;
