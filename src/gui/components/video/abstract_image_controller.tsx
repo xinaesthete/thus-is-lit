@@ -55,9 +55,14 @@ export default observer(function AbstractImageController(props: AbsImgProps) {
     const setAsVideo = action((newVid: VideoDescriptor) => {
         props.setImage(newVid);
     });
+    const k = useKaleid();
     return (
         <>
-        <IconButton onClick={()=>sendRefreshVideoElement()}>
+        <IconButton onClick={()=>{
+            k.vidState.refreshVidElement();
+            k.vidState.setImageState(k.model.imageSource as VideoDescriptor);
+            sendRefreshVideoElement();
+        }}>
             <BugReportIcon />
         </IconButton>
         {props.image.imgType === ImageType.VideoFile ?

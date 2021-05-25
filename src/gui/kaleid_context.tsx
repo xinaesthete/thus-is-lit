@@ -12,14 +12,16 @@ export class KaleidContextType {
   model: ObservableKaleidModel;
   vidState: VideoState;
   constructor(init: KaleidModel) {
-      this.model = new ObservableKaleidModel(init);
-      this.vidState = new VideoState();
-      autorun(() => {
-          this.vidState.setImageState(this.model.imageSource);
-      }, {name: `KaleidContext #${this.model.id}`});
-      makeObservable(this.vidState, {
-          imageState: observable
-      }, {name: `KaleidContextObserver #${this.model.id}`});
+    this.model = new ObservableKaleidModel(init);
+    this.vidState = new VideoState();
+    autorun(()=> {
+      this.vidState.setImageState(this.model.imageSource);
+    });
+    makeObservable(this.vidState, {
+      //this being observable should mean when it gets set in the action above, 
+      //observers of it in the GUI should update
+      imageState: observable 
+    }, {name: `KaleidContextObservable #${this.model.id}`});
   }
   renderers: Map<string, KaleidRenderer> = new Map();
   getRenderer(key: string) {
