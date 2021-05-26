@@ -6,12 +6,13 @@ import VolumeOff from '@material-ui/icons/VolumeOff'
 import VolumeUp from '@material-ui/icons/VolumeUp'
 import Pause from '@material-ui/icons/Pause'
 import PlayArrow from '@material-ui/icons/PlayArrow'
+import FirstPageIcon from '@material-ui/icons/FirstPage'
 import { useStyles } from '../../theme'
 import { observer } from 'mobx-react'
 import mediaLib from '../../medialib'
 import { action } from 'mobx'
-import { Button, Slider } from '@material-ui/core'
-import { sendVideoChange } from '@gui/gui_comms'
+import { Button, IconButton, Slider } from '@material-ui/core'
+import { seekTime, sendVideoChange } from '@gui/gui_comms'
 import { useKaleid } from '@gui/kaleid_context'
 
 export interface VProps {
@@ -29,6 +30,18 @@ const PlaybackRate = observer(({video}: {video: VideoDescriptor}) => {
     onChange={action((e, v) => video.playbackRate = v as number)} />
   )
 });
+
+const Restart = () => {
+  const k = useKaleid();
+  return (
+    <IconButton onClick={()=>{
+      seekTime(0, k.model.id);
+      k.vidState.seek(0);
+    }}>
+      <FirstPageIcon />
+    </IconButton>
+  )  
+}
 
 const MuteToggle = observer(function MuteToggle(props: VProps) {
   const classes = useStyles();
@@ -71,6 +84,7 @@ export default observer(function VideoController(props: VProps) {
 
   return (
     <>
+      <Restart />
       <ChooseVideo video={video} setURL={setName} />
       <MuteToggle video={video} setVideo={setVideo} />
       <PauseToggle video={video} setVideo={setVideo} />

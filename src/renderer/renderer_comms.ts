@@ -118,6 +118,10 @@ socket.on(API.SetVideoPlaybackState, (msg: {playState: VideoDescriptor, modelId:
     if (msg.modelId !== id) return;
     vidState.setVideoState(msg.playState);
 });
+socket.on(API.SeekTime, (msg: {time: number, modelId: number}) => {
+    if (msg.modelId !== id) return;
+    vidState.seek(msg.time);
+});
 
 socket.on(API.RequestVideoDevices, async (modelId: number) => {
     if (modelId !== id) return;

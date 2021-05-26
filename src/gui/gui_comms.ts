@@ -145,7 +145,9 @@ export function sendSetVideoDevice(deviceId: string, modelId: number){
 export function sendRefreshVideoElement() {
     ws.emit(API.RefreshVideoElement);
 }
-
+export function seekTime(time: number, modelId: number) {
+    ws.emit(API.SeekTime, {time, modelId});
+}
 export function starVideo(url: string) {
     ws.emit(API.StarVideo, url);
 }
