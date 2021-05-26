@@ -5,11 +5,17 @@ declare global { //todo: -> global.d.ts or something
     captureStream(frameRate?: number): MediaStream;
   }
 }
-export default async function recordAndDownload(canvas: HTMLCanvasElement, dur: number) {
+let activeRecorder: MediaRecorder | null = null;
+
+export default async function recordAndDownload(canvas: HTMLCanvasElement, dur?: number, name = 'kaleid') {
   console.log(`recording...`);
+  if (activeRecorder) {
+    activeRecorder.onstop = () => console.log('old recording cancelled');
+    activeRecorder.stop();
+  }
   const stream = canvas.captureStream(24);
   const recorder = new MediaRecorder(stream, {
-    mimeType: 'video/webm', videoBitsPerSecond: 15000000
+    mimeType: 'video/webm', videoBitsPerSecond: 15e6
   });
   
 
@@ -20,22 +26,28 @@ export default async function recordAndDownload(canvas: HTMLCanvasElement, dur: 
       recordedBlobs.push(data);
     }
   };
-  
+  const startTime = Date.now();
   recorder.start();
   
-  setTimeout(async ()=> {
-    recorder.stop();
-  }, dur);
-
+  
   return new Promise<void>((resolve, reject) => {
+    if (dur) {
+      setTimeout(async ()=> {
+        recorder.stop();
+      }, dur);
+    } else {
+      activeRecorder = recorder;
+    }
     recorder.onstop = async () => {
       try {
+        activeRecorder = null;
         const blob = new Blob(recordedBlobs, {type: 'video/webm'});
-        const url = URL.createObjectURL(await fixWebmDuration(blob, dur));
+        //maybe we could pass this off to a worker so it wouldn't stall main thread?
+        const url = URL.createObjectURL(await fixWebmDuration(blob, Date.now()-startTime));
         const a = document.createElement('a');
         a.style.display = 'none';
         a.href = url;
-        a.download = `kaleid${Date.now()}.webm`;
+        a.download = `${name}.webm`;
         document.body.appendChild(a);
         a.click();
         setTimeout(() => {
@@ -48,4 +60,7 @@ export default async function recordAndDownload(canvas: HTMLCanvasElement, dur: 
       }
     };
   });
+}
+export function stopRecording() {
+  activeRecorder?.stop();
 }
