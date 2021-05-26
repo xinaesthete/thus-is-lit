@@ -13,7 +13,7 @@ import MutatorCell from "./MutatorCell";
 export default observer(function MutatorGrid() {
   const classes = useStyles();
   const kaleid = useKaleid().model;
-  const [variants, setVariants] = React.useState([baseSpecimen(kaleid)]);
+  const [variants, setVariants] = React.useState(()=>[baseSpecimen(kaleid)]);
   const variantsRef = React.useRef(variants);
   const [mutationRate] = React.useState(1);
   const filter = (g: GeneDef)=> g.tags?.includes('geometry') || false;
