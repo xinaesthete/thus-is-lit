@@ -25,12 +25,26 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.prepend(renderer.domElement);
 kRenderer.initThree(renderer.domElement);
 commsInit(kRenderer);
+
+// lock FPS to avoid LED strobing on camera @ Barbican
+let fpsInterval: number;
+let lastDrawTime: number;
+function startAnimating(fps = 25) {
+  fpsInterval = 1000 / fps;
+  lastDrawTime = performance.now();
+  animate(lastDrawTime);
+}
 function animate(time: number) {
   requestAnimationFrame(animate);
-  kRenderer.update(time);
-  kRenderer.render(renderer);
+  const elapsed = time - lastDrawTime;
+  if (elapsed > fpsInterval) {
+    lastDrawTime = time - (elapsed % fpsInterval);
+    kRenderer.update(time);
+    kRenderer.render(renderer);
+  }
 }
-animate(Date.now());
+startAnimating(25);
+
 window.onresize = () => {
     renderer.setSize(window.innerWidth, window.innerHeight);
     //camera.aspect = window.innerWidth / window.innerHeight;
