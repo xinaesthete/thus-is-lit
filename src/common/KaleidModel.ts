@@ -33,6 +33,7 @@ class MobxTweakable<T extends Numeric> implements Tweakable<T> {
     max?: number;
     step?: number;
     delta?: number;
+    tags?: string[];
     movement?: MovementType;
     movementSpeedOffset: number;
     modelId: number;

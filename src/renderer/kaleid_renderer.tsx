@@ -21,8 +21,9 @@ const Vector2 = THREE.Vector2;
 const fix = MovementType.Fixed;
 const rot = MovementType.AngleShift;
 const defaultTweakables: Tweakable<Numeric>[] = [ //threact?
-  {name: "LagTime", value: -10, min: -180, max: 20, tags: ['motion']}, //"midi pitch" log scale.
-  {name: "ImageCentre", value: new Vector2(0.5, 0), min: -1, max: 1, wrap: true, tags: ['geometry'], specialWidget: true},
+  {name: "LagTime", value: -10, min: -180, max: 20, tags: ['motion', 'main']}, //"midi pitch" log scale.
+  {name: "ImageCentre", value: new Vector2(0.5, 0), min: -1, max: 1, wrap: true, tags: ['geometry'], 
+    specialWidget: true},
   {name: "Leaves", value: 3, min: 1, max: 8, step: 1, tags: ['geometry']},
   {name: "Angle", value: 1.05, min: -Math.PI, max: Math.PI, wrap: true, tags: ['geometry'], 
     default: 0, movement: rot, movementSpeedOffset: 0.
@@ -31,21 +32,23 @@ const defaultTweakables: Tweakable<Numeric>[] = [ //threact?
   {name: "Angle2", value: 0, min: -1, max: 1, tags: ['geometry'], movement: rot},
   {name: "OutAngle", value: 0, min: -1, max: 1, wrap: true, tags: ['geometry']},
   {name: "Zoom", value: 1.3, min: 0, max: 10, tags: ['geometry']},
-  {name: "KaleidMix", value: 1, min: 0, max: 1, step: 1, movement: fix},
+  {name: "KaleidMix", value: 1, min: 0, max: 1, step: 1, movement: fix, tags: ['geometry', 'main'],
+    specialWidget: true},
   {name: "Mozaic", value: 4, min: 1, max: 40, tags: ['geometry']}, //log scale...
-  {name: "MozGain", value: .5, min: 0, max: 1, tags: ['geometry']},
+  /// specialWidget? for now, 'reset' button.
+  {name: "MozGain", value: .5, min: 0, max: 1, tags: ['geometry', 'main']},
   {name: "HueShift", value: 0., min: 0, max: 1, wrap: true, tags: ['colour'], movement: fix},
-  // {name: "HueSteps", value: 3., min: 1, max: 10, tags: ['colour']},
-  // {name: "HueStepShape", value: 0., min: -2, max: 2, tags: ['colour']},
-  {name: "ContrastPreBias", value: 0.5, min: 0, max: 1, tags: ['colour']},
+  {name: "HueSteps", value: 3., min: 1, max: 10, tags: ['colour', 'debug']},
+  {name: "HueStepShape", value: 0., min: -2, max: 2, tags: ['colour', 'debug']},
+  {name: "ContrastPreBias", value: 0.5, min: 0, max: 1, tags: ['colour', 'debug']},
   {name: "ContrastGain", value: 0.5, min: 0, max: 1, tags: ['colour']},
-  {name: "ContrastPostBias", value: 0.5, min: 0, max: 1, tags: ['colour']},
+  {name: "ContrastPostBias", value: 0.5, min: 0, max: 1, tags: ['colour', 'debug']},
   {name: "SaturationBias", value: 0.5, min: 0, max: 1, tags: ['colour']},
   {name: "SaturationGain", value: 0.5, min: 0, max: 1, tags: ['colour']},
   {name: "Centre", value: new Vector2(0., 0.), min: -1, max: 1, tags: ['geometry']},
   {name: "Vignette", value: new Vector2(0., 0.), min: 0, max: 0.2, movement: fix},
-  {name: "OutputMult", value: 1, min: 0, max: 1, movement: fix},
-  {name: "DebugMix", value: 0, min: 0, max: 1, movement: fix},
+  {name: "OutputMult", value: 1, min: 0, max: 1, movement: fix, tags: ['main']},
+  {name: "DebugMix", value: 0, min: 0, max: 1, movement: fix, tags: ['debug']},
 ].map((t: Tweakable<Numeric>) => {
   if (t.default === undefined) t.default = t.value;
   else console.log('default specified', t.name, t.default);

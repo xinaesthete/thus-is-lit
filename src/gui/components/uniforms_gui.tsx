@@ -1,5 +1,5 @@
 import { 
-    Slider, Typography, Grid, IconButton,
+    Slider, Typography, Grid, IconButton, Switch
 } from '@material-ui/core'
 import RotateLeftIcon from '@material-ui/icons/RotateLeft';
 import React from 'react'
@@ -78,11 +78,24 @@ const TweakableSliderPair = observer(function _TweakableSliderPair(u: SliderProp
     )
 });
 
+const Toggle = observer((u: SliderProp<Numeric>) => {
+    const [checked, setChecked] = React.useState(u.value > 0.5);
+    return <Switch checked={checked} onChange={action((e, v) => {
+        setChecked(v);
+        const n = v ? 1 : 0;
+        console.log('setting', u.name, n);
+        u.onChange(n);
+    })}></Switch>
+})
+const SpecialWidget = observer((u: SliderProp<Numeric>) => {
+    if (!isNum(u.value)) return <KaleidImageCentre {...u as SliderProp<vec2>} />
+    return <Toggle {...u} />
+});
 
 const TweakableWidget = observer((u: SliderProp<Numeric>) => {
-    const useWidgets = useLitConfig();
+    const useWidgets = useLitConfig().enableSpecialWidgets;
     const f = () => {
-        if (useWidgets && u.specialWidget) return <KaleidImageCentre {...u as SliderProp<vec2>} />
+        if (useWidgets && u.specialWidget) return <SpecialWidget {...u} />
         return <TweakableSlider {...u} />
     }
     const el = React.useMemo(f, [f, useWidgets]);
@@ -90,7 +103,7 @@ const TweakableWidget = observer((u: SliderProp<Numeric>) => {
     <>
             <Grid item xs={4} sm={3}>
             <RowLabel name={u.name!} />
-            {/* <MovementControl {...u} /> */}
+            <MovementControl {...u} />
             </Grid>
             <Grid item xs={8} sm={9}>
                 <IconButton style={{padding: 0}}
@@ -107,12 +120,12 @@ const SliderBank = observer(() => {
     const config = useLitConfig();
     const kaleidContext = useKaleid();
     if (config.newGui) return <KnobPanel />;
-    //const model = kaleidContext.model; //dereference late (see 'mobx react optimizations')
-    //TODO: don't use array indices as keys. (actually ok at the time of writing as they're not changing)
-    //--- if I implement a 'filter' then indices are liable to change, depending on how the filter works.
+    const t = React.useMemo(()=>kaleidContext.model.tweakables.filter((t) => t.tags && !t.tags.includes('debug')), []);
+    //const geos = React.useMemo(()=>kaleidContext.model.tweakables.filter((t) => t.tags && t.tags[0] === 'geometry'), []);
+    //const cols = React.useMemo(()=>kaleidContext.model.tweakables.filter((t) => t.tags && t.tags[0] === 'colour'), []);
     return (
         <Grid container spacing={1}>
-            {kaleidContext.model.tweakables.map((u, i) => {
+            {t.map((u, i) => {
                 return (
                     <TweakableWidget key={u.name} {...u} modelId={kaleidContext.model.id}
                     onChange={action((v) => {
