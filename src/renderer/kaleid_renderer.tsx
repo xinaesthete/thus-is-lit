@@ -22,17 +22,17 @@ const fix = MovementType.Fixed;
 const rot = MovementType.AngleShift;
 const defaultTweakables: Tweakable<Numeric>[] = [ //threact?
   {name: "OutputMult", value: 1, min: 0, max: 1, movement: fix, tags: ['main'],
-    specialWidget: true, movementSpeedOffset: 48
+    specialWidget: true, movementSpeedOffset: 60
   },
   {name: "KaleidMix", value: 1, min: 0, max: 1, step: 1, movement: fix, tags: ['geometry', 'main'],
-    specialWidget: true, default: 0, movementSpeedOffset: 48
+    specialWidget: true, default: 0, movementSpeedOffset: 60
   },
   {name: "LagTime", value: -90, min: -180, max: 20, tags: ['motion']}, //"midi pitch" log scale.
   {name: "ImageCentre", value: new Vector2(0.5, 0), min: -1, max: 1, wrap: true, tags: ['geometry'], 
     specialWidget: true},
   {name: "Leaves", value: 3, min: 1, max: 8, step: 1, tags: ['geometry']},
   {name: "Angle", value: 1.05, min: -Math.PI, max: Math.PI, wrap: true, tags: ['geometry'], 
-    default: 0, movement: rot, movementSpeedOffset: 0.
+    default: 0, movement: rot, movementSpeedOffset: 0. //TODO change meaning of movementSpeedOffset with AngleShift.
   },
   {name: "AngleGain", value: 0.5, min: 0, max: 1, tags: ['geometry']},
   {name: "Angle2", value: 0, min: -1, max: 1, tags: ['geometry', 'main'], movement: rot},
@@ -41,7 +41,9 @@ const defaultTweakables: Tweakable<Numeric>[] = [ //threact?
   {name: "Mozaic", value: 4, min: 1, max: 40, tags: ['geometry']}, //log scale...
   /// specialWidget? for now, 'reset' button.
   {name: "MozGain", value: .5, min: 0, max: 1, tags: ['geometry', 'main']},
-  {name: "HueShift", value: 0., min: 0, max: 1, wrap: true, tags: ['colour', 'main'], movement: fix},
+  {name: "HueShift", value: 0., min: 0, max: 1, wrap: true, tags: ['colour', 'main'], movement: fix,
+    movementSpeedOffset: 60.
+  },
   {name: "HueSteps", value: 3., min: 1, max: 10, tags: ['colour', 'debug']},
   {name: "HueStepShape", value: 0., min: -2, max: 2, tags: ['colour', 'debug']},
   {name: "ContrastPreBias", value: 0.5, min: 0, max: 1, tags: ['colour', 'debug']},
