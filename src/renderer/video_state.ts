@@ -12,6 +12,7 @@ export default class VideoState {
     activeTexture: THREE.Texture;
     feedbackBuffers: THREE.WebGLRenderTarget[] = [];
     streamDeviceId?: string;
+    keepMuted = false;
     private changeListeners: TexChangeListener[] = [];
     constructor(initUrl = 'red.mp4') {
         this._vidUrl = initUrl;
@@ -92,7 +93,7 @@ export default class VideoState {
         }
         this.activeTexture = this.vidTex;
         const vidEl = this.vidEl;
-        vidEl.muted = state.muted;
+        if (!this.keepMuted) vidEl.muted = state.muted;
         vidEl.volume = state.volume;
         vidEl.playbackRate = state.playbackRate; //TODO gui
         if (vidEl.src !== state.url || this._vidUrl !== state.url) {

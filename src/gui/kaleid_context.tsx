@@ -16,6 +16,7 @@ export class KaleidContextType {
   constructor(init: KaleidModel) {
     this.model = new ObservableKaleidModel(init);
     this.vidState = new VideoState();
+    this.vidState.keepMuted = true;
     autorun(() => {
       this.vidState.setImageState(this.model.imageSource);
     });
