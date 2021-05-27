@@ -1,7 +1,8 @@
 import { 
-  Accordion, AccordionSummary, AccordionDetails, Typography, Button
+  Accordion, AccordionSummary, AccordionDetails, Typography, Button, IconButton
 } from '@material-ui/core'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
+import SkipNextIcon from '@material-ui/icons/SkipNext'
 import React, { Profiler } from 'react'
 import { AbstractImageDecriptor } from '@common/media_model'
 import { useStyles } from '../theme'
@@ -12,6 +13,8 @@ import MutatorGrid from './mutator/MutatorGrid'
 import { useKaleid } from '@gui/kaleid_context'
 import KaleidComponent from './kaleid_component'
 import SliderBank from './uniforms_gui';
+import mediaLib from '@gui/medialib'
+import { sendRefreshVideoElement } from '@gui/gui_comms'
 
 const SetNeutral = () => {
     const k = useKaleid();
@@ -19,7 +22,23 @@ const SetNeutral = () => {
         k.model.setNeutral();
         e.stopPropagation();
         e.preventDefault();
-    }}>Neutral playback</Button>
+    }}>fx off</Button>
+}
+const NextVidButton = () => {
+    const k = useKaleid();
+    return <IconButton onClick={async (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        const prevUrl = k.vidState.vidUrl;
+        const newUrl = mediaLib.chooseNext(prevUrl);
+        const desc = await mediaLib.getDescriptorAsync(newUrl);
+        if (!desc) {
+            console.error(`no descriptor for ${newUrl}?`);
+        } else {
+            action(()=>k.model.imageSource = desc)();
+            sendRefreshVideoElement();
+        }
+    }}><SkipNextIcon /></IconButton>
 }
 
 /** this is actually a fairly generic GUI for making a bunch of sliders for tweakable values.
@@ -58,6 +77,7 @@ export default observer(() => {
               <KaleidComponent name="header preview" />
               <KaleidComponent name="header previs" previs={true} />
               <SetNeutral />
+              <NextVidButton />
           </AccordionSummary>
           <AccordionDetails>
           <div>
