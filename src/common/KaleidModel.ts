@@ -5,8 +5,8 @@
 // With the current very-static form of Kaleid renderer, could be good to make this a straightforward
 // reflection of that (serving also a guide to what generated).
 
-import { sendVideoState } from '@gui/gui_comms';
-import { observable, makeObservable, autorun } from 'mobx'
+import { sendModel, sendVideoState } from '@gui/gui_comms';
+import { observable, makeObservable, autorun, action } from 'mobx'
 import { AbstractImageDecriptor, ImageType, VideoDescriptor } from "./media_model";
 import { MovementType, Numeric, Tweakable } from "./tweakables";
 
@@ -31,6 +31,7 @@ class MobxTweakable<T extends Numeric> implements Tweakable<T> {
     value: T;
     min?: number;
     max?: number;
+    default?: T;
     step?: number;
     delta?: number;
     tags?: string[];
@@ -59,6 +60,17 @@ export class ObservableKaleidModel implements KaleidModel {
             // console.log('autorun KaleidModel, sending sendVideoState...');
             sendVideoState(this.imageSource as VideoDescriptor, this.id);
         });
+    }
+    setNeutral() {
+        const t = this.tweakables.filter(t=>t.tags && t.tags.includes('main'));
+        console.log('setNeutral');
+        action(() => {
+            t.forEach(t => {
+                console.log(`changing ${t.name} from ${t.value} to ${t.default}`);
+                t.value = t.default! //assumes number type, not vec2
+            });
+        })();
+        sendModel(this);
     }
 }
 

@@ -13,6 +13,15 @@ import { useKaleid } from '@gui/kaleid_context'
 import KaleidComponent from './kaleid_component'
 import SliderBank from './uniforms_gui';
 
+const SetNeutral = () => {
+    const k = useKaleid();
+    return <Button onClick={(e) => {
+        k.model.setNeutral();
+        e.stopPropagation();
+        e.preventDefault();
+    }}>Neutral playback</Button>
+}
+
 /** this is actually a fairly generic GUI for making a bunch of sliders for tweakable values.
  * Hopefully soon we'll reason about what different types of models we want,
  * and both how to make more explicitly designed GUIs for something like Kaleid, also what more
@@ -46,8 +55,9 @@ export default observer(() => {
               id="panel{model.id}-header"
           >
               <Typography style={{paddingRight: '2em', alignSelf: 'center'}}>Renderer {k.model.id}:</Typography>
-              <KaleidComponent name="header preview"/>
+              <KaleidComponent name="header preview" />
               <KaleidComponent name="header previs" previs={true} />
+              <SetNeutral />
           </AccordionSummary>
           <AccordionDetails>
           <div>
