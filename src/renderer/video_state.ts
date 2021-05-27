@@ -2,6 +2,7 @@ import * as THREE from 'three'
 import { AbstractImageDecriptor, FeedbackDescriptor, ImageFileDescriptor, 
     ImageType, ImRot, VideoDescriptor, VideoStreamDescriptor 
 } from '@common/media_model';
+import { action } from 'mobx';
 export type TexChangeListener = (newTex: THREE.Texture) => void;
 export default class VideoState {
     imageState: AbstractImageDecriptor;
@@ -48,10 +49,10 @@ export default class VideoState {
         this.vidEl.muted = true;
         document.body.appendChild(this.vidEl);
         this.vidEl.src = this._vidUrl;
-        this.vidEl.onloadedmetadata = () => {
+        this.vidEl.onloadedmetadata = action(() => {
             this.imageState.width = this.vidEl.videoWidth;
             this.imageState.height = this.vidEl.videoHeight;
-        }
+        })
 
         //looking at the THREE.VideoTexture code, video is used in closure in constructor
         //so we definitely need a new instance to set different vidEl.
