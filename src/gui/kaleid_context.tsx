@@ -4,7 +4,7 @@ import React from 'react'
 import VideoState from '@renderer/video_state';
 //import { registerModelEvents } from './gui_comms';
 import KaleidRenderer from '@renderer/kaleid_renderer';
-import { isNum } from '@common/tweakables';
+import { isNum, Numeric, Tweakable } from '@common/tweakables';
 
 /** extra level of abstraction seems it may be unneeded, 
  * but this seems to allow vidState to react to change in GUI correctly, 
@@ -12,12 +12,14 @@ import { isNum } from '@common/tweakables';
 export class KaleidContextType {
   model: ObservableKaleidModel;
   vidState: VideoState;
+  parmMap: Map<string, Tweakable<Numeric>> = new Map();
   constructor(init: KaleidModel) {
     this.model = new ObservableKaleidModel(init);
     this.vidState = new VideoState();
     autorun(() => {
       this.vidState.setImageState(this.model.imageSource);
     });
+    this.model.tweakables.forEach(t => this.parmMap.set(t.name!, t));
     makeObservable(this.vidState, {
       //this being observable should mean when it gets set in the action above, 
       //observers of it in the GUI should update
@@ -42,11 +44,14 @@ export class KaleidContextType {
   }
   /** how do I set the model again? this isn't good. */
   applyTweakables(m: KaleidModel) {
-    this.model.tweakables.forEach((t, i) => {
-      const newT = m.tweakables[i];
-      if (t.name === 'KaleidMix') console.log('KaleidMix value loaded: ', newT.value);
-      if (isNum(t.value)) t.value = newT.value as number;
-      else Object.assign(t.value, newT.value);
+    m.tweakables.forEach(t => {
+      const p = this.parmMap.get(t.name!);
+      if (!p) {
+        console.error(`parm not found`);
+        return;
+      }
+      if (isNum(t.value)) p.value = t.value
+      else Object.assign(t.value, p.value);
     });
   }
 }
