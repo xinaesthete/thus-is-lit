@@ -15,6 +15,7 @@ import KaleidComponent from './kaleid_component'
 import SliderBank from './uniforms_gui';
 import mediaLib from '@gui/medialib'
 import { sendRefreshVideoElement } from '@gui/gui_comms'
+import { isNum } from '@common/tweakables'
 
 const SetNeutral = () => {
     const k = useKaleid();
@@ -37,6 +38,9 @@ const NextVidButton = () => {
         } else {
             action(()=>k.model.imageSource = desc)();
             sendRefreshVideoElement();
+            mediaLib.getSidecar(newUrl).then(action((m) => {
+                if (m) k.applyTweakables(m);
+            }));
         }
     }}><SkipNextIcon /></IconButton>
 }

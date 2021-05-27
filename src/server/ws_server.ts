@@ -96,12 +96,14 @@ export default function startWsServer(server: Server) {
         });
         socket.on(API.StarVideo, async (url: string, model?: any) => {
             // save the state of the model modelId to a sidecar file by the video.
-            const realFileName = await getFilePathForUrl(url);
+            const realFileName = await getFilePathForUrl(decodeURI(url)); //double decodeURI???
             if (model) {
-                const sidecarName = realFileName + '.lit.json';
+                const sidecarName = realFileName + '.barb.json';
+                //nb THIS WILL LIKELY BREAK as the model changes etc
+                //temporary for gig
                 const json = JSON.stringify(model, undefined, 2);
                 fs.writeFile(sidecarName, json, ()=>{
-                    console.log('saved sidecar file', sidecarName, json);
+                    console.log('saved sidecar file', sidecarName);
                 });
             }
 

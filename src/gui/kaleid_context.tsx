@@ -4,6 +4,7 @@ import React from 'react'
 import VideoState from '@renderer/video_state';
 //import { registerModelEvents } from './gui_comms';
 import KaleidRenderer from '@renderer/kaleid_renderer';
+import { isNum } from '@common/tweakables';
 
 /** extra level of abstraction seems it may be unneeded, 
  * but this seems to allow vidState to react to change in GUI correctly, 
@@ -14,14 +15,14 @@ export class KaleidContextType {
   constructor(init: KaleidModel) {
     this.model = new ObservableKaleidModel(init);
     this.vidState = new VideoState();
-    autorun(()=> {
+    autorun(() => {
       this.vidState.setImageState(this.model.imageSource);
     });
     makeObservable(this.vidState, {
       //this being observable should mean when it gets set in the action above, 
       //observers of it in the GUI should update
-      imageState: observable 
-    }, {name: `KaleidContextObservable #${this.model.id}`});
+      imageState: observable
+    }, { name: `KaleidContextObservable #${this.model.id}` });
   }
   renderers: Map<string, KaleidRenderer> = new Map();
   getRenderer(key: string) {
@@ -38,6 +39,15 @@ export class KaleidContextType {
   freeRenderer(key: string) {
     const r = this.renderers.delete(key);
     if (!r) throw `couldn't find renderer '${key}' to free.`
+  }
+  /** how do I set the model again? this isn't good. */
+  applyTweakables(m: KaleidModel) {
+    this.model.tweakables.forEach((t, i) => {
+      const newT = m.tweakables[i];
+      if (t.name === 'KaleidMix') console.log('KaleidMix value loaded: ', newT.value);
+      if (isNum(t.value)) t.value = newT.value as number;
+      else Object.assign(t.value, newT.value);
+    });
   }
 }
 
@@ -67,13 +77,13 @@ interface KaleidList {
 }
 
 export const globalKaleids: KaleidList = makeAutoObservable<KaleidList>({
-  renderModels: [], 
+  renderModels: [],
   setRenderModels: action((newModels) => globalKaleids.renderModels = newModels),
   addNewModel: action(model => {
     const l = globalKaleids.renderModels;
     globalKaleids.renderModels = [...l, new KaleidContextType(model)];
   })
-}, undefined, {deep: false, name: 'KaleidList'});
+}, undefined, { deep: false, name: 'KaleidList' });
 // const KaleidRendererListContext = React.createContext<KaleidList | null>(null);
 
 export const useKaleidList = () => {

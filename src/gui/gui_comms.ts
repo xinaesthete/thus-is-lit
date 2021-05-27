@@ -151,7 +151,14 @@ export function seekTime(time: number, modelId: number) {
 export function starVideo(url: string, model?: KaleidModel) {
     ws.emit(API.StarVideo, url, model);
 }
-
+export async function getModelSidecar(url: string) {
+    const r = await fetch(`${httpURL}/videoSidecar/${url}`);
+    try {
+        return await r.json() as KaleidModel; //nb, no validation or anything happening: WILL BREAK IF I CHANGE MODEL DEFINITION!!!!
+    } catch (err) {
+        console.log('no sidecar for ' + url);
+    }
+}
 /////
 ///// Connection status
 /////

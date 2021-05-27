@@ -79,9 +79,7 @@ const TweakableSliderPair = observer(function _TweakableSliderPair(u: SliderProp
 });
 
 const Toggle = observer((u: SliderProp<Numeric>) => {
-    const [checked, setChecked] = React.useState(u.value > 0.5);
-    return <Switch checked={checked} onChange={action((e, v) => {
-        setChecked(v);
+    return <Switch checked={u.value > 0.5} onChange={action((e, v) => {
         const n = v ? 1 : 0;
         console.log('setting', u.name, n);
         u.onChange(n);

@@ -1,5 +1,5 @@
 import * as config from './file_config'
-import probeMp4 from './metadata_parse'
+import probeMp4, {getModelSidecar} from './metadata_parse'
 import * as fs from 'fs'
 import * as path from 'path'
 import { Dirent } from 'original-fs';
@@ -44,6 +44,7 @@ function hasValidExtention(name: string, type: MediaType) {
 
 export async function getFilePathForUrl(url: string) {
     let id = decodeURI(url.substring(url.indexOf('/video/') + 7));
+    // console.log(url, id);
     let filename = path.join((await config.getConfig()).mainAssetPath || "", id);
     if (url === "red.mp4") {
         filename = path.join(__dirname, '../red.mp4');
@@ -150,6 +151,7 @@ export function addRestAPI(expApp: express.Application) {
         try {
             //what if this retrieved config object with settings saved by 'star' instead of probing metadata?
             //(and make it able to preload all in case of gig)
+            //// too likely to cause confusion; make an explicit route for that.
             const info = await probeMp4(id);
             res.send(info);
         } catch (err) {
@@ -157,7 +159,19 @@ export function addRestAPI(expApp: express.Application) {
             res.sendStatus(500);
         }
     });
-        
+    expApp.get('/videoSidecar/*', async (req, res) => {
+        const id = decodeURI(req.url.substring('/videoSidecar/'.length));
+        console.log('GET /videoSidecar/', req.url, id);
+        try {
+            const info = await getModelSidecar(id);
+            
+            res.send(info); //may be undefined
+        } catch (err) {
+            console.error(`${err.name}: ${err.message}`);
+            res.sendStatus(500);
+        }
+    });
+
     /** respond with a flat array of mp4s contained under mainAssetPath */
     expApp.get('/videoList', async (req, res) => {
         const t = Date.now();

@@ -14,6 +14,7 @@ import main_state from '../main_state'
 import { ImageType, IVideoDescriptor, VideoDescriptor } from '@common/media_model'
 import * as path from 'path'
 import { getConfig } from './file_config'
+import { getFilePathForUrl } from './media_server'
 
 function recordDebugMetadata(filename: string, data: any) {
     if (main_state.videoMetadataRaw.some(m => m.format.filename === filename)) return;
@@ -66,17 +67,33 @@ async function probeMediaInfo(filename: string) {
 }
 
 //something very much like this should exist for AbstractImageDescriptor
+/** CURRENTLY UNUSED */
 export default async function probeVideoMetadata(url: string) : Promise<IVideoDescriptor> {
     const cached = main_state.videoMetadataParsed.find(i=>i.url===url); //TODO: cache to catalog db...
     if (cached) return cached;
     let id = decodeURI(url.substring(url.indexOf('/video/') + 7));
-    let filename = path.join((await getConfig()).mainAssetPath || "", id);
-    if (url === "red.mp4") {
-        filename = path.join(__dirname, '../red.mp4');
-    }
+    let filename = await getFilePathForUrl(url); //not actually checked
     const data1 = await probeMediaInfo(filename);
     const parsed = parseMediaInfoVideoDescriptor(url, data1);
     const info = new VideoDescriptor(url, parsed);
     if (!main_state.videoMetadataParsed.find(i=>i.url==url)) main_state.videoMetadataParsed.push(info);
     return info;
+}
+
+/** if a video has been 'starred', retrieve the corresponding json,
+ * otherwise undefined
+ */
+export async function getModelSidecar(url: string) {
+    const p = await getFilePathForUrl(url + '.barb.json');
+    console.log('path: ', p);
+    try {
+        //may be better to sendFile() to the request.
+        const f = await fs.readFile(p, 'utf-8');
+        console.log('so far so good...');
+        //might be more efficient to keep it as a Buffer and send back...
+        //might be a nuisance.
+        return f;
+    } catch (err){
+        console.log('no sidecar for ' + p);
+    }
 }

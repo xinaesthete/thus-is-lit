@@ -60,6 +60,10 @@ class MediaLibrary {
     setDescriptorForAsset(url: string, info: AbstractImageDecriptor) {
         this.imageDescriptors.set(url, info);
     }
+    async getSidecar(url: string) {
+        const m = await API.getModelSidecar(url); //maybe I want a Map of these as well.
+        return m;
+    }
     setAvailableVideos(newVids: string[]) {
         this.availableVideos = newVids;
         this.fuse = new Fuse(newVids, {ignoreLocation: true});

@@ -37,5 +37,7 @@ app.on("ready", async () => {
     //change this to use default browser on mac because of video glitch bug.
     createGUIWindow();
     //if (isMac()) 
-    shell.openExternal(localGuiURL);
+    setTimeout(()=> {
+        shell.openExternal(localGuiURL);
+    }, 500);
 });
