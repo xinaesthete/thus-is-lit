@@ -42,6 +42,15 @@ function hasValidExtention(name: string, type: MediaType) {
     return validExtensions(type).includes(path.extname(name).toLowerCase());
 }
 
+export async function getFilePathForUrl(url: string) {
+    let id = decodeURI(url.substring(url.indexOf('/video/') + 7));
+    let filename = path.join((await config.getConfig()).mainAssetPath || "", id);
+    if (url === "red.mp4") {
+        filename = path.join(__dirname, '../red.mp4');
+    }
+    return filename;
+}
+
 async function getMediaList(type: MediaType) {
     const root = await(await config.getConfig()).mainAssetPath!;
     const t = Date.now();
@@ -139,6 +148,8 @@ export function addRestAPI(expApp: express.Application) {
         const id = decodeURI(req.url.substring('/videoDescriptor/'.length));
         //console.log(`--- ${req.url} ---`);
         try {
+            //what if this retrieved config object with settings saved by 'star' instead of probing metadata?
+            //(and make it able to preload all in case of gig)
             const info = await probeMp4(id);
             res.send(info);
         } catch (err) {

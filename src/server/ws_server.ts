@@ -7,6 +7,7 @@ import main_state from "./main_state";
 import { ParamValue } from '@common/tweakables';
 import { createRendererWindow, toggleRendererFullscreen } from './screen_config';
 import fs from 'fs';
+import { getFilePathForUrl } from './assets/media_server';
 
 
 export default function startWsServer(server: Server) {
@@ -93,17 +94,23 @@ export default function startWsServer(server: Server) {
         socket.on(API.Error, (json: {error: string})=> {
             main_state.lastError = json.error;
         });
-        socket.on(API.StarVideo, (url: string, modelId: number) => {
+        socket.on(API.StarVideo, async (url: string, model?: any) => {
             // save the state of the model modelId to a sidecar file by the video.
-            //const realFileName
-            main_state.currentModels.get(modelId)
+            const realFileName = await getFilePathForUrl(url);
+            if (model) {
+                const sidecarName = realFileName + '.lit.json';
+                const json = JSON.stringify(model, undefined, 2);
+                fs.writeFile(sidecarName, json, ()=>{
+                    console.log('saved sidecar file', sidecarName, json);
+                });
+            }
 
 
             // in future I want to have something like a catalog db
             // and maybe I was thinking about putting it along with other bits of state I want to save in a more formal way
             // but NOW I want to be able to have a quick & dirty way to make a note of clips that I want to use.
-            fs.appendFile('starred.txt', url+'\n', () => {
-                console.log('starred: ', url);
+            fs.appendFile('starred.txt', realFileName+'\n', () => {
+                console.log('starred: ', realFileName);
             });
         });
         socket.on(API.RefreshVideoElement, () => {

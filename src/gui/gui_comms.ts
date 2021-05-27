@@ -148,8 +148,8 @@ export function sendRefreshVideoElement() {
 export function seekTime(time: number, modelId: number) {
     ws.emit(API.SeekTime, {time, modelId});
 }
-export function starVideo(url: string) {
-    ws.emit(API.StarVideo, url);
+export function starVideo(url: string, model?: KaleidModel) {
+    ws.emit(API.StarVideo, url, model);
 }
 
 /////

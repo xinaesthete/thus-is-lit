@@ -13,6 +13,7 @@ import { VideoDescriptor } from '@common/media_model'
 import Fuse from 'fuse.js'
 import { useLogGui } from '../log_gui'
 import { starVideo } from '@gui/gui_comms'
+import { useKaleid } from '@gui/kaleid_context'
 
 
 export default observer( function ChooseVideo(props: { 
@@ -39,6 +40,7 @@ export default observer( function ChooseVideo(props: {
   const next = () => {
     props.setURL(mediaLib.chooseNext(url));
   }
+  const k = useKaleid(); //choose_video doesn't logically have this, but handy for starVideo now.
   return (
     <>
       <IconButton onClick={random}><CasinoIcon /></IconButton>
@@ -47,7 +49,7 @@ export default observer( function ChooseVideo(props: {
         onChange={e=>props.setURL(e.target.value as string)}>
         {availableMenu}
       </Select>
-      <IconButton onClick={()=>starVideo(url)}><StarIcon /></IconButton>
+      <IconButton onClick={()=>starVideo(url, k.model)}><StarIcon /></IconButton>
       {/* <TextField label="filter" onChange={e=>setFilterText(e.target.value)} /> */}
     </>
   )
