@@ -29,7 +29,7 @@ const defaultTweakables: Tweakable<Numeric>[] = [ //threact?
   },
   {name: "LagTime", value: -90, min: -180, max: 20, tags: ['motion']}, //"midi pitch" log scale.
   {name: "ImageCentre", value: new Vector2(0.5, 0), min: -1, max: 1, wrap: true, tags: ['geometry'], 
-    specialWidget: true},
+    specialWidget: true, movementSpeedOffset: 36},
   {name: "Leaves", value: 3, min: 1, max: 8, step: 1, tags: ['geometry']},
   {name: "Angle", value: 1.05, min: -Math.PI, max: Math.PI, wrap: true, tags: ['geometry'], 
     default: 0, movement: rot, movementSpeedOffset: 0. //TODO change meaning of movementSpeedOffset with AngleShift.
