@@ -3,6 +3,7 @@ import { observer } from 'mobx-react'
 import Select from '@material-ui/core/Select'
 import IconButton from '@material-ui/core/IconButton'
 import CasinoIcon from '@material-ui/icons/Casino'
+import SkipNextIcon from '@material-ui/icons/SkipNext'
 import StarIcon from '@material-ui/icons/StarOutline'
 import MenuItem from '@material-ui/core/MenuItem'
 import mediaLib, { niceName } from '../../medialib'
@@ -35,9 +36,13 @@ export default observer( function ChooseVideo(props: {
   const random = () => {
     props.setURL(mediaLib.chooseRandom());
   };
+  const next = () => {
+    props.setURL(mediaLib.chooseNext(url));
+  }
   return (
     <>
       <IconButton onClick={random}><CasinoIcon /></IconButton>
+      <IconButton onClick={next}><SkipNextIcon /></IconButton>
       <Select className={classes.vidDropdown} label="video file" value={url} 
         onChange={e=>props.setURL(e.target.value as string)}>
         {availableMenu}

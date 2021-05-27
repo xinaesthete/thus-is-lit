@@ -82,6 +82,10 @@ class MediaLibrary {
         const i = Math.floor(Math.random()*this.filteredVideos.length);
         return this.filteredVideos[i];
     }
+    chooseNext(current: string) {
+        const i = this.filteredVideos.indexOf(current);
+        return this.filteredVideos[(i+1) % this.filteredVideos.length];
+    }
     /**
      * Attempt to query the list of video inputs available. If both GUI & renderer are on localhost,
      * this might work. modelId & (Request|Report)VideoDevices may be used for remote control
