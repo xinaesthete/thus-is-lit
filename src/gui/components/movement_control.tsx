@@ -13,7 +13,7 @@ export default observer((u: Tweakable<Numeric>) => {
   //maybe if things like this were inside a 'speed dial'?
   //--- movementSpeedOffset ok, but really other kinds of movement are what I want. ---
   // not totally sure how I want to make this GUI, nor how I want to represent animation at the other end...
-  const {movementSpeedOffset=0, name=''} = u;
+  const {movementSpeedOffset, name=''} = u;
   const k = useKaleid();
   if (movementSpeedOffset === undefined) return <></>
   // return <Donut

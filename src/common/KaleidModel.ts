@@ -22,10 +22,13 @@ class MobxTweakable<T extends Numeric> implements Tweakable<T> {
     constructor(init: Tweakable<T>, modelId: number) {
         Object.assign(this, init);
         this.value = init.value;
-        if (init.movementSpeedOffset === undefined) this.movementSpeedOffset = 0;
-        else this.movementSpeedOffset = init.movementSpeedOffset;
         this.modelId = modelId;
-        makeObservable(this, {value: observable, movementSpeedOffset: observable});
+        const movement = init.movementSpeedOffset !== undefined;
+        if (movement) {
+            makeObservable(this, {value: observable, movementSpeedOffset: movement});
+        } else {
+            makeObservable(this, {value: observable});
+        }
     }
     name?: string;
     value: T;
@@ -36,7 +39,7 @@ class MobxTweakable<T extends Numeric> implements Tweakable<T> {
     delta?: number;
     tags?: string[];
     movement?: MovementType;
-    movementSpeedOffset: number;
+    movementSpeedOffset?: number;
     modelId: number;
     specialWidget?: boolean;
 }
