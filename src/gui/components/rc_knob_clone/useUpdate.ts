@@ -19,7 +19,9 @@ import {
 const onStart = state => ({
     ...state,
     isActive: true,
-    ...getStartXY(state),
+    // ...getStartXY(state),
+    // any chance we'd want above back?
+    startX: state.pageX, startY: state.pageY, //pjt hack.
     startPercentage: state.percentage,
     radius: state.size/2 //pjt hack
 })

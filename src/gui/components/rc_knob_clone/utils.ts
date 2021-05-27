@@ -58,6 +58,7 @@ export const getPercentageFromValue = ({ min = 0, max = 1, value }: SliderProp<n
 
 export const getStartXY = ({ container, size, percentage }: any) => {
   const rect = container.current.getBoundingClientRect() as DOMRect;
+  //TODO: base this on mouse position at start, not rect.
   return {
     startX: Math.floor(rect.left) + size / 2,
     startY: Math.floor(rect.top) + size / 2,
