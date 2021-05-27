@@ -105,8 +105,11 @@ export default class VideoState {
     }
     seek(time: number) {
         const vid = this.vidEl;
-        vid.pause();
+        const wasPaused = vid.paused;
+        if (!wasPaused) vid.pause();
         vid.currentTime = time;
+        //don't start playing if not already.
+        if (wasPaused) return;
         //https://stackoverflow.com/questions/10461669/seek-to-a-point-in-html5-video
         //there is evidence that this helps, other issues with other heavier imageState / setModel stuff.
         const timer = setInterval(()=> {
