@@ -153,10 +153,14 @@ export function starVideo(url: string, model?: KaleidModel) {
 }
 export async function getModelSidecar(url: string) {
     const r = await fetch(`${httpURL}/videoSidecar/${url}`);
+    if (r.status === 404) {
+        console.log('no sidecar found', url);
+        return;
+    }
     try {
         return await r.json() as KaleidModel; //nb, no validation or anything happening: WILL BREAK IF I CHANGE MODEL DEFINITION!!!!
     } catch (err) {
-        console.log('no sidecar for ' + url);
+        console.error('bad sidecar request for ' + url);
     }
 }
 /////

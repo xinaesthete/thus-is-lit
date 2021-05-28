@@ -164,8 +164,11 @@ export function addRestAPI(expApp: express.Application) {
         console.log('GET /videoSidecar/', req.url, id);
         try {
             const info = await getModelSidecar(id);
-            
-            res.send(info); //may be undefined
+            if (info === undefined) {
+                res.sendStatus(404);
+                return;
+            }
+            res.send(info);
         } catch (err) {
             console.error(`${err.name}: ${err.message}`);
             res.sendStatus(500);

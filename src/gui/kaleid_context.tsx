@@ -5,6 +5,7 @@ import VideoState from '@renderer/video_state';
 //import { registerModelEvents } from './gui_comms';
 import KaleidRenderer from '@renderer/kaleid_renderer';
 import { isNum, Numeric, Tweakable } from '@common/tweakables';
+import { sendModel } from './gui_comms';
 
 /** extra level of abstraction seems it may be unneeded, 
  * but this seems to allow vidState to react to change in GUI correctly, 
@@ -54,6 +55,7 @@ export class KaleidContextType {
       if (isNum(t.value)) p.value = t.value
       else Object.assign(t.value, p.value);
     });
+    sendModel(this.model);
   }
 }
 

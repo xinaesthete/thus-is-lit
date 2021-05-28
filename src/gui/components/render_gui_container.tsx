@@ -39,7 +39,10 @@ const NextVidButton = () => {
             action(()=>k.model.imageSource = desc)();
             sendRefreshVideoElement();
             mediaLib.getSidecar(newUrl).then(action((m) => {
-                if (m) k.applyTweakables(m);
+                if (m) {
+                    console.log('applying loaded values...');
+                    k.applyTweakables(m);
+                }
             }));
         }
     }}><SkipNextIcon /></IconButton>
