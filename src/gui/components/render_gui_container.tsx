@@ -4,17 +4,17 @@ import {
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import SkipNextIcon from '@material-ui/icons/SkipNext'
 import React, { Profiler } from 'react'
-import { AbstractImageDecriptor } from '@common/media_model'
+import { AbstractImageDecriptor, VideoDescriptor } from '@common/media_model'
 import { useStyles } from '../theme'
 import AbstractImageController from './video/abstract_image_controller'
 import { observer } from 'mobx-react'
 import { action, trace } from 'mobx'
 import MutatorGrid from './mutator/MutatorGrid'
-import { useKaleid } from '@gui/kaleid_context'
+import { useKaleid, useLitConfig } from '@gui/kaleid_context'
 import KaleidComponent from './kaleid_component'
 import SliderBank from './uniforms_gui';
 import mediaLib from '@gui/medialib'
-import { sendRefreshVideoElement } from '@gui/gui_comms'
+import { sendParameterValue, sendRefreshVideoElement } from '@gui/gui_comms'
 import { isNum } from '@common/tweakables'
 
 const SetNeutral = () => {
@@ -27,9 +27,27 @@ const SetNeutral = () => {
 }
 const NextVidButton = () => {
     const k = useKaleid();
+    const config = useLitConfig();
     return <IconButton onClick={async (e) => {
         e.stopPropagation();
         e.preventDefault();
+        //fadeout first... then maybe pause?
+        //add config flags for these.
+        const mix = k.parmMap.get('OutputMult');
+        if (mix) action(()=> {
+            if (config.transitionFadeOut) {
+                mix.value = 0;
+                sendParameterValue(mix, k.model.id);
+            }
+            if (config.transitionPause) {
+                //not working just yet.
+                const img = k.model.imageSource as VideoDescriptor;
+                img.paused = true;
+                //may need to assign again to trigger reaction
+                k.model.imageSource = img;                
+            }
+        })();
+        //or make fadeout something to do first?
         const prevUrl = k.vidState.vidUrl;
         const newUrl = mediaLib.chooseNext(prevUrl);
         const desc = await mediaLib.getDescriptorAsync(newUrl);
@@ -38,6 +56,7 @@ const NextVidButton = () => {
         } else {
             action(()=>k.model.imageSource = desc)();
             sendRefreshVideoElement();
+            //how about applying default / 'no fx' in this case?
             mediaLib.getSidecar(newUrl).then(action((m) => {
                 if (m) {
                     console.log('applying loaded values...');
