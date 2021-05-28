@@ -61,6 +61,8 @@ const NextVidButton = () => {
                 if (m) {
                     console.log('applying loaded values...');
                     k.applyTweakables(m);
+                } else {
+                    if (config.transitionDefaults) k.applyDefaults();
                 }
             }));
         }

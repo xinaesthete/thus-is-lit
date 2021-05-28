@@ -57,6 +57,15 @@ export class KaleidContextType {
     });
     sendModel(this.model);
   }
+  applyDefaults() {
+    this.model.tweakables.forEach(t => {
+      if (t.default !== undefined) {
+        if (isNum(t.value)) t.value = t.default;
+        else Object.assign(t.value, t.default);
+      }
+    });
+    sendModel(this.model);
+  }
 }
 
 
@@ -106,7 +115,9 @@ export const useKaleidList = () => {
 export const config = makeAutoObservable({
   presentation: false,
   livePreviews: true, enableVideoStreamInput: false, enableSpecialWidgets: true, paramsHack: true,
-  newGui: false, skipAwaitVidDescriptor: true
+  newGui: false, skipAwaitVidDescriptor: true, transitionFadeOut: true, transitionPause: true,
+  transitionDefaults: true
+  //TODO: save these to config file? a bit risky pre-gig.
 });
 /** provide access to a global (within the context of a GUI browser window) set of 
  * configuration options.
