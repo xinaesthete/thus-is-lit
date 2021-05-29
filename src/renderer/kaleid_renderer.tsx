@@ -27,7 +27,7 @@ const defaultTweakables: Tweakable<Numeric>[] = [ //threact?
   {name: "KaleidMix", value: 1, min: 0, max: 1, step: 1, movement: fix, tags: ['geometry', 'main'],
     specialWidget: true, default: 0, movementSpeedOffset: 60
   },
-  {name: "LagTime", value: -90, min: -180, max: 20, tags: ['motion']}, //"midi pitch" log scale.
+  {name: "LagTime", value: -90, min: -180, max: 20, tags: ['motion', 'main']}, //"midi pitch" log scale.
   {name: "ImageCentre", value: new Vector2(0.5, 0), min: -1, max: 1, wrap: true, tags: ['geometry'], 
     specialWidget: true, movementSpeedOffset: 36},
   {name: "Leaves", value: 3, min: 1, max: 8, step: 1, tags: ['geometry']},
@@ -49,10 +49,12 @@ const defaultTweakables: Tweakable<Numeric>[] = [ //threact?
   {name: "ContrastPreBias", value: 0.5, min: 0, max: 1, tags: ['colour', 'debug']},
   {name: "ContrastGain", value: 0.5, min: 0, max: 1, tags: ['colour', 'main']},
   {name: "ContrastPostBias", value: 0.5, min: 0, max: 1, tags: ['colour', 'debug']},
+  {name: "Saturation", value: 1, min: 0, max: 2, tags: ['colour', 'debug'], movement: fix},
+  {name: "Brightness", value: 1, min: 0, max: 2, tags: ['colour', 'debug'], movement: fix},
   {name: "SaturationBias", value: 0.5, min: 0, max: 1, tags: ['colour', 'main']},
   {name: "SaturationGain", value: 0.5, min: 0, max: 1, tags: ['colour', 'main']},
   {name: "Centre", value: new Vector2(0., 0.), min: -1, max: 1, tags: ['geometry']},
-  {name: "Vignette", value: new Vector2(0., 0.), min: 0, max: 0.2, movement: fix},
+  {name: "Vignette", value: new Vector2(0., 0.), min: 0, max: 0.2, tags: ['debug'], movement: fix},
   {name: "DebugMix", value: 0, min: 0, max: 1, movement: fix, tags: ['debug']},
 ].map((t: Tweakable<Numeric>) => {
   if (t.default === undefined) t.default = t.value;
@@ -73,6 +75,9 @@ export default class KaleidRenderer implements IThree {
   static previsFS: string = `#define PREVIS\n${fs}`;
   previs = false;
   texListener: TexChangeListener;
+  get outputMix() {
+    return this.uniforms.OutputMult.value as number;
+  }
   constructor(vid: VideoState, model?: KaleidModel) {
     this.vid = vid;
     console.log(`renderer constructor`);

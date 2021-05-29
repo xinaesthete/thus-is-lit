@@ -16,6 +16,8 @@ uniform float MozGain;
 uniform float ContrastPostBias;
 uniform float ContrastPreBias;
 uniform float ContrastGain;
+uniform float Saturation;
+uniform float Brightness;
 uniform float SaturationBias;
 uniform float SaturationGain;
 uniform float HueShift;
@@ -227,6 +229,8 @@ vec4 k_main() {
   dbg.z = dbg.z > 1. ? 0. : dbg.z;
   colHSV = mix(colHSV, dbg, DebugMix);
   #endif
+  colHSV.y *= Saturation;
+  colHSV.z *= Brightness;
   
   col.rgb = hsv2rgb(colHSV);
 

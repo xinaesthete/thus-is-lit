@@ -113,7 +113,7 @@ export const useKaleidList = () => {
  * Hook probably pointless, so one or other may go away at some point.
  */
 export const config = makeAutoObservable({
-  presentation: false,
+  presentation: false, showDebugSettings: false,
   livePreviews: true, enableVideoStreamInput: false, enableSpecialWidgets: true, paramsHack: true,
   newGui: false, skipAwaitVidDescriptor: true, transitionFadeOut: true, transitionPause: true,
   transitionDefaults: true

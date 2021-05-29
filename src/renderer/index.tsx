@@ -26,7 +26,13 @@ document.body.prepend(renderer.domElement);
 kRenderer.initThree(renderer.domElement);
 commsInit(kRenderer);
 
+//add an overlay element with Pete's intro loop & opacity set to 1-OutputMult?
+//const introOverlay = document.createElement('video');
+
+
+
 // lock FPS to avoid LED strobing on camera @ Barbican
+//// actually, setting display to 1080i 50hz should mean that I prefer to let the OS / display driver set FPS
 let fpsInterval: number;
 let lastDrawTime: number;
 function startAnimating(fps = 25) {
@@ -40,10 +46,12 @@ function animate(time: number) {
   if (elapsed > fpsInterval) {
     lastDrawTime = time - (elapsed % fpsInterval);
     kRenderer.update(time);
+    // introOverlay.style.opacity = (1. - kRenderer.outputMix).toString();
     kRenderer.render(renderer);
   }
 }
-startAnimating(25);
+startAnimating(250); //don't drop any frames
+
 
 window.onresize = () => {
     renderer.setSize(window.innerWidth, window.innerHeight);
