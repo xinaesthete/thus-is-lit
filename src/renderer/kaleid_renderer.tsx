@@ -21,13 +21,13 @@ const Vector2 = THREE.Vector2;
 const fix = MovementType.Fixed;
 const rot = MovementType.AngleShift;
 const defaultTweakables: Tweakable<Numeric>[] = [ //threact?
-  {name: "OutputMult", value: 1, min: 0, max: 1, movement: fix, tags: ['main'],
-    specialWidget: true, movementSpeedOffset: 60
+  {name: "OutputMult", value: 0, min: 0, max: 1, movement: fix, tags: ['main'],
+    specialWidget: true, movementSpeedOffset: 60, default: 0
   },
   {name: "KaleidMix", value: 1, min: 0, max: 1, step: 1, movement: fix, tags: ['geometry', 'main'],
     specialWidget: true, default: 0, movementSpeedOffset: 60
   },
-  {name: "LagTime", value: -90, min: -180, max: 20, tags: ['motion', 'main']}, //"midi pitch" log scale.
+  {name: "LagTime", value: -110, min: -180, max: 20, tags: ['motion', 'main']}, //"midi pitch" log scale.
   {name: "ImageCentre", value: new Vector2(0.5, 0), min: -1, max: 1, wrap: true, tags: ['geometry'], 
     specialWidget: true, movementSpeedOffset: 36},
   {name: "Leaves", value: 3, min: 1, max: 8, step: 1, tags: ['geometry'],
