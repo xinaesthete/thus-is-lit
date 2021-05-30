@@ -14,7 +14,7 @@ import MutatorGrid from './mutator/MutatorGrid'
 import { useKaleid, useLitConfig } from '@gui/kaleid_context'
 import KaleidComponent from './kaleid_component'
 import SliderBank from './uniforms_gui';
-import mediaLib from '@gui/medialib'
+import mediaLib, { niceName } from '@gui/medialib'
 import { sendParameterValue, sendRefreshVideoElement } from '@gui/gui_comms'
 import { isNum } from '@common/tweakables'
 
@@ -101,6 +101,9 @@ export default observer(() => {
       k.model.imageSource = newImg; //still needed to trigger reaction
       //(although could be done via context deep in the hierarchy)
   });
+  const name = React.useMemo(() => {
+      return niceName((k.model.imageSource as VideoDescriptor).url);
+  }, [k.model.imageSource]);
 
   const [mutateMode, setMutator] = React.useState(false);
   const tweaker = React.useMemo(()=> {
@@ -123,6 +126,7 @@ export default observer(() => {
               <SetNeutral />
               <NextVidButton />
               <StartScene />
+              <Typography style={{paddingRight: '2em', alignSelf: 'center'}}>{name}</Typography>
           </AccordionSummary>
           <AccordionDetails>
           <div>
