@@ -4,6 +4,7 @@ import { AbstractImageDecriptor, FeedbackDescriptor, ImageFileDescriptor,
 } from '@common/media_model';
 import { action } from 'mobx';
 export type TexChangeListener = (newTex: THREE.Texture) => void;
+let nextId = 0;
 export default class VideoState {
     imageState: AbstractImageDecriptor;
     vidEl: HTMLVideoElement;
@@ -14,7 +15,9 @@ export default class VideoState {
     streamDeviceId?: string;
     keepMuted = false;
     private changeListeners: TexChangeListener[] = [];
+    debugId: number;
     constructor(initUrl = 'red.mp4') {
+        this.debugId = nextId++;
         this._vidUrl = initUrl;
         //XXX: I should remove vidEl when appropriate as well...
         ///// (not just in newVidElement(), but at the moment we leak into DOM)
@@ -51,6 +54,7 @@ export default class VideoState {
         document.body.appendChild(this.vidEl);
         this.vidEl.src = this._vidUrl;
         this.vidEl.onloadedmetadata = action(() => {
+            //??? is this definitely happening when it should?
             this.imageState.width = this.vidEl.videoWidth;
             this.imageState.height = this.vidEl.videoHeight;
         })

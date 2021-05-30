@@ -6,7 +6,7 @@ import VideoState from '@renderer/video_state';
 import KaleidRenderer from '@renderer/kaleid_renderer';
 import { isNum, Numeric, Tweakable } from '@common/tweakables';
 import { sendModel } from './gui_comms';
-
+let nextContextId = 0;
 /** extra level of abstraction seems it may be unneeded, 
  * but this seems to allow vidState to react to change in GUI correctly, 
  * without the 'model' as sent to server etc needing to change */
@@ -14,7 +14,9 @@ export class KaleidContextType {
   model: ObservableKaleidModel;
   vidState: VideoState;
   parmMap: Map<string, Tweakable<Numeric>> = new Map();
+  debugId: number;
   constructor(init: KaleidModel) {
+    this.debugId = nextContextId++;
     this.model = new ObservableKaleidModel(init);
     this.vidState = new VideoState();
     this.vidState.keepMuted = true;
