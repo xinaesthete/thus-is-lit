@@ -84,7 +84,7 @@ class AngleRotater implements Lagger<number> {
         this.curVal = 0;
     }
     update(dt: number) {
-        //this.curVal = this.curVal + this.v.movementSpeedOffset!*dt; //like this? or...
+        // this.curVal = this.curVal + this.v.movementSpeedOffset!*(dt/1000); //like this? or...
         this.curVal = this.curVal + this.targVal*(dt/(10000)); //more this?
 
         return this.curVal;

@@ -67,6 +67,8 @@ export class ObservableKaleidModel implements KaleidModel {
     setNeutral() {
         const t = this.tweakables.filter(t=>t.tags && t.tags.includes('main'));
         console.log('setNeutral');
+        //should I be making and immediately calling actions like this?
+        //I keep making mistakes, forgetting to call the action, maybe consuming extra resources etc.
         action(() => {
             t.forEach(t => {
                 console.log(`changing ${t.name} from ${t.value} to ${t.default}`);

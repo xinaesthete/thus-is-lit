@@ -27,6 +27,7 @@ kRenderer.initThree(renderer.domElement);
 commsInit(kRenderer);
 
 //add an overlay element with Pete's intro loop & opacity set to 1-OutputMult?
+//--- not going to work that way if we also want Was Magician special transition.
 //const introOverlay = document.createElement('video');
 
 
