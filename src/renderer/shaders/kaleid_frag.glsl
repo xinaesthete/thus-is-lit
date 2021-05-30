@@ -169,6 +169,7 @@ vec4 k_main() {
   vec2 normalAspectUV = correctAspect(vertTexCoord.xy);
   uv -= 0.5;
   uv.x *= ScreenAspect;
+  //uv.x = mod(uv.x, 6.);
   
   vec2 c = Centre;
   
@@ -197,7 +198,7 @@ vec4 k_main() {
 
   vec2 uv_a = correctAspect(pol2car(polar) + ImageCentre);
   
-  vec2 uv2 = mix(normalAspectUV, uv_a, KaleidMix);
+  vec2 uv2 = uv_a; //mix(normalAspectUV, uv_a, KaleidMix); // don't blend UV for KaleidMix
   uv2 = mozaic(uv2, sqrt(Mozaic), MozGain);
 
   //FFS... all the mathematical rigour of a chimp brandishing a compass...
@@ -205,7 +206,8 @@ vec4 k_main() {
   vec2 _uvLim = vec2(1., mix(UVLimit.y, UVLimit.x, min(floor(ImageAspect), 1.)));
   uv2 = mirrorRepeat(uv2, _uvLim);
   
-  vec4 col = texture2D(texture1, uv2);
+  vec4 kcol = texture2D(texture1, uv2);
+  vec4 col = mix(texture2D(texture1, normalAspectUV), kcol, KaleidMix);
   vec3 colHSV = rgb2hsv(col.rgb);
   #define _HUE_EXPERIMENT
   #ifdef HUE_EXPERIMENT
