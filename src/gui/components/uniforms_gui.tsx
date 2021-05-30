@@ -114,14 +114,16 @@ const TweakableWidget = observer((u: SliderProp<Numeric>) => {
     )
 });
 
-
-const SliderBank = observer(() => {
+interface BankProps { tag?: string }
+const SliderBank = observer((props: BankProps) => {
+    const { tag } = props;
     const config = useLitConfig();
     const kaleidContext = useKaleid();
     if (config.newGui) return <KnobPanel />;
     const t = React.useMemo(()=>{
         const all = kaleidContext.model.tweakables;
-        return config.showDebugSettings ?  all : all.filter((t) => t.tags && !t.tags.includes('debug'))
+        const tagMatch = typeof tag !== 'string' ? all : all.filter(t => t.tags && t.tags.includes(tag));
+        return config.showDebugSettings ?  tagMatch : tagMatch.filter((t) => t.tags && !t.tags.includes('debug'))
     }, [config.showDebugSettings]);
     //const geos = React.useMemo(()=>kaleidContext.model.tweakables.filter((t) => t.tags && t.tags[0] === 'geometry'), []);
     //const cols = React.useMemo(()=>kaleidContext.model.tweakables.filter((t) => t.tags && t.tags[0] === 'colour'), []);

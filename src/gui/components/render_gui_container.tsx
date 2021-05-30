@@ -91,7 +91,9 @@ export default observer(() => {
   const [mutateMode, setMutator] = React.useState(false);
   const tweaker = React.useMemo(()=> {
       if (mutateMode) return <MutatorGrid />;
-      return <SliderBank />;
+      return (
+        <SliderBank />
+      );
   }, [mutateMode]);
   return (
       <div className={classes.uniformsGui}>
@@ -102,8 +104,8 @@ export default observer(() => {
               id="panel{model.id}-header"
           >
               <Typography style={{paddingRight: '2em', alignSelf: 'center'}}>Renderer {k.model.id}:</Typography>
-              <KaleidComponent name="header preview" />
-              <KaleidComponent name="header previs" previs={true} />
+              {/* <KaleidComponent name="header preview" />
+              <KaleidComponent name="header previs" previs={true} /> */}
               <SetNeutral />
               <NextVidButton />
           </AccordionSummary>

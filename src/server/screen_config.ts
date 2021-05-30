@@ -44,9 +44,12 @@ function getNextBounds() {
     console.log(`row: ${row}, col: ${col}`);
     i++;
     const { x, y, width, height } = screen.bounds;
-    return {x: x+col*width/2, y: y+row*height/2, width: width/2, height: height/2};
+    const aspect = 16/9;
+    const w = width/2;
+    return {x: x+col*width/2, y: y+row*height/2, width: w, height: w/aspect};
 }
 function getPresentationScreen() {
+    if (displays.length < 2) return getNextBounds();
     const fullscreen = true;
     return {fullscreen, ...displays[1].bounds};
 }

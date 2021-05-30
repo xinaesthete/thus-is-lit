@@ -5,7 +5,7 @@ import { API } from '@common/socket_cmds';
 import { FileConfigPrefs, VideoDescriptor } from '@common/media_model';
 import KaleidRenderer from '../renderer/kaleid_renderer';
 import { ParamValue, Tweakable } from '@common/tweakables';
-import { globalKaleids, KaleidContextType } from './kaleid_context';
+import { config, globalKaleids, KaleidContextType } from './kaleid_context';
 import { action, computed, makeObservable } from 'mobx';
 import mediaLib from './medialib';
 
@@ -22,7 +22,7 @@ const kaleidList = globalKaleids;
 */
 export async function requestNewRenderer(vidUrl?: string, presentation?: boolean) {
     console.log(`requesting newRenderer...`);
-    if (!vidUrl) vidUrl = mediaLib.chooseRandom();
+    if (!vidUrl && config.randomStartVid) vidUrl = mediaLib.chooseRandom();
     ws.emit(API.RequestNewRenderer, vidUrl, presentation);
 }
 
