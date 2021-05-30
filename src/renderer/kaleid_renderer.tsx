@@ -30,7 +30,9 @@ const defaultTweakables: Tweakable<Numeric>[] = [ //threact?
   {name: "LagTime", value: -90, min: -180, max: 20, tags: ['motion', 'main']}, //"midi pitch" log scale.
   {name: "ImageCentre", value: new Vector2(0.5, 0), min: -1, max: 1, wrap: true, tags: ['geometry'], 
     specialWidget: true, movementSpeedOffset: 36},
-  {name: "Leaves", value: 3, min: 1, max: 8, step: 1, tags: ['geometry']},
+  {name: "Leaves", value: 3, min: 1, max: 8, step: 1, tags: ['geometry'],
+    movementSpeedOffset: 0,
+  },
   {name: "Angle", value: 1.05, min: -Math.PI, max: Math.PI, wrap: true, tags: ['geometry'], 
     default: 0, movement: rot, movementSpeedOffset: 0. //TODO change meaning of movementSpeedOffset with AngleShift.
   },
@@ -42,6 +44,12 @@ const defaultTweakables: Tweakable<Numeric>[] = [ //threact?
   /// specialWidget? for now, 'reset' button.
   {name: "MozGain", value: .5, min: 0, max: 1, tags: ['geometry', 'main']},
   {name: "HueShift", value: 0., min: 0, max: 1, wrap: true, tags: ['colour', 'main'], movement: fix,
+    movementSpeedOffset: 60.
+  },
+  {name: "BarbHueShift", value: 0., min: 0, max: 1, wrap: true, tags: ['colour'], movement: fix,
+    movementSpeedOffset: 60.
+  },
+  {name: "BarbLeafGlitch", value: 0., min: -5, max: 5, wrap: true, tags: ['geometry'], movement: fix,
     movementSpeedOffset: 60.
   },
   {name: "HueSteps", value: 3., min: 1, max: 10, tags: ['colour', 'debug']},

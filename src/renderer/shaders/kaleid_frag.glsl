@@ -1,4 +1,4 @@
-varying float segAng;
+varying float vsegAng;
 uniform sampler2D texture1;
 uniform mat3 textureMatrix1;
 uniform float ScreenAspect;
@@ -28,6 +28,10 @@ uniform vec2 ImageCentre;
 uniform vec2 Vignette;
 uniform float OutputMult;
 uniform float DebugMix;
+
+uniform float BarbHueShift;
+uniform float BarbLeafGlitch;
+
 varying vec4 vertColor;
 varying vec2 vertTexCoord;
 
@@ -149,6 +153,7 @@ float shadeSeg(in vec2 p, in float angle) {
   return smoothstep(angle, angle+0.001, a);
 }
 vec4 previs_main() {
+  float segAng = vsegAng;
   vec2 uv = vertTexCoord;
   // vec2 dp = uv - 0.5*(ImageCentre + 1.);
   vec2 dp = uv - ImageCentre;
@@ -164,8 +169,12 @@ vec4 previs_main() {
   return mix(overlay, 0.6*vidCol, a);
 }
 vec4 k_main() {
+  float segAng = vsegAng;
   //see https://gist.github.com/bartwttewaall/5a1168d04a07d52eaf0571f7990191c2 for setting up textureMatrix
   vec2 uv = vertTexCoord;
+  float barbScreenI = floor(uv.x * 6.);
+  float barbScreenF = barbScreenI / 6.;
+  segAng += (barbScreenF - 0.5) * BarbLeafGlitch;
   vec2 normalAspectUV = correctAspect(vertTexCoord.xy);
   uv -= 0.5;
   uv.x *= ScreenAspect;
@@ -186,6 +195,7 @@ vec4 k_main() {
   
   float leaf = polar.y / segAng; ///....
   leaf += 1.5;
+  //leaf += (barbScreenF - 0.5) * BarbLeafGlitch;
   float leafI = ceil(leaf);
   float fr = fract(leaf);
   fr = gain(fr, AngleGain);
@@ -231,6 +241,7 @@ vec4 k_main() {
   dbg.z = dbg.z > 1. ? 0. : dbg.z;
   colHSV = mix(colHSV, dbg, DebugMix);
   #endif
+  colHSV.x += barbScreenF * BarbHueShift;
   colHSV.y *= Saturation;
   colHSV.z *= Brightness;
   
