@@ -3,6 +3,7 @@ import {
 } from '@material-ui/core'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import SkipNextIcon from '@material-ui/icons/SkipNext'
+import PlayArrow from '@material-ui/icons/PlayArrow'
 import React, { Profiler } from 'react'
 import { AbstractImageDecriptor, VideoDescriptor } from '@common/media_model'
 import { useStyles } from '../theme'
@@ -62,7 +63,26 @@ const NextVidButton = () => {
         }
     }}><SkipNextIcon /></IconButton>
 }
-
+const StartScene = () => {
+    const k = useKaleid();
+    const go = action(() => {
+        //play, set OutputMult
+        const mix = k.parmMap.get('OutputMult');
+        //alert(mix!.value);
+        if (mix) {
+            mix.value = 1;
+            sendParameterValue(mix, k.model.id);
+            (k.model.imageSource as VideoDescriptor).paused = false;
+        };
+    });
+    return <IconButton onClick={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        go();
+    }}>
+        <PlayArrow />
+    </IconButton>
+}
 /** this is actually a fairly generic GUI for making a bunch of sliders for tweakable values.
  * Hopefully soon we'll reason about what different types of models we want,
  * and both how to make more explicitly designed GUIs for something like Kaleid, also what more
@@ -102,6 +122,7 @@ export default observer(() => {
               <KaleidComponent name="header previs" previs={true} /> */}
               <SetNeutral />
               <NextVidButton />
+              <StartScene />
           </AccordionSummary>
           <AccordionDetails>
           <div>
