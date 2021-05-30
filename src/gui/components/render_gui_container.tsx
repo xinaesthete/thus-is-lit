@@ -39,13 +39,6 @@ const NextVidButton = () => {
                 mix.value = 0;
                 sendParameterValue(mix, k.model.id);
             }
-            if (config.transitionPause) {
-                //not working just yet.
-                const img = k.model.imageSource as VideoDescriptor;
-                img.paused = true;
-                //may need to assign again to trigger reaction
-                k.model.imageSource = img;                
-            }
         })();
         //or make fadeout something to do first?
         const prevUrl = k.vidState.vidUrl;
@@ -64,6 +57,7 @@ const NextVidButton = () => {
                 } else {
                     if (config.transitionDefaults) k.applyDefaults();
                 }
+                if (config.transitionPause) (desc as VideoDescriptor).paused = true;
             }));
         }
     }}><SkipNextIcon /></IconButton>
