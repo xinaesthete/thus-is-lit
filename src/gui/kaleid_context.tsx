@@ -49,6 +49,7 @@ export class KaleidContextType {
   /** how do I set the model again? this isn't good. */
   applyTweakables(m: KaleidModel) {
     m.tweakables.forEach(t => {
+      if (t.name === 'OutputMult') return;
       const p = this.parmMap.get(t.name!);
       if (!p) {
         console.error(`parm not found`);
