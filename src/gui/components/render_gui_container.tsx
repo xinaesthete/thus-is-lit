@@ -3,6 +3,7 @@ import {
 } from '@material-ui/core'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import SkipNextIcon from '@material-ui/icons/SkipNext'
+import SkipPreviousIcon from '@material-ui/icons/SkipPrevious'
 import PlayArrow from '@material-ui/icons/PlayArrow'
 import React, { Profiler } from 'react'
 import { AbstractImageDecriptor, VideoDescriptor } from '@common/media_model'
@@ -25,6 +26,43 @@ const SetNeutral = () => {
         e.stopPropagation();
         e.preventDefault();
     }}>fx off</Button>
+}
+const PreviousVidButton = () => {
+    const k = useKaleid();
+    const config = useLitConfig();
+    return <IconButton onClick={async (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        //fadeout first... then maybe pause?
+        //add config flags for these.
+        const mix = k.parmMap.get('OutputMult');
+        if (mix) action(()=> {
+            if (config.transitionFadeOut) {
+                mix.value = 0;
+                sendParameterValue(mix, k.model.id);
+            }
+        })();
+        //or make fadeout something to do first?
+        const prevUrl = k.vidState.vidUrl;
+        const newUrl = mediaLib.choosePrevious(prevUrl);
+        const desc = await mediaLib.getDescriptorAsync(newUrl);
+        if (!desc) {
+            console.error(`no descriptor for ${newUrl}?`);
+        } else {
+            action(()=>k.model.imageSource = desc)();
+            sendRefreshVideoElement();
+            //how about applying default / 'no fx' in this case?
+            mediaLib.getSidecar(newUrl).then(action((m) => {
+                if (m) {
+                    console.log('applying loaded values...');
+                    k.applyTweakables(m);
+                } else {
+                    if (config.transitionDefaults) k.applyDefaults();
+                }
+                if (config.transitionPause) (desc as VideoDescriptor).paused = true;
+            }));
+        }
+    }}><SkipPreviousIcon /></IconButton>
 }
 const NextVidButton = () => {
     const k = useKaleid();
@@ -124,6 +162,7 @@ export default observer(() => {
               {/* <KaleidComponent name="header preview" />
               <KaleidComponent name="header previs" previs={true} /> */}
               <SetNeutral />
+              <PreviousVidButton />
               <NextVidButton />
               <StartScene />
               <Typography style={{paddingRight: '2em', alignSelf: 'center'}}>{name}</Typography>
