@@ -58,14 +58,19 @@ const MuteToggle = observer(function MuteToggle(props: VProps) {
   )
 });
 
-const PauseToggle = observer((props: VProps) => {
+const PauseToggle = observer(() => {
   const classes = useStyles();
-  //TODO: figure out why this isn't actually working.
+  //TODO: figure out why this is working but other ways of pausing aren't
+  //I thought props.video was k.model.imageSource... but when I tried to use that it didn't work.
+  //actually it seems like it behaves differently for red.mp4 vs everything else.
+  //so we can useKaleid() here as expected and not pass props (although of course if we had multiple video layers that would change)
+  const k = useKaleid();
+  const video = k.model.imageSource as VideoDescriptor;
   return (
     <>
       <Button className={classes.vidCtrlButton} 
-        onClick={action(()=>props.video.paused = !props.video.paused)}>
-        { props.video.paused ? <PlayArrow /> : <Pause /> }
+        onClick={action(()=>video.paused = !video.paused)}>
+        { video.paused ? <PlayArrow /> : <Pause /> }
       </Button>
     </>
   )
@@ -73,7 +78,6 @@ const PauseToggle = observer((props: VProps) => {
 
 export default observer(function VideoController(props: VProps) {
   const {video, setVideo} = {...props};
-  const kaleid = useKaleid();
   const setName = async (name: string) => {
     console.log(`[video_controller] setName ${name}`);
     // sendVideoChange(name, kaleid.model.id); //should happen as a reaction to setVideo
@@ -87,7 +91,7 @@ export default observer(function VideoController(props: VProps) {
       <Restart />
       <ChooseVideo video={video} setURL={setName} />
       <MuteToggle video={video} setVideo={setVideo} />
-      <PauseToggle video={video} setVideo={setVideo} />
+      <PauseToggle />
       {/* <PlaybackRate video={video} /> */}
     </>
   )
