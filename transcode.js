@@ -10,7 +10,6 @@ const files = fs.readdirSync('.').filter(f => f.endsWith('.MOV') && !f.startsWit
 async function processFile(f) {
     if (!f) return;
     //ffmpeg -i .\P1041065.MOV -r 25 -vf "setpts=(PTS-STARTPTS)*59.94/25" -crf 18 -an p1041065_rtest.mp4
-    console.log('processing "' + f + '"...');
     const newName = f.replace('.MOV', '_slo_h264.mp4');
     if (fs.existsSync(newName)) {
         console.log(newName + ' already exists, skipping...');
@@ -39,6 +38,7 @@ async function processFile(f) {
 }
 (async function main() {
     for (let i = 0; i < files.length; i++) {
+        console.log(`processing "${files[i]}" (${i+1}/${files.length})...'`);
         await processFile(files[i]);
         // return;
     }
