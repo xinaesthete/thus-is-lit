@@ -114,6 +114,7 @@ const basePlane = new THREE.PlaneBufferGeometry(1, 1, 1, 1);
 
 /**
  * XXX: Really need to use this a bit to figure out how it should work...
+ * Or maybe use react-three-fiber instead.
  * 
  * 
  * React documentation & general conventions strongly favour composition over inheritence, for sound reasons.
