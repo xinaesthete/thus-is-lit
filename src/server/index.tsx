@@ -6,6 +6,8 @@ import { getNextScreen, isMac } from './screen_config';
 import main_state from './main_state';
 import { localGuiURL } from '@common/network_addresses';
 
+app.allowRendererProcessReuse = false;
+
 startServer();
 
 export const buildDir = path.join(__dirname, '..');
