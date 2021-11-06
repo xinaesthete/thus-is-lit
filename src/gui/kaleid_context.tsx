@@ -118,8 +118,9 @@ export const useKaleidList = () => {
 export const config = makeAutoObservable({
   presentation: true, showDebugSettings: false,
   livePreviews: true, enableVideoStreamInput: false, enableSpecialWidgets: true, paramsHack: true,
-  newGui: false, skipAwaitVidDescriptor: true, transitionFadeOut: true, transitionPause: true,
-  transitionDefaults: true, randomStartVid: false,
+  newGui: false, transitionFadeOut: true, transitionPause: true,
+  transitionDefaults: true, randomStartVid: false, 
+  skipAwaitVidDescriptor: true//, vidSwitchActionExperiment: true,
   //TODO: save these to config file? a bit risky pre-gig.
 });
 /** provide access to a global (within the context of a GUI browser window) set of 

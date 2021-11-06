@@ -40,6 +40,10 @@ const VidAssigner = observer((props: VidAssignerProps) => {
                 
                 //would be handy to have a 'bug' button here as well.
                 const desc = await mediaLib.getDescriptorAsync(url) as VideoDescriptor;
+                //// XXX: to review, October 2021
+                //maybe it would be better for this whole onClick to be an action, but that doesn't work with async.
+                //Is there a significant overhead with creating a new action like this that only gets used once?
+                //// --> use flow & function* instead of action & async.
                 action(()=>m.model.imageSource = desc)(); //<---- note that we have to execute the action()()
             }}>{m.model.id}</Button>
         })}

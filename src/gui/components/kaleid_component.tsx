@@ -38,7 +38,7 @@ export default observer(function KaleidComponent(props: { spec?: Specimen, previ
     const {previs, spec, name: key = '', ...dom} = props; //destructure anything that shouldn't be in dom before passing down.
     
     if (!config.livePreviews) {
-        return <div style={{width: '100px', height: '50px', backgroundColor: 'red', opacity: '0.3'}}> </div>
+        return <></>//<div style={{width: '100px', height: '50px', backgroundColor: 'red', opacity: '0.3'}}> </div>
     }
     if (props.spec) return <SpecimenVersion spec={props.spec} />;
     const getRenderer = ()=> {
@@ -47,9 +47,9 @@ export default observer(function KaleidComponent(props: { spec?: Specimen, previ
         k.parmsHack = config.paramsHack;
         return k;
     };
-    useAnimationFrame(()=> {
-        //kRender.
-    }); //could be useful (but threact already has its own logic).
+    // useAnimationFrame(()=> {
+    //     //kRender.
+    // }); //could be useful (but threact already has its own logic).
 
     const kRender = React.useMemo(getRenderer, [key, config.paramsHack]);
     return <Threact gfx={kRender} className={classes.kaleidComponent} domAttributes={dom} />

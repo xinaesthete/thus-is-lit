@@ -13,6 +13,12 @@ uniform float Angle2;
 uniform float OutAngle;
 uniform float Mozaic;
 uniform float MozGain;
+//TODO: more struct-based args... modular shaders...
+struct colParms {
+  float contrast;
+  float saturation;
+  float brightness;
+};
 uniform float ContrastPostBias;
 uniform float ContrastPreBias;
 uniform float ContrastGain;

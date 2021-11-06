@@ -51,8 +51,13 @@ const PreviousVidButton = () => {
         } else {
             action(()=>k.model.imageSource = desc)();
             sendRefreshVideoElement();
-            //how about applying default / 'no fx' in this case?
             mediaLib.getSidecar(newUrl).then(action((m) => {
+                //// October 2021 - code consolidated into one action
+                //// this change was made months ago & not comitted - seems an improvement?
+                //// but I'm out of this headspace as of this writing.
+                //// actually, seems maybe *not* an improvement. This is slow and buggy.
+                // k.model.imageSource = desc;
+                // sendRefreshVideoElement(); //this really wants to happen after the action? which should be made differently.
                 if (m) {
                     console.log('applying loaded values...');
                     k.applyTweakables(m);
@@ -90,6 +95,8 @@ const NextVidButton = () => {
             sendRefreshVideoElement();
             //how about applying default / 'no fx' in this case?
             mediaLib.getSidecar(newUrl).then(action((m) => {
+                // k.model.imageSource = desc;
+                // sendRefreshVideoElement(); //this really wants to happen after the action? which should be made differently.
                 if (m) {
                     console.log('applying loaded values...');
                     k.applyTweakables(m);
@@ -134,6 +141,7 @@ export default observer(() => {
 
   //--> ImageContext? What if there are multiple layers later?
   // then the context interface can change. KaleidContext can be used in place, anyway.
+  // should this be a hook?
   const handleSetImage = action((newImg: AbstractImageDecriptor) => {
       //console.log(`handleSetImage`);
       k.model.imageSource = newImg; //still needed to trigger reaction
@@ -159,8 +167,8 @@ export default observer(() => {
               id="panel{model.id}-header"
           >
               <Typography style={{paddingRight: '2em', alignSelf: 'center'}}>Renderer {k.model.id}:</Typography>
-              {/* <KaleidComponent name="header preview" />
-              <KaleidComponent name="header previs" previs={true} /> */}
+              <KaleidComponent name="header preview" />
+              <KaleidComponent name="header previs" previs={true} />
               <SetNeutral />
               <PreviousVidButton />
               <NextVidButton />
