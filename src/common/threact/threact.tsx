@@ -73,7 +73,9 @@ function resize() {
 }
 function animate(time: number) {
     requestAnimationFrame(animate);
-    globalUniforms.iTime.value = (Date.now()-startTime) / 1000; //XXX::: use time passed as arg
+    ////RAH22: was expecting different form of time than that passed as arg, messed up preview windows.
+    time = Date.now(); 
+    globalUniforms.iTime.value = (time-startTime) / 1000; //XXX::: use time passed as arg
     if (compositeMode === 'canvas') {
         views.forEach(v => v.updateLayout(time));
     } else {
@@ -166,19 +168,22 @@ export class Threact extends React.Component<IThreact, any> {
         const rect = this.mount.getBoundingClientRect(); //"Forced Reflow is likely a performance bottleneck"
 
         //TODO: don't render if off screen.
-        const w = rect.width, cw = renderer.domElement.clientWidth;
-        const h = rect.height, ch = renderer.domElement.clientHeight;
+        /// -> cw & ch are 0, is this an issue... did this start with different compositeMode implementation?
+        const w = rect.width, cw = renderer.domElement.width;
+        const h = rect.height, ch = renderer.domElement.height;
+        // const w = rect.width, cw = renderer.domElement.clientWidth;
+        // const h = rect.height, ch = renderer.domElement.clientHeight;
         this.resize(rect);
         
         //this.composite.updateMatrix();
         if (compositeMode === 'proxy') {
-        const left = rect.left + w/2;
-        const bottom = (ch - rect.bottom) + h/2;
-        this.composite.position.x = left;
-        this.composite.position.y = bottom;
-        
-        //this.composite.updateMatrix();
-        if (rect.bottom < 0 || rect.top > ch || rect.right < 0 || rect.left > cw) return;
+            const left = rect.left + w/2;
+            const bottom = (ch - rect.bottom) + h/2;
+            this.composite.position.x = left;
+            this.composite.position.y = bottom;
+            
+            //this.composite.updateMatrix();
+            if (rect.bottom < 0 || rect.top > ch || rect.right < 0 || rect.left > cw) return;
         }
         this.renderGL(time);
     }
