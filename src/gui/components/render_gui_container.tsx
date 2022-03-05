@@ -178,6 +178,7 @@ export default observer(() => {
           <AccordionDetails>
           <div>
               <AbstractImageController image={k.model.imageSource} setImage={handleSetImage} />
+              <KaleidComponent name="outputPreview" outputPreview={true} />
               <Button onClick={()=>setMutator(!mutateMode)}>
                   {mutateMode ? "mutator" : "sliders"}
               </Button>

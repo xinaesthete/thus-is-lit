@@ -104,7 +104,14 @@ export const useStyles = makeStyles((theme: Theme) =>
       objectFit: 'contain' //the element is larger than its container, so this doesn't work
     },
     kaleidComponent: {
-      width: '200px'
+      width: '200px',
+      aspectRatio: '16/9'
+    },
+    outputPreview: {
+      width: '600px',
+      position: 'fixed',
+      right: '0px',
+      bottom: '0px'
     },
     mutatorCell: {
       margin: '0.2em'

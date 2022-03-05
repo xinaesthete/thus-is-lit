@@ -31,7 +31,7 @@ const SpecimenVersion = observer(function SpecimenVersion(props: {spec: Specimen
  * where the kaleidoscope parameters point in the image. This can be used for direct manipulation with GUI.
  * @param props.onClick any DomAttributes (ie, any event handlers etc) will be passed on to the backing `<canvas>`
  */
-export default observer(function KaleidComponent(props: { spec?: Specimen, previs?: boolean, name?: string } & DomAttributes) {
+export default observer(function KaleidComponent(props: { spec?: Specimen, previs?: boolean, name?: string, outputPreview?: boolean } & DomAttributes) {
     const config = useLitConfig();
     const classes = useStyles();
     const kaleid = useKaleid();
@@ -50,7 +50,7 @@ export default observer(function KaleidComponent(props: { spec?: Specimen, previ
     // useAnimationFrame(()=> {
     //     //kRender.
     // }); //could be useful (but threact already has its own logic).
-
+    const className = props.outputPreview ? classes.outputPreview : classes.kaleidComponent;
     const kRender = React.useMemo(getRenderer, [key, config.paramsHack]);
-    return <Threact gfx={kRender} className={classes.kaleidComponent} domAttributes={dom} />
+    return <Threact gfx={kRender} className={className} domAttributes={dom} />
 });
