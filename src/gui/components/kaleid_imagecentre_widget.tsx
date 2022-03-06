@@ -25,7 +25,8 @@ export default observer((u: SliderProp<vec2>) => {
       u.onChange({x, y});
     }),
     style: {
-      width: '600px', height: '340px', maxWidth: '100%', border: '2px solid #555'
+      width: '400px', height: '225px', maxWidth: '100%', border: '2px solid #555',
+      aspectRatio: '16/9'
     }
   };
   return (
