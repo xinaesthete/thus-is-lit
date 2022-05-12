@@ -49,7 +49,7 @@ const defaultTweakables: Tweakable<Numeric>[] = [ //threact?
   {name: "BarbHueShift", value: 0., min: 0, max: 1, wrap: true, tags: ['colour'], movement: fix,
     movementSpeedOffset: 60.
   },
-  {name: "BarbLeafGlitch", value: 0., min: -5, max: 5, wrap: true, tags: ['geometry'], movement: fix,
+  {name: "BarbLeafGlitch", value: 0., min: -1, max: 1, wrap: true, tags: ['geometry'], movement: fix,
     movementSpeedOffset: 60.
   },
   {name: "HueSteps", value: 3., min: 1, max: 10, tags: ['colour', 'debug']},

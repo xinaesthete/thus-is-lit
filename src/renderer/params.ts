@@ -71,6 +71,9 @@ class LagVec2 implements Lagger<vec2> {
 
 /** Lagger interface isn't necessarily right for this
  * but there's probably ways this could all be simpler anway.
+ * Unfortunately there are also ways this needs to be more complicated.
+ * We need to ensure that different representations of the same model are
+ * in sync.
  */
 class AngleRotater implements Lagger<number> {
     lagTime: number;
